@@ -12,7 +12,7 @@ This project is specifically focused on asset processing workflows.  While there
 
 ### Installation
 
-After downloading the latest release from the [releases](./releases) page, the JAR can be executed with the command `java -jar wf-migrator-0.1.0.jar [PROJECT_DIR]`.  For additional information and options, please see the documentation.
+After downloading the latest release from the [releases](/releases) page, the JAR can be executed with the command `java -jar wf-migrator-0.1.0.jar [PROJECT_DIR]`.  For additional information and options, please see the documentation.
 
 ### Usage
 
