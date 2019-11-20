@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+    jcr:primaryType="cq:Page">
+    <jcr:content
+        cq:designPath="/etc/designs/default"
+        cq:lastModified="{Date}2011-11-18T12:22:50.848+01:00"
+        cq:lastModifiedBy="admin"
+        cq:tags="[workflow:dam]"
+        cq:template="/libs/cq/workflow/templates/model"
+        jcr:description="Workflow that uploads images to scene7"
+        jcr:primaryType="cq:PageContent"
+        jcr:title="Scene7"
+        sling:resourceType="cq/workflow/components/pages/model">
+        <flow
+            jcr:primaryType="nt:unstructured"
+            sling:resourceType="foundation/components/parsys">
+            <scene7upload
+                jcr:created="{Date}2011-03-24T11:08:05.524+01:00"
+                jcr:createdBy="admin"
+                jcr:description="scene7"
+                jcr:lastModified="{Date}2011-11-18T12:22:50.821+01:00"
+                jcr:lastModifiedBy="admin"
+                jcr:primaryType="nt:unstructured"
+                jcr:title="Scene7"
+                sling:resourceType="dam/components/scene7/scene7upload"
+                PROCESS="com.day.cq.dam.scene7.impl.process.Scene7UploadProcess"
+                PROCESS_AUTO_ADVANCE="true">
+                <metaData
+                    jcr:primaryType="nt:unstructured"
+                    PROCESS="com.day.cq.dam.scene7.impl.process.Scene7UploadProcess"
+                    PROCESS_AUTO_ADVANCE="true"/>
+            </scene7upload>
+        </flow>
+        <model/>
+    </jcr:content>
+</jcr:root>

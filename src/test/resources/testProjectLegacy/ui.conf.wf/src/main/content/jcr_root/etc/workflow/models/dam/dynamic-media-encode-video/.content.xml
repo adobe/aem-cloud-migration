@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+    jcr:primaryType="cq:Page">
+    <jcr:content
+        cq:lastModified="{Date}2017-01-31T15:01:04.599-05:00"
+        cq:lastModifiedBy="admin"
+        cq:tags="[workflow:dam]"
+        cq:template="/libs/cq/workflow/templates/model"
+        cq:workflowDetailsPage="/mnt/overlay/dam/gui/content/s7dam/jobmonitoring/encodingjobdetails.html${item}?item=${payload}"
+        jcr:description="This workflow manages the update of dynamic media videos."
+        jcr:primaryType="cq:PageContent"
+        jcr:title="Dynamic Media Encode Video"
+        sling:resourceType="cq/workflow/components/pages/model">
+        <flow
+            jcr:primaryType="nt:unstructured"
+            sling:resourceType="foundation/components/parsys">
+            <process
+                jcr:description="This process checks if the complete update process has to be executed. The workflow should terminate  eg. the asset got restored right before to make sure that trhe restored content is preserved."
+                jcr:primaryType="nt:unstructured"
+                jcr:title="Continue updating?"
+                sling:resourceType="cq/workflow/components/model/process">
+                <metaData
+                    jcr:primaryType="nt:unstructured"
+                    PROCESS="com.day.cq.dam.core.process.GateKeeperProcess"
+                    PROCESS_ARGS=""
+                    PROCESS_AUTO_ADVANCE="true"/>
+            </process>
+            <metadataprocessorpro
+                jcr:created="{Date}2014-07-08T18:32:21.880+05:30"
+                jcr:createdBy="admin"
+                jcr:description="A process to extract and import metadata, create references and apply processing profile, if the payload of the step is an asset or part of an asset."
+                jcr:lastModified="{Date}2014-07-08T18:32:21.880+05:30"
+                jcr:lastModifiedBy="admin"
+                jcr:primaryType="nt:unstructured"
+                jcr:title="Metadata Processor"
+                sling:resourceType="dam/components/workflow/metadataprocessorprocess">
+                <metaData
+                    jcr:primaryType="nt:unstructured"
+                    PROCESS="com.day.cq.dam.core.process.MetadataProcessorProcess"
+                    PROCESS_AUTO_ADVANCE="true"/>
+            </metadataprocessorpro>
+            <videoproxyprocess
+                jcr:created="{Date}2014-01-29T12:10:47.906-08:00"
+                jcr:createdBy="admin"
+                jcr:description="Uploads and processes videos through the Adobe Dynamic Media Video Service."
+                jcr:lastModified="{Date}2014-02-04T10:38:39.946-08:00"
+                jcr:lastModifiedBy="admin"
+                jcr:primaryType="nt:unstructured"
+                jcr:title="Dynamic Media Video Service Process"
+                sling:resourceType="dam/components/s7dam/videoproxyprocess"
+                advanceOnTimeout="true"
+                EXTERNAL_PROCESS="com.day.cq.dam.s7dam.common.process.VideoProxyServiceProcess"
+                period="30"
+                PROCESS_ARGS="test"
+                PROCESS_AUTO_ADVANCE="true"
+                timeout="3600">
+                <metaData
+                    jcr:primaryType="nt:unstructured"
+                    advanceOnTimeout="true"
+                    CONFIGS="[160:90,48:27,320:180]"
+                    EXTERNAL_PROCESS="com.day.cq.dam.s7dam.common.process.VideoProxyServiceProcess"
+                    period="30"
+                    PROCESS_ARGS="test"
+                    PROCESS_AUTO_ADVANCE="true"
+                    timeout="3600"/>
+            </videoproxyprocess>
+            <dmimageprocess
+                jcr:created="{Date}2015-09-28T17:50:46.962-07:00"
+                jcr:createdBy="admin"
+                jcr:description="Processes assets for use with Dynamic Media Image Services"
+                jcr:lastModified="{Date}2015-09-28T17:50:46.962-07:00"
+                jcr:lastModifiedBy="admin"
+                jcr:primaryType="nt:unstructured"
+                jcr:title="Dynamic Media Process Image Assets"
+                sling:resourceType="dam/components/s7imaging/dmimageprocess">
+                <metaData
+                    jcr:primaryType="nt:unstructured"
+                    CONFIGS="[140:100:false,48:48:false,319:319:false]"
+                    HEIGHT="1280"
+                    MIME_TYPE="image/jpeg"
+                    PROCESS="com.adobe.cq.dam.dm.process.workflow.DMImageProcess"
+                    PROCESS_AUTO_ADVANCE="true"
+                    QUALITY="90"
+                    WIDTH="1280"/>
+            </dmimageprocess>
+            <thumbnailprocess
+                jcr:created="{Date}2014-07-15T00:55:55.869+05:30"
+                jcr:createdBy="admin"
+                jcr:description="This process will create one or more thumbnails for the asset, create web enabled rendition and update folder thumbnail."
+                jcr:lastModified="{Date}2016-08-04T20:18:39.069+05:30"
+                jcr:lastModifiedBy="admin"
+                jcr:primaryType="nt:unstructured"
+                jcr:title="Process Thumbnails"
+                sling:resourceType="dam/components/workflow/thumbnailprocess"
+                PROCESS="com.day.cq.dam.core.process.ThumbnailProcess"
+                PROCESS_AUTO_ADVANCE="true">
+                <metaData
+                    jcr:primaryType="nt:unstructured"
+                    CONFIGS="[140:100:false,48:48:false,319:319:false]"
+                    CREATE_FPO_MIMETYPES="[image/pjpeg,image/jpeg,image/jpg,image/gif,image/x-png,image/tiff,image/png,application/x-photoshop,application/photoshop,image/vnd.adobe.photoshop,application/vnd.adobe.photoshop,image/bmp,image/x-tiff]"
+                    FPO_QUALITY="10"
+                    HEIGHT="1280"
+                    MIME_TYPE="image/jpeg"
+                    MIMETYPE="image/jpeg"
+                    PROCESS="com.day.cq.dam.core.process.ThumbnailProcess"
+                    PROCESS_AUTO_ADVANCE="true"
+                    QUALITY="90"
+                    SKIP="[audio/mpeg,video/(.*)]"
+                    WIDTH="1280"/>
+            </thumbnailprocess>
+            <deleteimagepreviewpr
+                jcr:created="{Date}2015-09-22T08:51:54.114-07:00"
+                jcr:createdBy="admin"
+                jcr:description="Process to delete the image preview rendition"
+                jcr:lastModified="{Date}2015-09-22T08:51:54.114-07:00"
+                jcr:lastModifiedBy="admin"
+                jcr:primaryType="nt:unstructured"
+                jcr:title="Delete Image Preview Rendition"
+                sling:resourceType="dam/components/workflow/deleteimagepreviewprocess">
+                <metaData
+                    jcr:primaryType="nt:unstructured"
+                    PROCESS="com.day.cq.dam.core.process.DeleteImagePreviewProcess"
+                    PROCESS_AUTO_ADVANCE="true"/>
+            </deleteimagepreviewpr>
+            <productassetuploadprocess
+                jcr:created="{Date}2014-03-13T16:50:00.000Z"
+                jcr:createdBy="admin"
+                jcr:description="This process will extract and upload the product assets"
+                jcr:lastModified="{Date}2014-03-13T16:50:00.000Z"
+                jcr:lastModifiedBy="admin"
+                jcr:primaryType="nt:unstructured"
+                jcr:title="Product Asset Upload"
+                sling:resourceType="dam/components/workflow/productassetuploadprocess">
+                <metaData
+                    jcr:primaryType="nt:unstructured"
+                    PROCESS="com.day.cq.dam.pim.impl.sourcing.upload.process.ProductAssetsUploadProcess"
+                    PROCESS_AUTO_ADVANCE="true"/>
+            </productassetuploadprocess>
+            <dmencodevideoworkflo
+                jcr:created="{Date}2016-12-16T15:25:51.226-05:00"
+                jcr:createdBy="admin"
+                jcr:description="This process will update the video status."
+                jcr:lastModified="{Date}2016-12-16T15:25:51.226-05:00"
+                jcr:lastModifiedBy="admin"
+                jcr:primaryType="nt:unstructured"
+                jcr:title="Dynamic Media Encode Vidoe Workflow Completed"
+                sling:resourceType="dam/components/workflow/dmencodevideoworkflowcompletedprocess">
+                <metaData
+                    jcr:primaryType="nt:unstructured"
+                    PROCESS="com.day.cq.dam.s7dam.common.process.DMEncodeVideoWorkflowCompletedProcess"
+                    PROCESS_AUTO_ADVANCE="true"/>
+            </dmencodevideoworkflo>
+        </flow>
+        <model/>
+    </jcr:content>
+</jcr:root>

@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+    jcr:primaryType="cq:Page">
+    <jcr:content
+        cq:designPath="/etc/designs/default"
+        cq:lastModified="{Date}2014-05-08T17:17:55.420+02:00"
+        cq:lastModifiedBy="admin"
+        cq:template="/libs/cq/workflow/templates/model"
+        jcr:primaryType="cq:PageContent"
+        jcr:title="Publish to Adobe Campaign"
+        sling:resourceType="cq/workflow/components/pages/model">
+        <flow
+            jcr:primaryType="nt:unstructured"
+            sling:resourceType="foundation/components/parsys">
+            <process_1
+                jcr:created="{Date}2014-01-15T17:19:31.554+01:00"
+                jcr:createdBy="admin"
+                jcr:lastModified="{Date}2014-01-15T17:21:10.182+01:00"
+                jcr:lastModifiedBy="admin"
+                jcr:primaryType="nt:unstructured"
+                jcr:title="Check prerequisites and prepare"
+                sling:resourceType="cq/workflow/components/model/process">
+                <metaData
+                    jcr:primaryType="nt:unstructured"
+                    PROCESS="com.day.cq.mcm.campaign.impl.PreparePublishing"
+                    PROCESS_AUTO_ADVANCE="true"/>
+            </process_1>
+            <or
+                jcr:created="{Date}2014-04-24T16:36:52.097+02:00"
+                jcr:createdBy="admin"
+                jcr:lastModified="{Date}2014-04-25T08:44:40.363+02:00"
+                jcr:lastModifiedBy="admin"
+                jcr:primaryType="nt:unstructured"
+                sling:resourceType="cq/workflow/components/model/or"
+                branches="2"
+                orSplit="true"
+                script1="function check() {&#xa;    var path = workflowData.getPayload().toString();&#xa;    var node = jcrSession.getNode(path);&#xa;    return !(node.hasProperty(&quot;jcr:content/acPublishState&quot;) &amp;&amp; node.getProperty(&quot;jcr:content/acPublishState&quot;).getString().equals(&quot;prepared&quot;));&#xa;}&#xa;">
+                <_x0031_
+                    jcr:primaryType="nt:unstructured"
+                    sling:resourceType="cq/flow/components/parsys">
+                    <participant
+                        jcr:created="{Date}2014-04-24T16:37:10.874+02:00"
+                        jcr:createdBy="admin"
+                        jcr:description="Adobe Campaign and / or the newsletter is not correctly set up. Please make sure to configure an Adobe Campaign cloud service and to add it to the newsletter page."
+                        jcr:lastModified="{Date}2014-04-25T08:42:09.488+02:00"
+                        jcr:lastModifiedBy="admin"
+                        jcr:primaryType="nt:unstructured"
+                        jcr:title="Set up Adobe Campaign"
+                        sling:resourceType="cq/workflow/components/model/participant">
+                        <metaData
+                            jcr:primaryType="nt:unstructured"
+                            PARTICIPANT="admin"/>
+                    </participant>
+                    <goto
+                        jcr:created="{Date}2014-04-24T16:38:30.056+02:00"
+                        jcr:createdBy="admin"
+                        jcr:lastModified="{Date}2014-04-25T08:43:58.746+02:00"
+                        jcr:lastModifiedBy="admin"
+                        jcr:primaryType="nt:unstructured"
+                        jcr:title="Retry publication"
+                        sling:resourceType="cq/workflow/components/model/goto"
+                        PROCESS="com.adobe.granite.workflow.core.process.GotoProcess"
+                        PROCESS_AUTO_ADVANCE="false">
+                        <metaData
+                            jcr:primaryType="nt:unstructured"
+                            PROCESS="com.adobe.granite.workflow.core.process.GotoProcess"
+                            PROCESS_AUTO_ADVANCE="false"
+                            script="function check() {&#xa;&#x9;return true;&#xa;}&#xa;"
+                            TARGET_NODE_PATH="/etc/workflow/models/publish_to_campaign/jcr:content/flow/process_1"/>
+                    </goto>
+                </_x0031_>
+                <_x0032_
+                    jcr:primaryType="nt:unstructured"
+                    sling:resourceType="cq/flow/components/parsys">
+                    <process
+                        jcr:created="{Date}2014-04-24T16:45:02.726+02:00"
+                        jcr:createdBy="admin"
+                        jcr:description="Newsletter gets published"
+                        jcr:lastModified="{Date}2014-04-25T09:10:34.890+02:00"
+                        jcr:lastModifiedBy="admin"
+                        jcr:primaryType="nt:unstructured"
+                        jcr:title="Activate the Newsletter"
+                        sling:resourceType="cq/workflow/components/model/process">
+                        <metaData
+                            jcr:primaryType="nt:unstructured"
+                            PROCESS="com.day.cq.mcm.campaign.impl.ActivateCampaignPage"
+                            PROCESS_AUTO_ADVANCE="true"/>
+                    </process>
+                    <process_0
+                        jcr:created="{Date}2014-04-24T16:45:11.834+02:00"
+                        jcr:createdBy="admin"
+                        jcr:description="as a deliverable"
+                        jcr:lastModified="{Date}2014-04-25T09:10:48.595+02:00"
+                        jcr:lastModifiedBy="admin"
+                        jcr:primaryType="nt:unstructured"
+                        jcr:title="Publish the Newsletter to Adobe Campaign"
+                        sling:resourceType="cq/workflow/components/model/process">
+                        <metaData
+                            jcr:primaryType="nt:unstructured"
+                            PROCESS="com.day.cq.mcm.campaign.impl.PublishToCampaignProcess"
+                            PROCESS_AUTO_ADVANCE="true"/>
+                    </process_0>
+                    <or
+                        jcr:created="{Date}2014-05-08T10:32:11.967+02:00"
+                        jcr:createdBy="admin"
+                        jcr:lastModified="{Date}2014-05-08T10:34:36.718+02:00"
+                        jcr:lastModifiedBy="admin"
+                        jcr:primaryType="nt:unstructured"
+                        sling:resourceType="cq/workflow/components/model/or"
+                        branches="2"
+                        orSplit="true"
+                        script1="function check() {&#xa;    var path = workflowData.getPayload().toString();&#xa;    var node = jcrSession.getNode(path);&#xa;    return &quot;failed&quot;.equals(node.getProperty(&quot;jcr:content/acPublishState&quot;).getString());&#xa;}&#xa;">
+                        <_x0031_
+                            jcr:primaryType="nt:unstructured"
+                            sling:resourceType="cq/flow/components/parsys">
+                            <participant
+                                jcr:created="{Date}2014-05-08T10:32:31.988+02:00"
+                                jcr:createdBy="admin"
+                                jcr:description="The publication of the newsletter failed. Please view the logs and retry the publication workflow."
+                                jcr:lastModified="{Date}2014-05-08T10:33:31.577+02:00"
+                                jcr:lastModifiedBy="admin"
+                                jcr:primaryType="nt:unstructured"
+                                jcr:title="Publication failed"
+                                sling:resourceType="cq/workflow/components/model/participant">
+                                <metaData
+                                    jcr:primaryType="nt:unstructured"
+                                    PARTICIPANT="admin"/>
+                            </participant>
+                            <goto
+                                jcr:created="{Date}2014-05-08T16:43:26.620+02:00"
+                                jcr:createdBy="admin"
+                                jcr:description="Removes the status property"
+                                jcr:lastModified="{Date}2014-05-08T17:17:55.418+02:00"
+                                jcr:lastModifiedBy="admin"
+                                jcr:primaryType="nt:unstructured"
+                                jcr:title="Terminate failed workflow"
+                                sling:resourceType="cq/workflow/components/model/goto"
+                                PROCESS="com.adobe.granite.workflow.core.process.GotoProcess"
+                                PROCESS_AUTO_ADVANCE="false">
+                                <metaData
+                                    jcr:primaryType="nt:unstructured"
+                                    PROCESS="com.adobe.granite.workflow.core.process.GotoProcess"
+                                    PROCESS_AUTO_ADVANCE="false"
+                                    script="function check() {&#xa;    var path = workflowData.getPayload().toString();&#xa;    var node = jcrSession.getNode(path);&#xa;    node.getProperty(&quot;jcr:content/acPublishState&quot;).remove();&#xa;    jcrSession.save();&#xa;    return true;&#xa;}&#xa;"
+                                    TARGET_NODE_PATH="/etc/workflow/models/publish_to_campaign/jcr:content/flow/noopprocess"/>
+                            </goto>
+                        </_x0031_>
+                        <_x0032_
+                            jcr:primaryType="nt:unstructured"
+                            sling:resourceType="cq/flow/components/parsys">
+                            <noopprocess
+                                jcr:created="{Date}2014-05-08T14:01:14.175+02:00"
+                                jcr:createdBy="admin"
+                                jcr:description="A no operation process"
+                                jcr:lastModified="{Date}2014-05-08T14:01:14.175+02:00"
+                                jcr:lastModifiedBy="admin"
+                                jcr:primaryType="nt:unstructured"
+                                jcr:title="No Operation"
+                                sling:resourceType="cq/workflow/components/workflow/noopprocess">
+                                <metaData
+                                    jcr:primaryType="nt:unstructured"
+                                    PROCESS="/etc/workflow/scripts/noop.ecma"
+                                    PROCESS_AUTO_ADVANCE="true"/>
+                            </noopprocess>
+                        </_x0032_>
+                    </or>
+                </_x0032_>
+            </or>
+            <noopprocess
+                jcr:created="{Date}2014-05-08T16:44:48.847+02:00"
+                jcr:createdBy="admin"
+                jcr:lastModified="{Date}2014-05-08T16:44:59.110+02:00"
+                jcr:lastModifiedBy="admin"
+                jcr:primaryType="nt:unstructured"
+                jcr:title="End"
+                sling:resourceType="cq/workflow/components/workflow/noopprocess"
+                PROCESS="/etc/workflow/scripts/noop.ecma"
+                PROCESS_AUTO_ADVANCE="true">
+                <metaData
+                    jcr:primaryType="nt:unstructured"
+                    PROCESS="/etc/workflow/scripts/noop.ecma"
+                    PROCESS_AUTO_ADVANCE="true"/>
+            </noopprocess>
+        </flow>
+        <image
+            jcr:lastModified="{Date}2013-11-19T13:06:20.269+01:00"
+            jcr:lastModifiedBy="admin"
+            jcr:primaryType="nt:unstructured"
+            imageRotate="0"/>
+        <model/>
+    </jcr:content>
+</jcr:root>

@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+    jcr:primaryType="cq:Page">
+    <jcr:content
+        cq:designPath="/etc/designs/default"
+        cq:lastModified="{Date}2013-12-12T15:38:03.100-05:00"
+        cq:lastModifiedBy="admin"
+        cq:template="/libs/cq/workflow/templates/model"
+        jcr:description="Workflow for requesting and approving copy."
+        jcr:primaryType="cq:PageContent"
+        jcr:title="Request Copy"
+        sling:resourceType="cq/workflow/components/pages/model"
+        navTitle="Request Copy"
+        pageTitle="Request Copy">
+        <flow
+            jcr:primaryType="nt:unstructured"
+            sling:resourceType="foundation/components/parsys">
+            <process
+                jcr:created="{Date}2013-11-07T15:34:02.651-05:00"
+                jcr:createdBy="admin"
+                jcr:description="Creates empty manuscript that the copy writer will complete"
+                jcr:lastModified="{Date}2013-11-07T15:56:32.706-05:00"
+                jcr:lastModifiedBy="admin"
+                jcr:primaryType="nt:unstructured"
+                jcr:title="Create Manuscript"
+                sling:resourceType="cq/workflow/components/model/process">
+                <metaData
+                    jcr:primaryType="nt:unstructured"
+                    PROCESS="com.adobe.cq.projects.impl.workflow.CreateManuscriptWorkflowProcess"
+                    PROCESS_AUTO_ADVANCE="true"/>
+            </process>
+            <taskworkflowstep_0
+                jcr:created="{Date}2013-09-27T10:38:04.912-04:00"
+                jcr:createdBy="admin"
+                jcr:description="Please accept this task if you wish to take on this assignment.  You will get a new task in your inbox with additional details after accepting this task."
+                jcr:lastModified="{Date}2013-11-28T14:27:19.015-05:00"
+                jcr:lastModifiedBy="admin"
+                jcr:primaryType="nt:unstructured"
+                jcr:title="Generate Copy"
+                sling:resourceType="cq/projects/taskworkflowstep"
+                PROCESS="com.adobe.cq.projects.impl.workflow.ProjectTaskWorkflowProcess"
+                PROCESS_AUTO_ADVANCE="false"
+                PROCESS_PERSIST_ANONYMOUS_WORKITEM="true">
+                <metaData
+                    jcr:primaryType="nt:unstructured"
+                    argActions="[Done,Reject]"
+                    argTaskDescription="Write copy for the brief given.  You can update the manuscript attached to this item or drag a new manuscript in."
+                    argTaskName="Generate Copy"
+                    argTaskPriority="High"
+                    onCreateScript="/etc/workflow/scripts/projects/CopyRequest.ecma"
+                    PROCESS="com.adobe.cq.projects.impl.workflow.ProjectTaskWorkflowProcess"
+                    PROCESS_AUTO_ADVANCE="false"
+                    PROCESS_PERSIST_ANONYMOUS_WORKITEM="true"
+                    script="// set taskDueDate property to value in workflow metadata, if set&#xa;if(workflowData.getMetaDataMap().containsKey(&quot;taskDueDate&quot;) &amp;&amp; Packages.org.apache.commons.lang3.StringUtils.isNotBlank(workflowData.getMetaDataMap().get(&quot;taskDueDate&quot;, Packages.java.lang.String)) ) {&#xa;    task.setProperty(&quot;taskDueDate&quot;, workflowData.getMetaDataMap().get(&quot;taskDueDate&quot;, Packages.java.util.Date));&#xa;}&#xa;&#xa;// set taskPriority property to value in workflow metadata, if set&#xa;if(workflowData.getMetaDataMap().containsKey(&quot;taskPriority&quot;) &amp;&amp; Packages.org.apache.commons.lang3.StringUtils.isNotBlank(workflowData.getMetaDataMap().get(&quot;taskPriority&quot;, Packages.java.lang.String)) ) {&#xa;    task.setProperty(&quot;taskPriority&quot;, workflowData.getMetaDataMap().get(&quot;taskPriority&quot;, Packages.java.lang.String));&#xa;}"/>
+            </taskworkflowstep_0>
+            <goto
+                jcr:created="{Date}2013-09-25T17:12:13.098-04:00"
+                jcr:createdBy="admin"
+                jcr:description="copywriter may decide to no longer be interested in this work in which case he returns it to the pool."
+                jcr:lastModified="{Date}2013-11-28T15:19:35.207-05:00"
+                jcr:lastModifiedBy="admin"
+                jcr:primaryType="nt:unstructured"
+                jcr:title="Back to pool if copywriter did not complete"
+                sling:resourceType="cq/workflow/components/model/goto"
+                PROCESS="com.adobe.granite.workflow.core.process.GotoProcess"
+                PROCESS_AUTO_ADVANCE="false">
+                <metaData
+                    jcr:primaryType="nt:unstructured"
+                    PROCESS="com.adobe.granite.workflow.core.process.GotoProcess"
+                    PROCESS_AUTO_ADVANCE="false"
+                    script="function check() {&#xa;&#xa;    if (workflowData.getMetaDataMap().get(&quot;lastTaskAction&quot;,&quot;&quot;) == &quot;Reject&quot;) {&#xa;        return true&#xa;    }&#xa;&#xa;    // set copywriter user in metadata&#xa;    var previousId = workflowData.getMetaDataMap().get(&quot;lastTaskCompletedBy&quot;, &quot;&quot;);  &#xa;    workflowData.getMetaDataMap().put(&quot;copywriter&quot;, previousId);&#xa;&#xa;    return false;&#xa;}"
+                    TARGET_NODE_PATH="/etc/workflow/models/projects/request_copy/jcr:content/flow/taskworkflowstep_0"/>
+            </goto>
+            <taskworkflowstep_1
+                jcr:created="{Date}2013-10-25T11:14:56.313-04:00"
+                jcr:createdBy="admin"
+                jcr:description="This copy requires approval"
+                jcr:lastModified="{Date}2013-11-28T15:19:09.335-05:00"
+                jcr:lastModifiedBy="admin"
+                jcr:primaryType="nt:unstructured"
+                jcr:title="Copy Approval"
+                sling:resourceType="cq/projects/taskworkflowstep"
+                PROCESS="com.adobe.cq.projects.impl.workflow.ProjectTaskWorkflowProcess"
+                PROCESS_AUTO_ADVANCE="false"
+                PROCESS_PERSIST_ANONYMOUS_WORKITEM="true">
+                <metaData
+                    jcr:primaryType="nt:unstructured"
+                    argActions="[Approve,Reject]"
+                    argTaskDescription="Please approve or reject this copy."
+                    argTaskName="Copy Approval"
+                    argTaskPriority="High"
+                    PROCESS="com.adobe.cq.projects.impl.workflow.ProjectTaskWorkflowProcess"
+                    PROCESS_AUTO_ADVANCE="false"
+                    PROCESS_PERSIST_ANONYMOUS_WORKITEM="true"
+                    script="var groupId = groupId = &quot;project.group.observer&quot;;&#xa;&#xa;if (groupId) {&#xa;    task.setCurrentAssignee(workflowData.getMetaDataMap().get(groupId, &quot;&quot;));&#xa;}&#xa;&#xa;// set taskDueDate property to value in workflow metadata, if set&#xa;if(workflowData.getMetaDataMap().containsKey(&quot;taskDueDate&quot;) &amp;&amp; Packages.org.apache.commons.lang3.StringUtils.isNotBlank(workflowData.getMetaDataMap().get(&quot;taskDueDate&quot;, Packages.java.lang.String)) ) {&#xa;    task.setProperty(&quot;taskDueDate&quot;, workflowData.getMetaDataMap().get(&quot;taskDueDate&quot;, Packages.java.util.Date));&#xa;}&#xa;&#xa;// set taskPriority property to value in workflow metadata, if set&#xa;if(workflowData.getMetaDataMap().containsKey(&quot;taskPriority&quot;) &amp;&amp; Packages.org.apache.commons.lang3.StringUtils.isNotBlank(workflowData.getMetaDataMap().get(&quot;taskPriority&quot;, Packages.java.lang.String)) ) {&#xa;    task.setProperty(&quot;taskPriority&quot;, workflowData.getMetaDataMap().get(&quot;taskPriority&quot;, Packages.java.lang.String));&#xa;}"/>
+            </taskworkflowstep_1>
+            <goto_0
+                jcr:created="{Date}2013-10-30T10:38:15.106-04:00"
+                jcr:createdBy="admin"
+                jcr:description="reassign back to copywriter if not aproved"
+                jcr:lastModified="{Date}2013-10-30T11:05:38.094-04:00"
+                jcr:lastModifiedBy="admin"
+                jcr:primaryType="nt:unstructured"
+                jcr:title="Decide if Approved"
+                sling:resourceType="cq/workflow/components/model/goto"
+                PROCESS="com.adobe.granite.workflow.core.process.GotoProcess"
+                PROCESS_AUTO_ADVANCE="false">
+                <metaData
+                    jcr:primaryType="nt:unstructured"
+                    PROCESS="com.adobe.granite.workflow.core.process.GotoProcess"
+                    PROCESS_AUTO_ADVANCE="false"
+                    script="function check() {&#xa;&#xa;    if (workflowData.getMetaDataMap().get(&quot;lastTaskAction&quot;,&quot;&quot;) == &quot;Approve&quot;) {&#xa;        return true&#xa;    }&#xa;    return false;&#xa;}"
+                    TARGET_NODE_PATH="/etc/workflow/models/projects/request_copy/jcr:content/flow/taskworkflowstep_3"/>
+            </goto_0>
+            <taskworkflowstep_2
+                jcr:created="{Date}2013-10-30T10:39:50.211-04:00"
+                jcr:createdBy="admin"
+                jcr:description="The copy that was written was rejected and must be edited by the copywriter"
+                jcr:lastModified="{Date}2013-12-12T15:38:03.092-05:00"
+                jcr:lastModifiedBy="admin"
+                jcr:primaryType="nt:unstructured"
+                jcr:title="Rejected"
+                sling:resourceType="cq/projects/taskworkflowstep"
+                PROCESS="com.adobe.cq.projects.impl.workflow.ProjectTaskWorkflowProcess"
+                PROCESS_AUTO_ADVANCE="false"
+                PROCESS_PERSIST_ANONYMOUS_WORKITEM="true">
+                <metaData
+                    jcr:primaryType="nt:unstructured"
+                    argActions="Done"
+                    argTaskDescription="The copy you wrote was rejected. Please see the comments and make adjustments."
+                    argTaskName="Copy Rejected"
+                    argTaskPriority="High"
+                    PROCESS="com.adobe.cq.projects.impl.workflow.ProjectTaskWorkflowProcess"
+                    PROCESS_AUTO_ADVANCE="false"
+                    PROCESS_PERSIST_ANONYMOUS_WORKITEM="true"
+                    script="var assignTo = workflowData.getMetaDataMap().get(&quot;copywriter&quot;, &quot;&quot;);&#xa;&#xa;task.setCurrentAssignee(assignTo);&#xa;&#xa;// set taskDueDate property to value in workflow metadata, if set&#xa;if(workflowData.getMetaDataMap().containsKey(&quot;taskDueDate&quot;) &amp;&amp; Packages.org.apache.commons.lang3.StringUtils.isNotBlank(workflowData.getMetaDataMap().get(&quot;taskDueDate&quot;, Packages.java.lang.String)) ) {&#xa;    task.setProperty(&quot;taskDueDate&quot;, workflowData.getMetaDataMap().get(&quot;taskDueDate&quot;, Packages.java.util.Date));&#xa;}&#xa;&#xa;// set taskPriority property to value in workflow metadata, if set&#xa;if(workflowData.getMetaDataMap().containsKey(&quot;taskPriority&quot;) &amp;&amp; Packages.org.apache.commons.lang3.StringUtils.isNotBlank(workflowData.getMetaDataMap().get(&quot;taskPriority&quot;, Packages.java.lang.String)) ) {&#xa;    task.setProperty(&quot;taskPriority&quot;, workflowData.getMetaDataMap().get(&quot;taskPriority&quot;, Packages.java.lang.String));&#xa;}"/>
+            </taskworkflowstep_2>
+            <goto_1
+                jcr:created="{Date}2013-10-30T11:01:47.523-04:00"
+                jcr:createdBy="admin"
+                jcr:description="simple goto step which always sends for approval"
+                jcr:lastModified="{Date}2013-11-28T14:28:31.305-05:00"
+                jcr:lastModifiedBy="admin"
+                jcr:primaryType="nt:unstructured"
+                jcr:title="Send for approval again"
+                sling:resourceType="cq/workflow/components/model/goto"
+                PROCESS="com.adobe.granite.workflow.core.process.GotoProcess"
+                PROCESS_AUTO_ADVANCE="false">
+                <metaData
+                    jcr:primaryType="nt:unstructured"
+                    PROCESS="com.adobe.granite.workflow.core.process.GotoProcess"
+                    PROCESS_AUTO_ADVANCE="false"
+                    script="function check() {&#xa;    return true;&#xa;}"
+                    TARGET_NODE_PATH="/etc/workflow/models/projects/request_copy/jcr:content/flow/taskworkflowstep_1"/>
+            </goto_1>
+            <taskworkflowstep_3
+                jcr:created="{Date}2013-10-30T10:40:42.425-04:00"
+                jcr:createdBy="admin"
+                jcr:description="Notify the initiator that the copy has been approved"
+                jcr:lastModified="{Date}2013-11-18T13:26:39.800-05:00"
+                jcr:lastModifiedBy="admin"
+                jcr:primaryType="nt:unstructured"
+                jcr:title="Copy has been approved"
+                sling:resourceType="cq/projects/taskworkflowstep"
+                PROCESS="com.adobe.cq.projects.impl.workflow.ProjectTaskWorkflowProcess"
+                PROCESS_AUTO_ADVANCE="false"
+                PROCESS_PERSIST_ANONYMOUS_WORKITEM="true">
+                <metaData
+                    jcr:primaryType="nt:unstructured"
+                    argActions="Close"
+                    argTaskDescription="The copy request has been completed. Please see payload for this task for the final copy."
+                    argTaskName="Copy Complete and Approved"
+                    argTaskPriority="Medium"
+                    PROCESS="com.adobe.cq.projects.impl.workflow.ProjectTaskWorkflowProcess"
+                    PROCESS_AUTO_ADVANCE="false"
+                    PROCESS_PERSIST_ANONYMOUS_WORKITEM="true"
+                    script="var workflowInitiator = workItem.getWorkflow().getInitiator();&#xa;&#xa;task.setCurrentAssignee(workflowInitiator);&#xa;&#xa;// set taskDueDate property to value in workflow metadata, if set&#xa;if(workflowData.getMetaDataMap().containsKey(&quot;taskDueDate&quot;) &amp;&amp; Packages.org.apache.commons.lang3.StringUtils.isNotBlank(workflowData.getMetaDataMap().get(&quot;taskDueDate&quot;, Packages.java.lang.String)) ) {&#xa;    task.setProperty(&quot;taskDueDate&quot;, workflowData.getMetaDataMap().get(&quot;taskDueDate&quot;, Packages.java.util.Date));&#xa;}&#xa;&#xa;// set taskPriority property to value in workflow metadata, if set&#xa;if(workflowData.getMetaDataMap().containsKey(&quot;taskPriority&quot;) &amp;&amp; Packages.org.apache.commons.lang3.StringUtils.isNotBlank(workflowData.getMetaDataMap().get(&quot;taskPriority&quot;, Packages.java.lang.String)) ) {&#xa;    task.setProperty(&quot;taskPriority&quot;, workflowData.getMetaDataMap().get(&quot;taskPriority&quot;, Packages.java.lang.String));&#xa;}"/>
+            </taskworkflowstep_3>
+        </flow>
+        <image
+            jcr:lastModified="{Date}2013-10-24T13:31:16.928-04:00"
+            jcr:lastModifiedBy="admin"
+            jcr:primaryType="nt:unstructured"
+            imageRotate="0">
+            <file/>
+        </image>
+        <model/>
+    </jcr:content>
+</jcr:root>

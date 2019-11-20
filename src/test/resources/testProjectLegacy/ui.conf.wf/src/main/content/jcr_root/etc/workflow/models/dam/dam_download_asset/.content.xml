@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:mix="http://www.jcp.org/jcr/mix/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+    jcr:primaryType="cq:Page">
+    <jcr:content
+        cq:designPath="/etc/designs/default"
+        cq:lastModified="{Date}2013-11-01T12:55:10.357-04:00"
+        cq:lastModifiedBy="admin"
+        cq:template="/libs/cq/workflow/templates/model"
+        jcr:description="This workflow manages the download of assets"
+        jcr:isCheckedOut="{Boolean}true"
+        jcr:mixinTypes="[mix:versionable]"
+        jcr:primaryType="cq:PageContent"
+        jcr:title="Download Asset"
+        jcr:uuid="3a33dadb-1eb3-40d2-babb-28d97915f9de"
+        sling:resourceType="cq/workflow/components/pages/model">
+        <flow
+            jcr:primaryType="nt:unstructured"
+            sling:resourceType="foundation/components/parsys">
+            <downloadassetworkflo_0
+                jcr:created="{Date}2013-10-21T14:18:13.151-04:00"
+                jcr:createdBy="admin"
+                jcr:description="Process to download dam asset(s)."
+                jcr:lastModified="{Date}2013-10-24T15:29:05.509-04:00"
+                jcr:lastModifiedBy="admin"
+                jcr:primaryType="nt:unstructured"
+                jcr:title="Download Dam Asset"
+                sling:resourceType="dam/components/workflow/downloadassetworkflow"
+                PROCESS="com.day.cq.dam.core.process.DownloadAssetProcess"
+                PROCESS_AUTO_ADVANCE="true">
+                <metaData
+                    jcr:primaryType="nt:unstructured"
+                    PROCESS="com.day.cq.dam.core.process.DownloadAssetProcess"
+                    PROCESS_AUTO_ADVANCE="true"/>
+            </downloadassetworkflo_0>
+            <downloadassetprocess
+                jcr:created="{Date}2013-11-01T12:05:46.044-04:00"
+                jcr:createdBy="admin"
+                jcr:description="Process to download dam asset(s)."
+                jcr:lastModified="{Date}2013-11-01T12:05:46.044-04:00"
+                jcr:lastModifiedBy="admin"
+                jcr:primaryType="nt:unstructured"
+                jcr:title="Download Dam Asset"
+                sling:resourceType="dam/components/workflow/downloadassetprocess">
+                <metaData
+                    jcr:primaryType="nt:unstructured"
+                    PROCESS="com.day.cq.dam.core.process.DownloadAssetProcess"
+                    PROCESS_AUTO_ADVANCE="true"/>
+            </downloadassetprocess>
+            <sendemailprocess
+                jcr:created="{Date}2013-11-01T12:47:00.002-04:00"
+                jcr:createdBy="admin"
+                jcr:description="Sends an email based on an email template"
+                jcr:lastModified="{Date}2013-11-01T12:55:10.334-04:00"
+                jcr:lastModifiedBy="admin"
+                jcr:primaryType="nt:unstructured"
+                jcr:title="Send Email"
+                sling:resourceType="dam/components/workflow/sendemailprocess"
+                PROCESS="com.day.cq.dam.core.process.SendDownloadAssetEmailProcess"
+                PROCESS_AUTO_ADVANCE="true">
+                <metaData
+                    jcr:primaryType="nt:unstructured"
+                    PROCESS="com.day.cq.dam.core.process.SendDownloadAssetEmailProcess"
+                    PROCESS_AUTO_ADVANCE="true"
+                    templatePath="/etc/dam/workflow/notification/email/downloadasset/en.txt"/>
+            </sendemailprocess>
+        </flow>
+        <start
+            jcr:lastModified="{Date}2013-10-24T15:29:09.912-04:00"
+            jcr:lastModifiedBy="admin"
+            jcr:primaryType="nt:unstructured"
+            sling:resourceType="cq/flow/components/step/start"/>
+        <model/>
+    </jcr:content>
+</jcr:root>

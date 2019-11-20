@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+    jcr:primaryType="cq:Page">
+    <jcr:content
+        cq:designPath="/etc/designs/default"
+        cq:lastModified="{Date}2015-02-18T14:09:11.992+05:30"
+        cq:lastModifiedBy="admin"
+        cq:template="/libs/cq/workflow/templates/model"
+        jcr:description="This workflow creates and translates language copies for assets"
+        jcr:primaryType="cq:PageContent"
+        jcr:title="DAM Create and Translate Language Copy"
+        sling:resourceType="cq/workflow/components/pages/model">
+        <flow
+            jcr:primaryType="nt:unstructured"
+            sling:resourceType="foundation/components/parsys">
+            <process
+                jcr:created="{Date}2015-01-19T14:44:15.002+05:30"
+                jcr:createdBy="admin"
+                jcr:description="Creates language copy of assets"
+                jcr:lastModified="{Date}2015-02-18T00:55:06.514+05:30"
+                jcr:lastModifiedBy="admin"
+                jcr:primaryType="nt:unstructured"
+                jcr:title="Create Language Copy"
+                sling:resourceType="cq/workflow/components/model/process">
+                <metaData
+                    jcr:primaryType="nt:unstructured"
+                    PROCESS="com.day.cq.dam.core.impl.process.CreateAssetLanguageCopyProcess"
+                    PROCESS_AUTO_ADVANCE="true"/>
+            </process>
+            <process_1708686701
+                jcr:created="{Date}2015-01-19T14:44:17.008+05:30"
+                jcr:createdBy="admin"
+                jcr:description="Translates language copy of assets"
+                jcr:lastModified="{Date}2015-02-18T14:09:11.989+05:30"
+                jcr:lastModifiedBy="admin"
+                jcr:primaryType="nt:unstructured"
+                jcr:title="Translate Language Copy"
+                sling:resourceType="cq/workflow/components/model/process">
+                <metaData
+                    jcr:primaryType="nt:unstructured"
+                    PROCESS="com.day.cq.dam.core.impl.process.TranslateAssetLanguageCopyProcess"
+                    PROCESS_AUTO_ADVANCE="true"/>
+            </process_1708686701>
+        </flow>
+        <model/>
+    </jcr:content>
+</jcr:root>

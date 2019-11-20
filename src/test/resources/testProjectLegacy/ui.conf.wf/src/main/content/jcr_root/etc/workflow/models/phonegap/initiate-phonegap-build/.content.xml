@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+    jcr:primaryType="cq:Page">
+    <jcr:content
+        cq:designPath="/etc/designs/default"
+        cq:lastModified="{Date}2013-02-01T13:47:56.969-05:00"
+        cq:lastModifiedBy="admin"
+        cq:tags="[workflow:mobile]"
+        cq:template="/libs/cq/workflow/templates/model"
+        jcr:description="Generate and upload content to PhoneGap Build"
+        jcr:primaryType="cq:PageContent"
+        jcr:title="Initiate PhoneGap Build"
+        sling:resourceType="cq/workflow/components/pages/model">
+        <flow
+            jcr:primaryType="nt:unstructured"
+            sling:resourceType="foundation/components/parsys">
+            <process
+                jcr:created="{Date}2012-03-20T11:31:43.403-04:00"
+                jcr:createdBy="admin"
+                jcr:lastModified="{Date}2013-02-01T13:47:56.967-05:00"
+                jcr:lastModifiedBy="admin"
+                jcr:primaryType="nt:unstructured"
+                jcr:title="Post to PhoneGap Build"
+                sling:resourceType="cq/workflow/components/model/process">
+                <metaData
+                    jcr:primaryType="nt:unstructured"
+                    PROCESS="com.adobe.cq.mobile.phonegap.impl.build.workflow.InitiatePhoneGapBuildProcess"
+                    PROCESS_AUTO_ADVANCE="true"/>
+            </process>
+        </flow>
+        <model/>
+    </jcr:content>
+</jcr:root>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
+    jcr:primaryType="cq:WorkflowLauncher"
+    condition="jcr:content/jcr:mimeType==application/msword"
+    description="Parse Word documents (DOC) that have been modified in the DAM"
+    enabled="{Boolean}true"
+    eventType="{Long}16"
+    excludeList=""
+    glob="/content/dam(/.*/)renditions/original"
+    nodetype="nt:file"
+    runModes="author"
+    workflow="/etc/workflow/models/dam-parse-word-documents/jcr:content/model"/>

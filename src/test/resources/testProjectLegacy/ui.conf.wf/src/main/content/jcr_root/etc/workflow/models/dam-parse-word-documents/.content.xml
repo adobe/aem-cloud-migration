@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+    jcr:primaryType="cq:Page">
+    <jcr:content
+        cq:designPath="/etc/designs/default"
+        cq:lastModified="{Date}2012-10-01T14:28:16.814-04:00"
+        cq:lastModifiedBy="admin"
+        cq:template="/libs/cq/workflow/templates/model"
+        jcr:description="This workflow parses a Word document and create image subassets as well as a CQ Page rendition of the document."
+        jcr:primaryType="cq:PageContent"
+        jcr:title="DAM Parse Word Documents"
+        sling:resourceType="cq/workflow/components/pages/model">
+        <flow
+            jcr:primaryType="nt:unstructured"
+            sling:resourceType="foundation/components/parsys">
+            <process
+                jcr:created="{Date}2012-05-29T13:27:27.694-04:00"
+                jcr:createdBy="admin"
+                jcr:lastModified="{Date}2012-05-29T13:27:44.730-04:00"
+                jcr:lastModifiedBy="admin"
+                jcr:primaryType="nt:unstructured"
+                jcr:title="Extract Image from Word Document"
+                sling:resourceType="cq/workflow/components/model/process">
+                <metaData
+                    jcr:primaryType="nt:unstructured"
+                    PROCESS="com.day.cq.dam.word.process.ExtractImagesProcess"
+                    PROCESS_AUTO_ADVANCE="true"/>
+            </process>
+            <inddpageextractproce
+                jcr:created="{Date}2012-05-29T13:29:49.049-04:00"
+                jcr:createdBy="admin"
+                jcr:description="Word Page Extraction"
+                jcr:lastModified="{Date}2012-05-29T13:30:23.510-04:00"
+                jcr:lastModifiedBy="admin"
+                jcr:primaryType="nt:unstructured"
+                jcr:title="Page Extraction"
+                sling:resourceType="dam/components/workflow/inddpageextractprocess"
+                PROCESS="com.day.cq.dam.indd.process.INDDPageExtractProcess"
+                PROCESS_ARGS="test"
+                PROCESS_AUTO_ADVANCE="true">
+                <metaData
+                    jcr:primaryType="nt:unstructured"
+                    extractionHandler="com.day.cq.dam.word.extraction.WordExtractionHandler"
+                    pageDesign="/etc/designs/wordDesign"
+                    pageTemplate="/libs/dam/templates/word"
+                    pageTitle="Page extract from Word"
+                    PROCESS="com.day.cq.dam.indd.process.INDDPageExtractProcess"
+                    PROCESS_ARGS="test"
+                    PROCESS_AUTO_ADVANCE="true"/>
+            </inddpageextractproce>
+            <process_0
+                jcr:created="{Date}2012-10-01T12:59:56.752-04:00"
+                jcr:createdBy="admin"
+                jcr:description="Word plaintext extraction"
+                jcr:lastModified="{Date}2012-10-01T13:00:28.400-04:00"
+                jcr:lastModifiedBy="admin"
+                jcr:primaryType="nt:unstructured"
+                jcr:title="Extract Plain Text"
+                sling:resourceType="cq/workflow/components/model/process">
+                <metaData
+                    jcr:primaryType="nt:unstructured"
+                    PROCESS="com.day.cq.dam.word.process.ExtractPlainProcess"
+                    PROCESS_AUTO_ADVANCE="true"/>
+            </process_0>
+        </flow>
+        <image
+            jcr:lastModified="{Date}2012-06-13T15:28:01.826-04:00"
+            jcr:lastModifiedBy="admin"
+            jcr:primaryType="nt:unstructured"
+            imageRotate="0"/>
+        <model/>
+    </jcr:content>
+</jcr:root>

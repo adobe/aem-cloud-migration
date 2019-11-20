@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<jcr:root xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0" xmlns:sling="http://sling.apache.org/jcr/sling/1.0" jcr:primaryType="cq:Page">
+
+
+
+
+
+
+    <jcr:content cq:lastModified="{Date}2018-11-20T18:52:36.225+05:30" cq:lastModifiedBy="admin" cq:tags="[workflow:dam,workflow:wcm]" cq:template="/libs/cq/workflow/templates/model" cq:workflowDetailsPage="/mnt/overlay/dam/gui/content/s7dam/jobmonitoring/encodingjobdetails.html${item}?item=${payload}" jcr:description="This workflow manages the update of assets" jcr:primaryType="cq:PageContent" jcr:title="DAM Update Asset" sling:resourceType="cq/workflow/components/pages/model" transient="true">
+
+
+
+
+
+
+        <flow jcr:primaryType="nt:unstructured" sling:resourceType="foundation/components/parsys">
+
+
+
+
+
+
+
+
+
+            <fileextraction jcr:primaryType="nt:unstructured" jcr:title="Extracting File Name" sling:resourceType="ua-brand-aem-project/components/workflowstep/fileextraction">
+
+
+
+
+
+
+                <metaData CONFIGS="[^(([^[auto_dim7_]]+_)(([^-]+)-([^_.]+))),^[^[V5]-]+-(([^-]+)-([^_]+))_([^.]+),^[^[PS]-]+-(([^-]+)-([^_]+))_([^.]+),^[^[PS]_]+_(([^-]+)-([^_]+))_([^.]+),^[^[PS]]+(([^-]+)-([^_]+))_([^.]+),^PS(([^[0-9]-]+)-([^.]+)),^(([^-]+)-([^_]+))_([^[_a-zA-Z0-9].]+),^(([^-]+)-([^_]+))_([^[DEFAULT].]+),^(([^-]+)-([^_]+))_([^[SOLE].]+),^(([^-]+)-([^_]+))_([^[HEEL].]+),^(([^-]+)-([^_]+))_([^[TOE].]+),^(([^-]+)-([^_]+))_([^[A].]+),^(([^-]+)-([^_]+))-([^.]+),^(([^-]+)-([^.]+))]" PROCESS="com.ua.workflow.AddNewMetaDataProcess" PROCESS_AUTO_ADVANCE="true" jcr:primaryType="nt:unstructured"/>
+
+
+
+
+
+
+            </fileextraction>
+
+
+
+
+
+
+            <process_285335565 jcr:primaryType="nt:unstructured" jcr:title="XMP Keyword Process" sling:resourceType="cq/workflow/components/model/process">
+
+
+
+
+
+
+                <metaData PROCESS="com.ua.workflow.XmpKeywordProcess" PROCESS_AUTO_ADVANCE="true" jcr:primaryType="nt:unstructured"/>
+
+
+
+
+
+
+            </process_285335565>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            <damupdateassetworkflowcompletedprocess jcr:description="This process will send DamEvent.Type.DAM_UPDATE_ASSET_WORKFLOW_COMPLETED event when DAM update asset workflow is completed" jcr:primaryType="nt:unstructured" jcr:title="DAM Update Asset Workflow Completed" sling:resourceType="dam/components/workflow/damupdateassetworkflowcompletedprocess">
+
+
+
+
+
+
+                <metaData PROCESS="com.day.cq.dam.core.impl.process.DamUpdateAssetWorkflowCompletedProcess" PROCESS_AUTO_ADVANCE="true" jcr:primaryType="nt:unstructured"/>
+
+
+
+
+
+
+            </damupdateassetworkflowcompletedprocess>
+
+
+
+
+
+
+            <moveassetfileextract jcr:lastModified="{Date}2018-11-20T18:52:36.206+05:30" jcr:lastModifiedBy="admin" jcr:primaryType="nt:unstructured" jcr:title="Moving Assets to Correct Location" sling:resourceType="ua-brand-aem-project/components/workflowstep/moveassetfileextraction">
+
+
+
+
+
+
+                <metaData PROCESS="com.ua.workflow.AssetMoveProcess" PROCESS_AUTO_ADVANCE="true" assetShareExclusion="/content/dam/product/lineart" folderpaths="[/content/dam/product/splashlight,/content/dam/product/invodo,/content/dam/product/kids-hq,/content/dam/product/united-sports-brand,/content/dam/product/t22-lacrosse,/content/dam/product/psi-91,/content/dam/product/all-star,/content/dam/product/jbl,/content/dam/product/eyeking,/content/dam/product/thermos,/content/dam/product/incipio,/content/dam/product/gildan,/content/dam/product/apac,/content/dam/product/emea,/content/dam/product/latam,/content/dam/product/lineart/upload,/content/dam/product/lineart]" imagebasePath="/content/dam/product/photography" jcr:primaryType="nt:unstructured" lineartbasePath="/content/dam/product/lineart" manualpaths="[/content/dam/product/splashlight/manual-upload,/content/dam/product/invodo/manual-upload,/content/dam/product/kids-hq/manual-upload,/content/dam/product/united-sports-brand/manual-upload,/content/dam/product/t22-lacrosse/manual-upload,/content/dam/product/psi-91/manual-upload,/content/dam/product/all-star/manual-upload,/content/dam/product/jbl/manual-upload,/content/dam/product/thermos/manual-upload,/content/dam/product/incipio/manual-upload,/content/dam/product/gildan/manual-upload,/content/dam/product/eyeking/manual-upload,/content/dam/product/apac/manual-upload,/content/dam/product/emea/manual-upload,/content/dam/product/latam/manual-upload,/content/dam/product/lineart/upload/manual-upload,/content/dam/product/invodo/uncategorized,/content/dam/product/splashlight/uncategorized,/content/dam/product/kids-hq/uncategorized,/content/dam/product/gear-for-sports/uncategorized,/content/dam/product/stance/uncategorized,/content/dam/product/united-sports-brand/uncategorized,/content/dam/product/t22-lacrosse/uncategorized,/content/dam/product/psi-91/uncategorized,/content/dam/product/all-star/uncategorized,/content/dam/product/jbl/uncategorized,/content/dam/product/eyeking/uncategorized,/content/dam/product/thermos/uncategorized,/content/dam/product/incipio/uncategorized,/content/dam/product/gildan/uncategorized,/content/dam/product/apac/uncategorized,/content/dam/product/emea/uncategorized,/content/dam/product/latam/uncategorized,/content/dam/product/lineart/upload/uncategorized]" s7Enable="true" s7FtpUploadModelPath="/var/workflow/models/scene7ftpupload" s7ModelPath="/var/workflow/models/scene7" s7VideoFTPEnable="true" videobasePath="/content/dam/product/video"/>
+
+
+
+
+
+
+            </moveassetfileextract>
+
+
+
+
+
+
+        </flow>
+
+
+
+
+
+
+    </jcr:content>
+
+
+
+
+
+
+</jcr:root>

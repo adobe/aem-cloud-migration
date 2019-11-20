@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+    jcr:isCheckedOut="{Boolean}false"
+    jcr:primaryType="cq:WorkflowModel"
+    jcr:uuid="3838b7eb-cea3-42b3-aeb2-aa47ae3620bd"
+    sling:resourceType="cq/workflow/components/model"
+    description="Description of DAM Set last modified date"
+    title="DAM Set last modified date">
+    <metaData
+        jcr:primaryType="nt:unstructured"
+        tags="dam"/>
+    <nodes jcr:primaryType="nt:unstructured">
+        <node0
+            jcr:primaryType="cq:WorkflowNode"
+            description="The start node of the workflow"
+            title="Start"
+            type="START">
+            <metaData jcr:primaryType="nt:unstructured"/>
+        </node0>
+        <node1
+            jcr:primaryType="cq:WorkflowNode"
+            description="Set metadata lastModified date"
+            title="Set  lastModified date"
+            type="PROCESS">
+            <metaData
+                jcr:primaryType="nt:unstructured"
+                PARTICIPANT="admin"
+                PROCESS="com.day.cq.dam.core.process.AssetSetLastModifiedProcess"
+                PROCESS_ARGS="relativeLastModifiedPath:metadata/jcr:lastModified,relativeLastModifiedByPath:metadata/jcr:lastModifiedBy"
+                PROCESS_AUTO_ADVANCE="true"/>
+        </node1>
+        <node2
+            jcr:primaryType="cq:WorkflowNode"
+            description="The end node of the workflow"
+            title="End"
+            type="END">
+            <metaData jcr:primaryType="nt:unstructured"/>
+        </node2>
+    </nodes>
+    <transitions jcr:primaryType="nt:unstructured">
+        <node0_x0023_node1
+            jcr:primaryType="cq:WorkflowTransition"
+            from="node0"
+            to="node1">
+            <metaData jcr:primaryType="nt:unstructured"/>
+        </node0_x0023_node1>
+        <node1_x0023_node2
+            jcr:primaryType="cq:WorkflowTransition"
+            from="node1"
+            to="node2">
+            <metaData jcr:primaryType="nt:unstructured"/>
+        </node1_x0023_node2>
+    </transitions>
+</jcr:root>

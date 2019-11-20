@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+    jcr:primaryType="cq:Page">
+    <jcr:content
+        cq:designPath="/etc/designs/default"
+        cq:lastModified="{Date}2014-03-06T17:18:02.529+02:00"
+        cq:lastModifiedBy="admin"
+        cq:tags="[workflow:wcm/translatelanguagecopy]"
+        cq:template="/libs/cq/workflow/templates/model"
+        jcr:description="Workflow to translate a language copy"
+        jcr:primaryType="cq:PageContent"
+        jcr:title="WCM: Translate Language Copy"
+        sling:resourceType="cq/workflow/components/pages/model">
+        <flow
+            jcr:primaryType="nt:unstructured"
+            sling:resourceType="foundation/components/parsys">
+            <process
+                jcr:created="{Date}2014-03-06T17:16:45.245+02:00"
+                jcr:createdBy="admin"
+                jcr:description="Translate Language Copy page"
+                jcr:lastModified="{Date}2014-03-06T17:18:02.524+02:00"
+                jcr:lastModifiedBy="admin"
+                jcr:primaryType="nt:unstructured"
+                jcr:title="Translate page"
+                sling:resourceType="cq/workflow/components/model/process">
+                <metaData
+                    jcr:primaryType="nt:unstructured"
+                    PROCESS="com.adobe.cq.wcm.translation.impl.process.TranslateLanguageCopyProcess"
+                    PROCESS_AUTO_ADVANCE="true"/>
+            </process>
+        </flow>
+        <image
+            jcr:lastModified="{Date}2014-03-06T17:15:53.226+02:00"
+            jcr:lastModifiedBy="admin"
+            jcr:primaryType="nt:unstructured"
+            imageRotate="0"/>
+        <model/>
+    </jcr:content>
+</jcr:root>

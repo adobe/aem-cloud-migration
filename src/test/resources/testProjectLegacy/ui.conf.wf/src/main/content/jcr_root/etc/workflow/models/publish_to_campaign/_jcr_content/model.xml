@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+    jcr:isCheckedOut="{Boolean}false"
+    jcr:primaryType="cq:WorkflowModel"
+    jcr:uuid="e4ec2b45-c92b-4d05-9d56-0c5dee81860a"
+    sling:resourceType="cq/workflow/components/model"
+    description="No Description"
+    title="Publish to Adobe Campaign">
+    <metaData
+        cq:lastModified="{Long}1399562278051"
+        cq:lastModifiedBy="admin"
+        jcr:primaryType="nt:unstructured"/>
+    <nodes jcr:primaryType="nt:unstructured">
+        <node0
+            jcr:primaryType="cq:WorkflowNode"
+            title="Start"
+            type="START">
+            <metaData jcr:primaryType="nt:unstructured"/>
+        </node0>
+        <node1
+            jcr:primaryType="cq:WorkflowNode"
+            title="Check prerequisites and prepare"
+            type="PROCESS">
+            <metaData
+                jcr:primaryType="nt:unstructured"
+                PROCESS="com.day.cq.mcm.campaign.impl.PreparePublishing"
+                PROCESS_AUTO_ADVANCE="true"/>
+        </node1>
+        <node2
+            jcr:primaryType="cq:WorkflowNode"
+            title="OR_SPLIT"
+            type="OR_SPLIT">
+            <metaData jcr:primaryType="nt:unstructured"/>
+        </node2>
+        <node3
+            jcr:primaryType="cq:WorkflowNode"
+            title="OR_JOIN"
+            type="OR_JOIN">
+            <metaData jcr:primaryType="nt:unstructured"/>
+        </node3>
+        <node4
+            jcr:primaryType="cq:WorkflowNode"
+            description="Adobe Campaign and / or the newsletter is not correctly set up. Please make sure to configure an Adobe Campaign cloud service and to add it to the newsletter page."
+            title="Set up Adobe Campaign"
+            type="PARTICIPANT">
+            <metaData
+                jcr:primaryType="nt:unstructured"
+                PARTICIPANT="admin"/>
+        </node4>
+        <node5
+            jcr:primaryType="cq:WorkflowNode"
+            title="Retry publication"
+            type="PROCESS">
+            <metaData
+                jcr:primaryType="nt:unstructured"
+                PROCESS="com.adobe.granite.workflow.core.process.GotoProcess"
+                PROCESS_AUTO_ADVANCE="false"
+                script="function check() {&#xa;&#x9;return true;&#xa;}&#xa;"
+                TARGET_NODE_ID="node1"
+                TARGET_NODE_PATH="/etc/workflow/models/publish_to_campaign/jcr:content/flow/process_1"/>
+        </node5>
+        <node6
+            jcr:primaryType="cq:WorkflowNode"
+            description="Newsletter gets published"
+            title="Activate the Newsletter"
+            type="PROCESS">
+            <metaData
+                jcr:primaryType="nt:unstructured"
+                PROCESS="com.day.cq.mcm.campaign.impl.ActivateCampaignPage"
+                PROCESS_AUTO_ADVANCE="true"/>
+        </node6>
+        <node7
+            jcr:primaryType="cq:WorkflowNode"
+            description="as a deliverable"
+            title="Publish the Newsletter to Adobe Campaign"
+            type="PROCESS">
+            <metaData
+                jcr:primaryType="nt:unstructured"
+                PROCESS="com.day.cq.mcm.campaign.impl.PublishToCampaignProcess"
+                PROCESS_AUTO_ADVANCE="true"/>
+        </node7>
+        <node8
+            jcr:primaryType="cq:WorkflowNode"
+            title="OR_SPLIT"
+            type="OR_SPLIT">
+            <metaData jcr:primaryType="nt:unstructured"/>
+        </node8>
+        <node9
+            jcr:primaryType="cq:WorkflowNode"
+            title="OR_JOIN"
+            type="OR_JOIN">
+            <metaData jcr:primaryType="nt:unstructured"/>
+        </node9>
+        <node10
+            jcr:primaryType="cq:WorkflowNode"
+            description="The publication of the newsletter failed. Please view the logs and retry the publication workflow."
+            title="Publication failed"
+            type="PARTICIPANT">
+            <metaData
+                jcr:primaryType="nt:unstructured"
+                PARTICIPANT="admin"/>
+        </node10>
+        <node11
+            jcr:primaryType="cq:WorkflowNode"
+            description="Removes the status property"
+            title="Terminate failed workflow"
+            type="PROCESS">
+            <metaData
+                jcr:primaryType="nt:unstructured"
+                PROCESS="com.adobe.granite.workflow.core.process.GotoProcess"
+                PROCESS_AUTO_ADVANCE="false"
+                script="function check() {&#xa;    var path = workflowData.getPayload().toString();&#xa;    var node = jcrSession.getNode(path);&#xa;    node.getProperty(&quot;jcr:content/acPublishState&quot;).remove();&#xa;    jcrSession.save();&#xa;    return true;&#xa;}&#xa;"
+                TARGET_NODE_ID="node13"
+                TARGET_NODE_PATH="/etc/workflow/models/publish_to_campaign/jcr:content/flow/noopprocess"/>
+        </node11>
+        <node12
+            jcr:primaryType="cq:WorkflowNode"
+            description="A no operation process"
+            title="No Operation"
+            type="PROCESS">
+            <metaData
+                jcr:primaryType="nt:unstructured"
+                PROCESS="/etc/workflow/scripts/noop.ecma"
+                PROCESS_AUTO_ADVANCE="true"/>
+        </node12>
+        <node13
+            jcr:primaryType="cq:WorkflowNode"
+            title="End"
+            type="PROCESS">
+            <metaData
+                jcr:primaryType="nt:unstructured"
+                PROCESS="/etc/workflow/scripts/noop.ecma"
+                PROCESS_AUTO_ADVANCE="true"/>
+        </node13>
+        <node14
+            jcr:primaryType="cq:WorkflowNode"
+            title="End"
+            type="END">
+            <metaData jcr:primaryType="nt:unstructured"/>
+        </node14>
+    </nodes>
+    <transitions jcr:primaryType="nt:unstructured">
+        <node0_x0023_node1
+            jcr:primaryType="cq:WorkflowTransition"
+            from="node0"
+            rule=""
+            to="node1">
+            <metaData jcr:primaryType="nt:unstructured"/>
+        </node0_x0023_node1>
+        <node1_x0023_node2
+            jcr:primaryType="cq:WorkflowTransition"
+            from="node1"
+            to="node2">
+            <metaData jcr:primaryType="nt:unstructured"/>
+        </node1_x0023_node2>
+        <node2_x0023_node4
+            jcr:primaryType="cq:WorkflowTransition"
+            from="node2"
+            rule="function check() {&#xa;    var path = workflowData.getPayload().toString();&#xa;    var node = jcrSession.getNode(path);&#xa;    return !(node.hasProperty(&quot;jcr:content/acPublishState&quot;) &amp;&amp; node.getProperty(&quot;jcr:content/acPublishState&quot;).getString().equals(&quot;prepared&quot;));&#xa;}&#xa;"
+            to="node4">
+            <metaData
+                jcr:primaryType="nt:unstructured"
+                isDefault="false"/>
+        </node2_x0023_node4>
+        <node4_x0023_node5
+            jcr:primaryType="cq:WorkflowTransition"
+            from="node4"
+            rule=""
+            to="node5">
+            <metaData jcr:primaryType="nt:unstructured"/>
+        </node4_x0023_node5>
+        <node5_x0023_node3
+            jcr:primaryType="cq:WorkflowTransition"
+            from="node5"
+            to="node3">
+            <metaData jcr:primaryType="nt:unstructured"/>
+        </node5_x0023_node3>
+        <node2_x0023_node6
+            jcr:primaryType="cq:WorkflowTransition"
+            from="node2"
+            rule=""
+            to="node6">
+            <metaData
+                jcr:primaryType="nt:unstructured"
+                isDefault="false"/>
+        </node2_x0023_node6>
+        <node6_x0023_node7
+            jcr:primaryType="cq:WorkflowTransition"
+            from="node6"
+            rule=""
+            to="node7">
+            <metaData jcr:primaryType="nt:unstructured"/>
+        </node6_x0023_node7>
+        <node7_x0023_node8
+            jcr:primaryType="cq:WorkflowTransition"
+            from="node7"
+            to="node8">
+            <metaData jcr:primaryType="nt:unstructured"/>
+        </node7_x0023_node8>
+        <node8_x0023_node10
+            jcr:primaryType="cq:WorkflowTransition"
+            from="node8"
+            rule="function check() {&#xa;    var path = workflowData.getPayload().toString();&#xa;    var node = jcrSession.getNode(path);&#xa;    return &quot;failed&quot;.equals(node.getProperty(&quot;jcr:content/acPublishState&quot;).getString());&#xa;}&#xa;"
+            to="node10">
+            <metaData
+                jcr:primaryType="nt:unstructured"
+                isDefault="false"/>
+        </node8_x0023_node10>
+        <node10_x0023_node11
+            jcr:primaryType="cq:WorkflowTransition"
+            from="node10"
+            rule=""
+            to="node11">
+            <metaData jcr:primaryType="nt:unstructured"/>
+        </node10_x0023_node11>
+        <node11_x0023_node9
+            jcr:primaryType="cq:WorkflowTransition"
+            from="node11"
+            to="node9">
+            <metaData jcr:primaryType="nt:unstructured"/>
+        </node11_x0023_node9>
+        <node8_x0023_node12
+            jcr:primaryType="cq:WorkflowTransition"
+            from="node8"
+            rule=""
+            to="node12">
+            <metaData
+                jcr:primaryType="nt:unstructured"
+                isDefault="false"/>
+        </node8_x0023_node12>
+        <node12_x0023_node9
+            jcr:primaryType="cq:WorkflowTransition"
+            from="node12"
+            to="node9">
+            <metaData jcr:primaryType="nt:unstructured"/>
+        </node12_x0023_node9>
+        <node9_x0023_node3
+            jcr:primaryType="cq:WorkflowTransition"
+            from="node9"
+            to="node3">
+            <metaData jcr:primaryType="nt:unstructured"/>
+        </node9_x0023_node3>
+        <node3_x0023_node13
+            jcr:primaryType="cq:WorkflowTransition"
+            from="node3"
+            rule=""
+            to="node13">
+            <metaData jcr:primaryType="nt:unstructured"/>
+        </node3_x0023_node13>
+        <node13_x0023_node14
+            jcr:primaryType="cq:WorkflowTransition"
+            from="node13"
+            to="node14">
+            <metaData jcr:primaryType="nt:unstructured"/>
+        </node13_x0023_node14>
+    </transitions>
+</jcr:root>

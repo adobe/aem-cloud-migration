@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+    jcr:primaryType="cq:Page">
+    <jcr:content
+        cq:designPath="/etc/designs/default"
+        cq:lastModified="{Date}2014-11-05T15:51:56.058+01:00"
+        cq:lastModifiedBy="admin"
+        cq:template="/libs/cq/workflow/templates/model"
+        jcr:primaryType="cq:PageContent"
+        jcr:title="Request for Deletion"
+        sling:resourceType="cq/workflow/components/pages/model">
+        <flow
+            jcr:primaryType="nt:unstructured"
+            sling:resourceType="foundation/components/parsys">
+            <participant
+                jcr:created="{Date}2010-09-21T14:47:57.672+02:00"
+                jcr:createdBy="admin"
+                jcr:description="please delete page"
+                jcr:lastModified="{Date}2014-11-05T14:37:37.420+01:00"
+                jcr:lastModifiedBy="admin"
+                jcr:primaryType="nt:unstructured"
+                jcr:title="Request for Deletion"
+                sling:resourceType="cq/workflow/components/model/participant">
+                <metaData
+                    jcr:lastModified="{Date}2010-09-21T14:48:07.024+02:00"
+                    jcr:lastModifiedBy="admin"
+                    jcr:primaryType="nt:unstructured"
+                    PARTICIPANT="administrators"/>
+            </participant>
+            <process
+                jcr:created="{Date}2014-11-05T14:39:38.052+01:00"
+                jcr:createdBy="admin"
+                jcr:description="Deactivates the page"
+                jcr:lastModified="{Date}2014-11-05T15:50:02.205+01:00"
+                jcr:lastModifiedBy="admin"
+                jcr:primaryType="nt:unstructured"
+                jcr:title="Deactivates the page"
+                sling:resourceType="cq/workflow/components/model/process">
+                <metaData
+                    jcr:primaryType="nt:unstructured"
+                    PROCESS="com.day.cq.wcm.workflow.process.DeactivatePageProcess"
+                    PROCESS_AUTO_ADVANCE="true"/>
+            </process>
+            <participant_0
+                jcr:created="{Date}2014-11-05T15:50:26.442+01:00"
+                jcr:createdBy="admin"
+                jcr:description="deletes the page resource on author"
+                jcr:lastModified="{Date}2014-11-05T15:51:56.056+01:00"
+                jcr:lastModifiedBy="admin"
+                jcr:primaryType="nt:unstructured"
+                jcr:title="Delete Page resource"
+                sling:resourceType="cq/workflow/components/model/participant">
+                <metaData
+                    jcr:primaryType="nt:unstructured"
+                    PARTICIPANT="administrators"/>
+            </participant_0>
+            <process_0
+                jcr:created="{Date}2014-11-05T14:40:08.239+01:00"
+                jcr:createdBy="admin"
+                jcr:description="Deletes the page"
+                jcr:lastModified="{Date}2014-11-05T14:41:06.267+01:00"
+                jcr:lastModifiedBy="admin"
+                jcr:primaryType="nt:unstructured"
+                jcr:title="Delete page"
+                sling:resourceType="cq/workflow/components/model/process">
+                <metaData
+                    jcr:primaryType="nt:unstructured"
+                    PROCESS="com.day.cq.wcm.workflow.process.DeletePageProcess"
+                    PROCESS_AUTO_ADVANCE="true"/>
+            </process_0>
+        </flow>
+        <model/>
+    </jcr:content>
+</jcr:root>

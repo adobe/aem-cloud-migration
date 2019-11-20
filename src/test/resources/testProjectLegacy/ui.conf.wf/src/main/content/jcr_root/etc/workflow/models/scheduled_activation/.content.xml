@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+    jcr:primaryType="cq:Page">
+    <jcr:content
+        cq:tags="[workflow:system]"
+        cq:template="/libs/cq/workflow/templates/model"
+        jcr:description="Description of Scheduled Activation"
+        jcr:primaryType="cq:PageContent"
+        jcr:title="Scheduled Page/Asset Activation"
+        sling:resourceType="cq/workflow/components/pages/model"
+        multiResourceSupport="true">
+        <flow
+            jcr:primaryType="nt:unstructured"
+            sling:resourceType="foundation/components/parsys">
+            <process
+                jcr:description="The Version to be activated/replicated is created"
+                jcr:primaryType="nt:unstructured"
+                jcr:title="Create Version"
+                sling:resourceType="cq/workflow/components/model/process">
+                <metaData
+                    jcr:primaryType="nt:unstructured"
+                    PROCESS="com.day.cq.wcm.workflow.process.CreateVersionProcess"
+                    PROCESS_ARGS=""
+                    PROCESS_AUTO_ADVANCE="true"/>
+            </process>
+            <participant
+                jcr:description="Waiting for activation until the scheduled time is reached"
+                jcr:primaryType="nt:unstructured"
+                jcr:title="Waiting for activation"
+                sling:resourceType="cq/workflow/components/model/participant">
+                <metaData
+                    jcr:primaryType="nt:unstructured"
+                    DO_NOTIFY="false"
+                    PARTICIPANT="admin"
+                    timeoutHandler="com.day.cq.workflow.timeout.autoadvance.AbsoluteTimeAutoAdvancer"
+                    timeoutMillis="0"/>
+            </participant>
+            <process0
+                jcr:description="Activates the page/asset"
+                jcr:primaryType="nt:unstructured"
+                jcr:title="Activate Page/Asset"
+                sling:resourceType="cq/workflow/components/model/process">
+                <metaData
+                    jcr:primaryType="nt:unstructured"
+                    PROCESS="com.day.cq.wcm.workflow.process.ActivatePageProcess"
+                    PROCESS_ARGS=""
+                    PROCESS_AUTO_ADVANCE="true"/>
+            </process0>
+        </flow>
+        <model/>
+    </jcr:content>
+</jcr:root>

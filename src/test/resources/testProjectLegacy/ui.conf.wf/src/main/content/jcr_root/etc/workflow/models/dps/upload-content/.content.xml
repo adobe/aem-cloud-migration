@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+    jcr:primaryType="cq:Page">
+    <jcr:content
+        cq:designPath="/etc/designs/default"
+        cq:lastModified="{Date}2014-03-03T10:57:42.933-05:00"
+        cq:lastModifiedBy="admin"
+        cq:tags="[workflow:media]"
+        cq:template="/libs/cq/workflow/templates/model"
+        jcr:description="Upload CQ content to the configured DPS cloud service account"
+        jcr:primaryType="cq:PageContent"
+        jcr:title="Upload to DPS"
+        sling:resourceType="cq/workflow/components/pages/model">
+        <flow
+            jcr:primaryType="nt:unstructured"
+            sling:resourceType="foundation/components/parsys">
+            <process
+                jcr:primaryType="nt:unstructured"
+                jcr:title="Upload HTMLResources to DPS"
+                sling:resourceType="cq/workflow/components/model/process">
+                <metaData
+                    jcr:primaryType="nt:unstructured"
+                    PROCESS="com.adobe.cq.media.publishing.dps.impl.process.UploadHTMLResourcesToDPSProcess"
+                    PROCESS_AUTO_ADVANCE="true"/>
+            </process>
+            <process_0
+                jcr:created="{Date}2012-08-02T10:23:38.562-04:00"
+                jcr:createdBy="admin"
+                jcr:lastModified="{Date}2012-08-14T15:26:49.117-04:00"
+                jcr:lastModifiedBy="admin"
+                jcr:primaryType="nt:unstructured"
+                jcr:title="Upload to DPS"
+                sling:resourceType="cq/workflow/components/model/process">
+                <metaData
+                    jcr:primaryType="nt:unstructured"
+                    PROCESS="com.adobe.cq.media.publishing.dps.impl.process.UploadToDPSProcess"
+                    PROCESS_AUTO_ADVANCE="true"/>
+            </process_0>
+            <or
+                jcr:primaryType="nt:unstructured"
+                sling:resourceType="cq/workflow/components/model/or"
+                branches="2"
+                orSplit="true"
+                script1="function check() {&#xa;    log.debug(&quot;=== check error &quot;+workflowData.getMetaDataMap().get(&quot;error&quot;));&#xa;    log.debug(&quot;=== check error occurred: &quot;+(null!=workflowData.getMetaDataMap().get(&quot;error&quot;)));&#xa;    return null!=workflowData.getMetaDataMap().get(&quot;error&quot;);&#xa;}">
+                <_x0031_
+                    jcr:primaryType="nt:unstructured"
+                    sling:resourceType="cq/flow/components/parsys">
+                    <initiatorparticipant
+                        jcr:description="Try again after correcting any issues.&#xa;Contact an administrator for further assistance."
+                        jcr:primaryType="nt:unstructured"
+                        jcr:title="An error occurred during upload."
+                        sling:resourceType="cq/workflow/components/workflow/initiatorparticipantchooser"
+                        DYNAMIC_PARTICIPANT="/etc/workflow/scripts/initiator-participant-chooser.ecma"
+                        PROCESS_AUTO_ADVANCE="true">
+                        <metaData
+                            jcr:primaryType="nt:unstructured"
+                            DYNAMIC_PARTICIPANT="/etc/workflow/scripts/initiator-participant-chooser.ecma"
+                            PROCESS_AUTO_ADVANCE="true"/>
+                    </initiatorparticipant>
+                </_x0031_>
+                <_x0032_
+                    jcr:primaryType="nt:unstructured"
+                    sling:resourceType="cq/flow/components/parsys">
+                    <process
+                        jcr:created="{Date}2014-03-03T10:56:23.938-05:00"
+                        jcr:createdBy="admin"
+                        jcr:lastModified="{Date}2014-03-03T10:57:33.794-05:00"
+                        jcr:lastModifiedBy="admin"
+                        jcr:primaryType="nt:unstructured"
+                        jcr:title="Upload Successful"
+                        sling:resourceType="cq/workflow/components/model/process">
+                        <metaData
+                            jcr:primaryType="nt:unstructured"
+                            PROCESS="/etc/workflow/scripts/dps/uploadNotificationTask.ecma"
+                            PROCESS_AUTO_ADVANCE="true"/>
+                    </process>
+                </_x0032_>
+            </or>
+        </flow>
+        <image
+            jcr:lastModified="{Date}2012-06-06T14:01:45.661-04:00"
+            jcr:lastModifiedBy="admin"
+            jcr:primaryType="nt:unstructured"
+            imageRotate="0"/>
+        <model/>
+    </jcr:content>
+</jcr:root>

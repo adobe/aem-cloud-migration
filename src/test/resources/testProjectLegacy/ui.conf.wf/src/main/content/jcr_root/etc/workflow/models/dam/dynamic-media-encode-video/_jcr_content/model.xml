@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+    jcr:isCheckedOut="{Boolean}false"
+    jcr:primaryType="cq:WorkflowModel"
+    jcr:uuid="41699399-95fd-444d-ab8c-b9f8e614607e"
+    sling:resourceType="cq/workflow/components/model"
+    description="This workflow manages the update of dynamic media videos."
+    title="Dynamic Media Encode Video">
+    <metaData
+        cq:lastModified="{Long}1485892867570"
+        cq:lastModifiedBy="admin"
+        jcr:primaryType="nt:unstructured"
+        tags="dam"/>
+    <nodes jcr:primaryType="nt:unstructured">
+        <node0
+            jcr:primaryType="cq:WorkflowNode"
+            title="Start"
+            type="START">
+            <metaData jcr:primaryType="nt:unstructured"/>
+        </node0>
+        <node1
+            jcr:primaryType="cq:WorkflowNode"
+            description="This process checks if the complete update process has to be executed. The workflow should terminate  eg. the asset got restored right before to make sure that trhe restored content is preserved."
+            title="Continue updating?"
+            type="PROCESS">
+            <metaData
+                jcr:primaryType="nt:unstructured"
+                PROCESS="com.day.cq.dam.core.process.GateKeeperProcess"
+                PROCESS_ARGS=""
+                PROCESS_AUTO_ADVANCE="true"/>
+        </node1>
+        <node2
+            jcr:primaryType="cq:WorkflowNode"
+            description="A process to extract and import metadata, create references and apply processing profile, if the payload of the step is an asset or part of an asset."
+            title="Metadata Processor"
+            type="PROCESS">
+            <metaData
+                jcr:primaryType="nt:unstructured"
+                PROCESS="com.day.cq.dam.core.process.MetadataProcessorProcess"
+                PROCESS_AUTO_ADVANCE="true"/>
+        </node2>
+        <node3
+            jcr:primaryType="cq:WorkflowNode"
+            description="Uploads and processes videos through the Adobe Dynamic Media Video Service."
+            title="Dynamic Media Video Service Process"
+            type="EXTERNAL_PROCESS">
+            <metaData
+                jcr:primaryType="nt:unstructured"
+                advanceOnTimeout="true"
+                CONFIGS="[160:90,48:27,320:180]"
+                EXTERNAL_PROCESS="com.day.cq.dam.s7dam.common.process.VideoProxyServiceProcess"
+                period="30"
+                PROCESS_ARGS="test"
+                PROCESS_AUTO_ADVANCE="true"
+                timeout="3600"/>
+        </node3>
+        <node4
+            jcr:primaryType="cq:WorkflowNode"
+            description="Processes assets for use with Dynamic Media Image Services"
+            title="Dynamic Media Process Image Assets"
+            type="PROCESS">
+            <metaData
+                jcr:primaryType="nt:unstructured"
+                CONFIGS="[140:100:false,48:48:false,319:319:false]"
+                HEIGHT="1280"
+                MIME_TYPE="image/jpeg"
+                PROCESS="com.adobe.cq.dam.dm.process.workflow.DMImageProcess"
+                PROCESS_AUTO_ADVANCE="true"
+                QUALITY="90"
+                WIDTH="1280"/>
+        </node4>
+        <node5
+            jcr:primaryType="cq:WorkflowNode"
+            description="This process will create one or more thumbnails for the asset, create web enabled rendition and update folder thumbnail."
+            title="Process Thumbnails"
+            type="PROCESS">
+            <metaData
+                jcr:primaryType="nt:unstructured"
+                CONFIGS="[140:100:false,48:48:false,319:319:false]"
+                CREATE_FPO_MIMETYPES="[image/pjpeg,image/jpeg,image/jpg,image/gif,image/x-png,image/tiff,image/png,application/x-photoshop,application/photoshop,image/vnd.adobe.photoshop,application/vnd.adobe.photoshop,image/bmp,image/x-tiff]"
+                FPO_QUALITY="10"
+                HEIGHT="1280"
+                MIME_TYPE="image/jpeg"
+                MIMETYPE="image/jpeg"
+                PROCESS="com.day.cq.dam.core.process.ThumbnailProcess"
+                PROCESS_AUTO_ADVANCE="true"
+                QUALITY="90"
+                SKIP="[audio/mpeg,video/(.*)]"
+                WIDTH="1280"/>
+        </node5>
+        <node6
+            jcr:primaryType="cq:WorkflowNode"
+            description="Process to delete the image preview rendition"
+            title="Delete Image Preview Rendition"
+            type="PROCESS">
+            <metaData
+                jcr:primaryType="nt:unstructured"
+                PROCESS="com.day.cq.dam.core.process.DeleteImagePreviewProcess"
+                PROCESS_AUTO_ADVANCE="true"/>
+        </node6>
+        <node7
+            jcr:primaryType="cq:WorkflowNode"
+            description="This process will extract and upload the product assets"
+            title="Product Asset Upload"
+            type="PROCESS">
+            <metaData
+                jcr:primaryType="nt:unstructured"
+                PROCESS="com.day.cq.dam.pim.impl.sourcing.upload.process.ProductAssetsUploadProcess"
+                PROCESS_AUTO_ADVANCE="true"/>
+        </node7>
+        <node8
+            jcr:primaryType="cq:WorkflowNode"
+            description="This process will update the video status."
+            title="Dynamic Media Encode Vidoe Workflow Completed"
+            type="PROCESS">
+            <metaData
+                jcr:primaryType="nt:unstructured"
+                PROCESS="com.day.cq.dam.s7dam.common.process.DMEncodeVideoWorkflowCompletedProcess"
+                PROCESS_AUTO_ADVANCE="true"/>
+        </node8>
+        <node9
+            jcr:primaryType="cq:WorkflowNode"
+            title="End"
+            type="END">
+            <metaData jcr:primaryType="nt:unstructured"/>
+        </node9>
+    </nodes>
+    <transitions jcr:primaryType="nt:unstructured">
+        <node0_x0023_node1
+            jcr:primaryType="cq:WorkflowTransition"
+            from="node0"
+            rule=""
+            to="node1">
+            <metaData jcr:primaryType="nt:unstructured"/>
+        </node0_x0023_node1>
+        <node1_x0023_node2
+            jcr:primaryType="cq:WorkflowTransition"
+            from="node1"
+            rule=""
+            to="node2">
+            <metaData jcr:primaryType="nt:unstructured"/>
+        </node1_x0023_node2>
+        <node2_x0023_node3
+            jcr:primaryType="cq:WorkflowTransition"
+            from="node2"
+            rule=""
+            to="node3">
+            <metaData jcr:primaryType="nt:unstructured"/>
+        </node2_x0023_node3>
+        <node3_x0023_node4
+            jcr:primaryType="cq:WorkflowTransition"
+            from="node3"
+            rule=""
+            to="node4">
+            <metaData jcr:primaryType="nt:unstructured"/>
+        </node3_x0023_node4>
+        <node4_x0023_node5
+            jcr:primaryType="cq:WorkflowTransition"
+            from="node4"
+            rule=""
+            to="node5">
+            <metaData jcr:primaryType="nt:unstructured"/>
+        </node4_x0023_node5>
+        <node5_x0023_node6
+            jcr:primaryType="cq:WorkflowTransition"
+            from="node5"
+            rule=""
+            to="node6">
+            <metaData jcr:primaryType="nt:unstructured"/>
+        </node5_x0023_node6>
+        <node6_x0023_node7
+            jcr:primaryType="cq:WorkflowTransition"
+            from="node6"
+            rule=""
+            to="node7">
+            <metaData jcr:primaryType="nt:unstructured"/>
+        </node6_x0023_node7>
+        <node7_x0023_node8
+            jcr:primaryType="cq:WorkflowTransition"
+            from="node7"
+            rule=""
+            to="node8">
+            <metaData jcr:primaryType="nt:unstructured"/>
+        </node7_x0023_node8>
+        <node8_x0023_node9
+            jcr:primaryType="cq:WorkflowTransition"
+            from="node8"
+            to="node9">
+            <metaData jcr:primaryType="nt:unstructured"/>
+        </node8_x0023_node9>
+    </transitions>
+</jcr:root>

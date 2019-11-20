@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+    jcr:primaryType="cq:Page">
+    <jcr:content
+        cq:designPath="/etc/designs/default"
+        cq:lastModified="{Date}2011-10-27T11:09:58.431+08:00"
+        cq:lastModifiedBy="admin"
+        cq:tags="[workflow:dam]"
+        cq:template="/libs/cq/workflow/templates/model"
+        jcr:description="InDesign Proxy"
+        jcr:primaryType="cq:PageContent"
+        jcr:title="DAM InDesign Proxy"
+        sling:resourceType="cq/workflow/components/pages/model"
+        pageTitle="DAM InDesign Proxy">
+        <flow
+            jcr:primaryType="nt:unstructured"
+            sling:resourceType="foundation/components/parsys">
+            <idsjobprocess
+                jcr:created="{Date}2011-10-27T11:09:26.896+08:00"
+                jcr:createdBy="admin"
+                jcr:description="IDS Job Process"
+                jcr:lastModified="{Date}2011-10-27T11:09:44.082+08:00"
+                jcr:lastModifiedBy="admin"
+                jcr:primaryType="nt:unstructured"
+                jcr:title="IDS Job Process"
+                sling:resourceType="dam/components/workflow/idsjobprocess"
+                advanceOnTimeout="true"
+                EXTERNAL_PROCESS="com.day.cq.dam.ids.impl.process.IDSJobProcess"
+                period="10"
+                PROCESS_ARGS="test"
+                PROCESS_AUTO_ADVANCE="true"
+                timeout="3600">
+                <metaData
+                    jcr:primaryType="nt:unstructured"
+                    advanceOnTimeout="true"
+                    EXTERNAL_PROCESS="com.day.cq.dam.ids.impl.process.IDSJobProcess"
+                    period="10"
+                    PROCESS_ARGS="test"
+                    PROCESS_AUTO_ADVANCE="true"
+                    timeout="3600"/>
+            </idsjobprocess>
+        </flow>
+        <image
+            jcr:lastModified="{Date}2011-10-27T11:09:58.429+08:00"
+            jcr:lastModifiedBy="admin"
+            jcr:primaryType="nt:unstructured"
+            imageRotate="0"/>
+        <model/>
+    </jcr:content>
+</jcr:root>

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+    jcr:primaryType="cq:Page">
+    <jcr:content
+        cq:designPath="/etc/designs/default"
+        cq:lastModified="{Date}2014-01-09T15:41:40.342+02:00"
+        cq:lastModifiedBy="admin"
+        cq:template="/libs/cq/workflow/templates/model"
+        jcr:description="Default workflow for downloading, extracting and storing the DTM bundle."
+        jcr:primaryType="cq:PageContent"
+        jcr:title="Default DTM Bundle Download"
+        sling:resourceType="cq/workflow/components/pages/model">
+        <flow
+            jcr:primaryType="nt:unstructured"
+            sling:resourceType="foundation/components/parsys">
+            <process
+                jcr:created="{Date}2013-12-18T13:53:43.232+02:00"
+                jcr:createdBy="admin"
+                jcr:description="Download the DTM bundle into the CQ repository using the URL provided in the DTM cloud service configuration."
+                jcr:lastModified="{Date}2013-12-18T16:35:01.283+02:00"
+                jcr:lastModifiedBy="admin"
+                jcr:primaryType="nt:unstructured"
+                jcr:title="Download DTM bundle"
+                sling:resourceType="cq/workflow/components/model/process">
+                <metaData
+                    jcr:primaryType="nt:unstructured"
+                    PROCESS="com.adobe.cq.dtm.impl.process.DTMBundleDownloadProcess"/>
+            </process>
+            <process_0
+                jcr:created="{Date}2013-12-23T12:00:12.102+02:00"
+                jcr:createdBy="admin"
+                jcr:description="Replicate the DTM downloaded libraries to the publish instances."
+                jcr:lastModified="{Date}2013-12-23T15:34:27.621+02:00"
+                jcr:lastModifiedBy="admin"
+                jcr:primaryType="nt:unstructured"
+                jcr:title="Activate DTM libs"
+                sling:resourceType="cq/workflow/components/model/process">
+                <metaData
+                    jcr:primaryType="nt:unstructured"
+                    PROCESS="com.adobe.cq.dtm.impl.process.DTMLibsActivateProcess"/>
+            </process_0>
+        </flow>
+        <image
+            jcr:lastModified="{Date}2013-12-24T17:52:00.642+02:00"
+            jcr:lastModifiedBy="admin"
+            jcr:primaryType="nt:unstructured"
+            imageRotate="0"/>
+        <model/>
+    </jcr:content>
+</jcr:root>

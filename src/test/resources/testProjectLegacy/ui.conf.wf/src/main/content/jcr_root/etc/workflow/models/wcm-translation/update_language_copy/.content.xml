@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+    jcr:primaryType="cq:Page">
+    <jcr:content
+        cq:designPath="/etc/designs/default"
+        cq:lastModified="{Date}2015-02-06T15:38:00.278+01:00"
+        cq:lastModifiedBy="admin"
+        cq:tags="[workflow:wcm]"
+        cq:template="/libs/cq/workflow/templates/model"
+        jcr:description="Workflow to update an existing language copy using a launch"
+        jcr:primaryType="cq:PageContent"
+        jcr:title="WCM: Update Language Copy"
+        sling:resourceType="cq/workflow/components/pages/model">
+        <flow
+            jcr:primaryType="nt:unstructured"
+            sling:resourceType="foundation/components/parsys">
+            <process
+                jcr:created="{Date}2014-02-18T10:25:38.327+02:00"
+                jcr:createdBy="admin"
+                jcr:description="Create launch for an existing language copy"
+                jcr:lastModified="{Date}2015-02-06T15:38:00.270+01:00"
+                jcr:lastModifiedBy="admin"
+                jcr:primaryType="nt:unstructured"
+                jcr:title="Create Language Copy Launch"
+                sling:resourceType="cq/workflow/components/model/process">
+                <metaData
+                    jcr:primaryType="nt:unstructured"
+                    PROCESS="com.adobe.cq.wcm.translation.impl.process.CreateLanguageCopyLaunchProcess"
+                    PROCESS_ARGS="/etc/msm/rolloutconfigs/pushonmodify /etc/msm/rolloutconfigs/pushonmodifyshallow /etc/msm/rolloutconfigs/launch"
+                    PROCESS_AUTO_ADVANCE="true"/>
+            </process>
+            <process_0
+                jcr:created="{Date}2014-02-18T10:25:40.303+02:00"
+                jcr:createdBy="admin"
+                jcr:description="Replace language copy launch content with master language content"
+                jcr:lastModified="{Date}2014-02-18T10:27:29.947+02:00"
+                jcr:lastModifiedBy="admin"
+                jcr:primaryType="nt:unstructured"
+                jcr:title="Inject Master Language into Launch"
+                sling:resourceType="cq/workflow/components/model/process">
+                <metaData
+                    jcr:primaryType="nt:unstructured"
+                    PROCESS="com.adobe.cq.wcm.translation.impl.process.InjectMasterLanguageIntoLaunchProcess"
+                    PROCESS_AUTO_ADVANCE="true"/>
+            </process_0>
+        </flow>
+        <image
+            jcr:lastModified="{Date}2014-02-18T10:25:18.335+02:00"
+            jcr:lastModifiedBy="admin"
+            jcr:primaryType="nt:unstructured"
+            imageRotate="0"/>
+        <model/>
+    </jcr:content>
+</jcr:root>

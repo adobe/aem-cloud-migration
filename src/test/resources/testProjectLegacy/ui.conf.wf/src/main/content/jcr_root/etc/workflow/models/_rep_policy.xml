@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:crx="http://www.day.com/crx/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:rep="internal"
+    jcr:primaryType="rep:ACL">
+    <deny
+        jcr:primaryType="rep:DenyACE"
+        rep:principalName="workflow-users"
+        rep:privileges="{Name}[jcr:versionManagement,rep:write,jcr:lockManagement]"/>
+    <allow1
+        jcr:primaryType="rep:GrantACE"
+        rep:principalName="workflow-editors"
+        rep:privileges="{Name}[jcr:versionManagement,crx:replicate,rep:write,jcr:lockManagement]"/>
+    <allow2
+        jcr:primaryType="rep:GrantACE"
+        rep:principalName="offloading-service"
+        rep:privileges="{Name}[jcr:versionManagement,jcr:lockManagement]"/>
+    <allow3
+        jcr:primaryType="rep:GrantACE"
+        rep:principalName="idsjobprocessor"
+        rep:privileges="{Name}[jcr:read]"/>
+</jcr:root>

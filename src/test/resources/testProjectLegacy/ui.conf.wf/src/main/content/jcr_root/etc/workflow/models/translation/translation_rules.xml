@@ -1,0 +1,73 @@
+<nodelist>
+	<node path="/content">
+		<property name="addLabel" />
+		<property name="allowedResponses" />
+		<property name="alt" />
+		<property name="attachFileLabel" />
+		<property name="benefits" />
+		<property name="buttonLabel" />
+		<property name="chartAlt" />
+		<property name="confirmationMessageToggle" />
+		<property name="confirmationMessageUntoggle" />
+		<property name="constraintMessage" />
+		<property name="contentLabel" />
+		<property name="denyText" />
+		<property name="detailDescription" />
+		<property name="emptyText" />
+		<property name="helpMessage" />
+		<property name="image/alt" />
+		<property name="image/jcr:description" />
+		<property name="image/jcr:title" />
+		<property name="jcr:description" />
+		<property name="jcr:title" />
+		<property name="label" />
+		<property name="listLabel" />
+		<property name="moreText" />
+		<property name="pageTitle" />
+		<property name="placeholder" />
+		<property name="requiredMessage" />
+		<property name="resetTitle" />
+		<property name="subjectLabel" />
+		<property name="subtitle" />
+		<property name="tableData" />
+		<property name="text" />
+		<property name="title" />
+		<property name="titleDivContent" />
+		<property name="toggleLabel" />
+		<property name="transitionLabel" />
+		<property name="untoggleLabel" />
+		<property name="cq:language" updateDestinationLanguage="true"/>
+		<node pathContains="/cq:annotations">
+			<property name="text" translate="false"/>
+		</node>
+	</node>
+	<node path="/content/forms">
+		<property name="text" translate="false"/>
+    </node>
+	<node path="/content/dam">
+		<property name="dc:description" />
+		<property name="dc:rights" />
+		<property name="dc:subject" />
+		<property name="dc:title" />
+		<property name="defaultContent" />
+		<property name="jcr:description" />
+		<property name="jcr:title" />
+		<property name="pdf:Title" />
+		<property name="xmpRights:UsageTerms" />
+		<node pathContains="/jcr:content/metadata/predictedTags">
+			<property name="name"/>
+		</node>
+	</node>
+	<assetNode resourceType="dam/cfm/components/contentfragment" assetReferenceAttribute="fileReference"/>
+	<assetNode resourceType="docs/components/download" />
+	<assetNode resourceType="docs/components/image" />
+	<assetNode resourceType="foundation/components/image" assetReferenceAttribute="fileReference"/>
+	<assetNode resourceType="foundation/components/video" assetReferenceAttribute="asset"/>
+	<assetNode resourceType="foundation/components/download" assetReferenceAttribute="fileReference"/>
+	<assetNode resourceType="foundation/components/mobileimage" assetReferenceAttribute="fileReference"/>
+	<assetNode resourceType="wcm/foundation/components/image" assetReferenceAttribute="fileReference"/>
+	<assetNode resourceType="weretail/components/content/contentfragment" assetReferenceAttribute="fileReference"/>
+	<assetNode resourceType="weretail/components/content/categoryteaser" assetReferenceAttribute="fileReference"/>
+	<assetNode resourceType="weretail/components/content/heroimage" assetReferenceAttribute="fileReference"/>
+	<assetNode resourceType="weretail/components/content/image" assetReferenceAttribute="fileReference"/>
+</nodelist>

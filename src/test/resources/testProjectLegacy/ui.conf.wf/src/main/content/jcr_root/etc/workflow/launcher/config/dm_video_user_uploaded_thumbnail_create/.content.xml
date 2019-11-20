@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
+    jcr:primaryType="cq:WorkflowLauncher"
+    condition="../dam:s7damType!="
+    description="Dynamic Media Video User Uploaded Thumbnail Process"
+    enabled="{Boolean}true"
+    eventType="{Long}1"
+    excludeList="jcr:lastModified,dc:modified,dc:format,jcr:lastModifiedBy,imageMap,event-user-data:changedByWorkflowProcess"
+    glob="/content/dam(/.*/)manualThumbnail.jpg"
+    nodetype="nt:file"
+    runModes="author"
+    workflow="/etc/workflow/models/dam/dynamic-media-video-user-uploaded-thumbnail/jcr:content/model"/>

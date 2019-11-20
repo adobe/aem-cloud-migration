@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+    jcr:isCheckedOut="{Boolean}false"
+    jcr:primaryType="cq:WorkflowModel"
+    jcr:uuid="55ab241b-c939-48a5-9225-289940313db3"
+    sling:resourceType="cq/workflow/components/model"
+    description="Workflow to initiate and manage photo shoot request for products managed, externally"
+    title="Product Photo Shoot">
+    <metaData
+        cq:lastModified="{Long}1390574268967"
+        cq:lastModifiedBy="admin"
+        jcr:primaryType="nt:unstructured"
+        tags="misc"/>
+    <nodes jcr:primaryType="nt:unstructured">
+        <node0
+            jcr:primaryType="cq:WorkflowNode"
+            title="Start"
+            type="START">
+            <metaData jcr:primaryType="nt:unstructured"/>
+        </node0>
+        <node1
+            jcr:primaryType="cq:WorkflowNode"
+            description="Creates a project task to upload a shot list of requiring photographer to provide shots."
+            title="Upload Shot List"
+            type="PROCESS">
+            <metaData
+                jcr:primaryType="nt:unstructured"
+                argTaskDescription="Upload a Shot List for which digital images are needed."
+                argTaskDueDeltaDays="2"
+                argTaskName="Upload Shot List"
+                argTaskPriority="Medium"
+                argTaskRole="Creative Director"
+                onCreateScript="/etc/workflow/scripts/projects/RoleBasedAssignment.ecma"
+                PROCESS="com.adobe.cq.projects.impl.workflow.ProjectTaskWorkflowProcess"
+                PROCESS_AUTO_ADVANCE="false"
+                PROCESS_PERSIST_ANONYMOUS_WORKITEM="true"
+                script="task.setProperty(&quot;taskTypeName&quot;,&quot;dam:uploadshotlist&quot;);"/>
+        </node1>
+        <node2
+            jcr:primaryType="cq:WorkflowNode"
+            description="Creates a task to upload photos corresponding to the shot list generated in the previous ste"
+            title="Upload Photo Shoot"
+            type="PROCESS">
+            <metaData
+                jcr:primaryType="nt:unstructured"
+                argTaskDescription="Upload photos either as zip archive or individually based on Shot List.&#xa;Filenames should be in format &lt;productId>_&lt;...>.***&#xa;Example: For a product with productID jk001, sample filenames could be jk001_1.jpg or jk001_2.png or jk001_highcontrast.jpg.&#xa;Click on View Shot List link to view the list."
+                argTaskDueDeltaDays="2"
+                argTaskName="Upload Photo Shoot"
+                argTaskPriority="Medium"
+                argTaskRole="Photographer"
+                onCreateScript="/etc/workflow/scripts/projects/RoleBasedAssignment.ecma"
+                PROCESS="com.adobe.cq.projects.impl.workflow.ProjectTaskWorkflowProcess"
+                PROCESS_AUTO_ADVANCE="false"
+                PROCESS_PERSIST_ANONYMOUS_WORKITEM="true"
+                script="task.setProperty(&quot;taskTypeName&quot;,&quot;dam:uploadphotoshoot&quot;);&#xa;"/>
+        </node2>
+        <node3
+            jcr:primaryType="cq:WorkflowNode"
+            description="Creates a project task for retoucher"
+            title="Retouch Photo Shoot"
+            type="PROCESS">
+            <metaData
+                jcr:primaryType="nt:unstructured"
+                argTaskDescription="Retouch product photoshoot images."
+                argTaskDueDeltaDays="2"
+                argTaskName="Retouch Photo Shoot"
+                argTaskPriority="Medium"
+                argTaskRole="Photo Retoucher"
+                onCreateScript="/etc/workflow/scripts/projects/RoleBasedAssignment.ecma"
+                PROCESS="com.adobe.cq.projects.impl.workflow.ProjectTaskWorkflowProcess"
+                PROCESS_AUTO_ADVANCE="false"
+                PROCESS_PERSIST_ANONYMOUS_WORKITEM="true"
+                script="task.setProperty(&quot;taskTypeName&quot;,&quot;dam:retouch&quot;);&#xa;"/>
+        </node3>
+        <node4
+            jcr:primaryType="cq:WorkflowNode"
+            description="Creates a photoshoot review &amp; approval task"
+            title="Photo Shoot Review"
+            type="PROCESS">
+            <metaData
+                jcr:primaryType="nt:unstructured"
+                argTaskDescription="Review images in the Photo Shoot Folder and approve/select images for usage."
+                argTaskDueDeltaDays="2"
+                argTaskName="Review &amp; Approve"
+                argTaskPriority="Medium"
+                argTaskRole="Reviewer"
+                onCreateScript="/etc/workflow/scripts/projects/RoleBasedAssignment.ecma"
+                PROCESS="com.adobe.cq.projects.impl.workflow.ProjectTaskWorkflowProcess"
+                PROCESS_AUTO_ADVANCE="false"
+                PROCESS_PERSIST_ANONYMOUS_WORKITEM="true"
+                script="task.setProperty(&quot;taskTypeName&quot;,&quot;dam:productreview&quot;);&#xa;"/>
+        </node4>
+        <node5
+            jcr:primaryType="cq:WorkflowNode"
+            description="Creates a task to move approved assets to a production ready folder"
+            title="Move to Production"
+            type="PROCESS">
+            <metaData
+                jcr:primaryType="nt:unstructured"
+                argTaskDescription="Move approved assets to a production ready folder"
+                argTaskDueDeltaDays="2"
+                argTaskName="Move to Production"
+                argTaskPriority="High"
+                argTaskRole="Creative Director"
+                onCreateScript="/etc/workflow/scripts/projects/RoleBasedAssignment.ecma"
+                PROCESS="com.adobe.cq.projects.impl.workflow.ProjectTaskWorkflowProcess"
+                PROCESS_AUTO_ADVANCE="false"
+                PROCESS_PERSIST_ANONYMOUS_WORKITEM="true"
+                script="task.setProperty(&quot;taskTypeName&quot;,&quot;dam:production&quot;);"/>
+        </node5>
+        <node6
+            jcr:primaryType="cq:WorkflowNode"
+            title="End"
+            type="END">
+            <metaData jcr:primaryType="nt:unstructured"/>
+        </node6>
+    </nodes>
+    <transitions jcr:primaryType="nt:unstructured">
+        <node0_x0023_node1
+            jcr:primaryType="cq:WorkflowTransition"
+            from="node0"
+            rule=""
+            to="node1">
+            <metaData jcr:primaryType="nt:unstructured"/>
+        </node0_x0023_node1>
+        <node1_x0023_node2
+            jcr:primaryType="cq:WorkflowTransition"
+            from="node1"
+            rule=""
+            to="node2">
+            <metaData jcr:primaryType="nt:unstructured"/>
+        </node1_x0023_node2>
+        <node2_x0023_node3
+            jcr:primaryType="cq:WorkflowTransition"
+            from="node2"
+            rule=""
+            to="node3">
+            <metaData jcr:primaryType="nt:unstructured"/>
+        </node2_x0023_node3>
+        <node3_x0023_node4
+            jcr:primaryType="cq:WorkflowTransition"
+            from="node3"
+            rule=""
+            to="node4">
+            <metaData jcr:primaryType="nt:unstructured"/>
+        </node3_x0023_node4>
+        <node4_x0023_node5
+            jcr:primaryType="cq:WorkflowTransition"
+            from="node4"
+            rule=""
+            to="node5">
+            <metaData jcr:primaryType="nt:unstructured"/>
+        </node4_x0023_node5>
+        <node5_x0023_node6
+            jcr:primaryType="cq:WorkflowTransition"
+            from="node5"
+            to="node6">
+            <metaData jcr:primaryType="nt:unstructured"/>
+        </node5_x0023_node6>
+    </transitions>
+</jcr:root>

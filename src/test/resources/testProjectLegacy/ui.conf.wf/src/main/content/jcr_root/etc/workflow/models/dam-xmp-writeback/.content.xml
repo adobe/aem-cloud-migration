@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+    jcr:primaryType="cq:Page">
+    <jcr:content
+        cq:designPath="/etc/designs/default"
+        cq:lastModified="{Date}2012-05-16T12:50:03.480+05:30"
+        cq:lastModifiedBy="admin"
+        cq:tags="[workflow:dam]"
+        cq:template="/libs/cq/workflow/templates/model"
+        jcr:description="This workflow manages XMP write-back to the original binary and sets the last modified date in jcr. "
+        jcr:primaryType="cq:PageContent"
+        jcr:title="DAM MetaData Writeback"
+        sling:resourceType="cq/workflow/components/pages/model"
+        transient="true">
+        <flow
+            jcr:primaryType="nt:unstructured"
+            sling:resourceType="foundation/components/parsys">
+            <process_0
+                jcr:created="{Date}2011-12-21T16:59:41.171+08:00"
+                jcr:createdBy="admin"
+                jcr:description="Set metadata lastModified date"
+                jcr:lastModified="{Date}2011-12-21T17:04:33.588+08:00"
+                jcr:lastModifiedBy="admin"
+                jcr:primaryType="nt:unstructured"
+                jcr:title="Set last modified date"
+                sling:resourceType="cq/workflow/components/model/process">
+                <metaData
+                    jcr:primaryType="nt:unstructured"
+                    PROCESS="com.day.cq.dam.core.process.AssetSetLastModifiedProcess"
+                    PROCESS_ARGS="relativeLastModifiedPath:metadata/jcr:lastModified,relativeLastModifiedByPath:metadata/jcr:lastModifiedBy"
+                    PROCESS_AUTO_ADVANCE="true"/>
+            </process_0>
+            <process
+                jcr:created="{Date}2011-07-19T13:01:26.670+08:00"
+                jcr:createdBy="admin"
+                jcr:description="This step executes XMP writeback process which rewrite all meta data from JCR to the original binary as XMP."
+                jcr:lastModified="{Date}2012-05-16T12:50:03.463+05:30"
+                jcr:lastModifiedBy="admin"
+                jcr:primaryType="nt:unstructured"
+                jcr:title="XMP Writeback Process"
+                sling:resourceType="cq/workflow/components/model/process">
+                <metaData
+                    jcr:primaryType="nt:unstructured"
+                    PROCESS="com.day.cq.dam.core.process.XMPWritebackProcess"
+                    PROCESS_ARGS="createversion:true,rendition:original"
+                    PROCESS_AUTO_ADVANCE="true"/>
+            </process>
+            <dammetadatawritebackworkflowcompletedprocess
+                jcr:description="This process will send DamEvent.Type.DAM_METADATA_WRITEBACK_WORKFLOW_COMPLETED event when DAM metadata writeback workflow is completed"
+                jcr:primaryType="nt:unstructured"
+                jcr:title="DAM Metadata Writeback Workflow Completed"
+                sling:resourceType="dam/components/workflow/dammetadatawritebackworkflowcompletedprocess">
+                <metaData
+                    jcr:primaryType="nt:unstructured"
+                    PROCESS="com.day.cq.dam.core.impl.process.DamMetadataWritebackWorkflowCompletedProcess"
+                    PROCESS_AUTO_ADVANCE="true"/>
+            </dammetadatawritebackworkflowcompletedprocess>
+        </flow>
+        <image
+            jcr:lastModified="{Date}2011-12-21T17:03:48.690+08:00"
+            jcr:lastModifiedBy="admin"
+            jcr:primaryType="nt:unstructured"
+            imageRotate="0"/>
+        <end
+            jcr:lastModified="{Date}2011-08-22T17:17:21.936+08:00"
+            jcr:lastModifiedBy="admin"
+            jcr:primaryType="nt:unstructured"
+            sling:resourceType="cq/flow/components/step/end"/>
+        <model/>
+    </jcr:content>
+</jcr:root>

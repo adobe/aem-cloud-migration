@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+    jcr:primaryType="cq:Page">
+    <jcr:content
+        cq:designPath="/etc/designs/default"
+        cq:lastModified="{Date}2014-04-11T10:53:18.987+02:00"
+        cq:lastModifiedBy="admin"
+        cq:tags="[workflow:projects/landingpage,workflow:projects/wcm/landingpage]"
+        cq:template="/libs/cq/workflow/templates/model"
+        jcr:description="Workflow for requesting a landing page."
+        jcr:primaryType="cq:PageContent"
+        jcr:title="Request Landing Page"
+        sling:resourceType="cq/workflow/components/pages/model">
+        <flow
+            jcr:primaryType="nt:unstructured"
+            sling:resourceType="foundation/components/parsys">
+            <process
+                jcr:created="{Date}2013-11-27T17:44:07.115+01:00"
+                jcr:createdBy="admin"
+                jcr:description="Create the landing page."
+                jcr:lastModified="{Date}2013-11-28T12:01:42.318+01:00"
+                jcr:lastModifiedBy="admin"
+                jcr:primaryType="nt:unstructured"
+                jcr:title="Create Landing Page"
+                sling:resourceType="cq/workflow/components/model/process">
+                <metaData
+                    jcr:primaryType="nt:unstructured"
+                    PROCESS="com.adobe.cq.projects.wcm.impl.workflow.CreateLandingPageWorkflowProcess"
+                    PROCESS_AUTO_ADVANCE="true"/>
+            </process>
+            <taskworkflowstep_0
+                jcr:created="{Date}2013-12-12T17:45:53.339-05:00"
+                jcr:createdBy="admin"
+                jcr:description="Landing Page Approval Task Step"
+                jcr:lastModified="{Date}2013-12-12T18:00:07.951-05:00"
+                jcr:lastModifiedBy="admin"
+                jcr:primaryType="nt:unstructured"
+                jcr:title="Landing Page Approval"
+                sling:resourceType="cq/projects/taskworkflowstep"
+                PROCESS="com.adobe.cq.projects.impl.workflow.ProjectTaskWorkflowProcess"
+                PROCESS_AUTO_ADVANCE="false"
+                PROCESS_PERSIST_ANONYMOUS_WORKITEM="true">
+                <metaData
+                    jcr:primaryType="nt:unstructured"
+                    argActions="[Approve,Reject]"
+                    argTaskDescription="Please approve or reject this landing page."
+                    argTaskName="Landing Page Approval"
+                    argTaskPriority="Medium"
+                    PROCESS="com.adobe.cq.projects.impl.workflow.ProjectTaskWorkflowProcess"
+                    PROCESS_AUTO_ADVANCE="false"
+                    PROCESS_PERSIST_ANONYMOUS_WORKITEM="true"
+                    script="var groupId = groupId = &quot;project.group.observer&quot;;&#xa;&#xa;if (groupId) {&#xa;    task.setCurrentAssignee(workflowData.getMetaDataMap().get(groupId, &quot;&quot;));&#xa;}&#xa;&#xa;// set taskDueDate property to value in workflow metadata, if set&#xa;if(workflowData.getMetaDataMap().containsKey(&quot;liveDate&quot;) &amp;&amp; Packages.org.apache.commons.lang3.StringUtils.isNotBlank(workflowData.getMetaDataMap().get(&quot;liveDate&quot;, Packages.java.lang.String)) ) {&#xa;    task.setProperty(&quot;taskDueDate&quot;, workflowData.getMetaDataMap().get(&quot;liveDate&quot;, Packages.java.util.Date));&#xa;}"/>
+            </taskworkflowstep_0>
+            <goto
+                jcr:created="{Date}2013-12-12T15:27:04.556-05:00"
+                jcr:createdBy="admin"
+                jcr:description="Reassign back to initiator if not aproved"
+                jcr:lastModified="{Date}2014-01-23T08:45:39.203+01:00"
+                jcr:lastModifiedBy="admin"
+                jcr:primaryType="nt:unstructured"
+                jcr:title="Decide if approved"
+                sling:resourceType="cq/workflow/components/model/goto"
+                PROCESS="com.adobe.granite.workflow.core.process.GotoProcess"
+                PROCESS_AUTO_ADVANCE="false">
+                <metaData
+                    jcr:primaryType="nt:unstructured"
+                    PROCESS="com.adobe.granite.workflow.core.process.GotoProcess"
+                    PROCESS_AUTO_ADVANCE="false"
+                    script="function check() {&#xa;&#xa;    if (workflowData.getMetaDataMap().get(&quot;lastTaskAction&quot;,&quot;&quot;) == &quot;Approve&quot;) {&#xa;        return true&#xa;    }&#xa;    return false;&#xa;}"
+                    TARGET_NODE_PATH="/etc/workflow/models/projects/request_landing_page/jcr:content/flow/noopprocess"/>
+            </goto>
+            <taskworkflowstep_1
+                jcr:created="{Date}2013-12-12T15:31:02.468-05:00"
+                jcr:createdBy="admin"
+                jcr:description="The landing page that was created was rejected and must be edited by the initiator"
+                jcr:lastModified="{Date}2013-12-12T15:38:25.241-05:00"
+                jcr:lastModifiedBy="admin"
+                jcr:primaryType="nt:unstructured"
+                jcr:title="Rejected"
+                sling:resourceType="cq/projects/taskworkflowstep"
+                PROCESS="com.adobe.cq.projects.impl.workflow.ProjectTaskWorkflowProcess"
+                PROCESS_AUTO_ADVANCE="false"
+                PROCESS_PERSIST_ANONYMOUS_WORKITEM="true">
+                <metaData
+                    jcr:primaryType="nt:unstructured"
+                    argActions="Done"
+                    argTaskDescription="The landing page you requested was rejected. Please see the comments and make adjustments."
+                    argTaskName="Landing Page Rejected"
+                    argTaskPriority="Medium"
+                    PROCESS="com.adobe.cq.projects.impl.workflow.ProjectTaskWorkflowProcess"
+                    PROCESS_AUTO_ADVANCE="false"
+                    PROCESS_PERSIST_ANONYMOUS_WORKITEM="true"
+                    script="var assignTo = workItem.getWorkflow().getInitiator();&#xa;&#xa;task.setCurrentAssignee(assignTo);&#xa;&#xa;// set taskDueDate property to value in workflow metadata, if set&#xa;if(workflowData.getMetaDataMap().containsKey(&quot;liveDate&quot;) &amp;&amp; Packages.org.apache.commons.lang3.StringUtils.isNotBlank(workflowData.getMetaDataMap().get(&quot;liveDate&quot;, Packages.java.lang.String)) ) {&#xa;    task.setProperty(&quot;taskDueDate&quot;, workflowData.getMetaDataMap().get(&quot;liveDate&quot;, Packages.java.util.Date));&#xa;}&#xa;"/>
+            </taskworkflowstep_1>
+            <goto_0
+                jcr:created="{Date}2013-12-12T15:38:43.876-05:00"
+                jcr:createdBy="admin"
+                jcr:description="Send for approval again"
+                jcr:lastModified="{Date}2013-12-12T15:39:34.848-05:00"
+                jcr:lastModifiedBy="admin"
+                jcr:primaryType="nt:unstructured"
+                jcr:title="Send for approval again"
+                sling:resourceType="cq/workflow/components/model/goto"
+                PROCESS="com.adobe.granite.workflow.core.process.GotoProcess"
+                PROCESS_AUTO_ADVANCE="false">
+                <metaData
+                    jcr:primaryType="nt:unstructured"
+                    PROCESS="com.adobe.granite.workflow.core.process.GotoProcess"
+                    PROCESS_AUTO_ADVANCE="false"
+                    script="function check() {&#xa;    return true;&#xa;}"
+                    TARGET_NODE_PATH="/etc/workflow/models/projects/request_landing_page/jcr:content/flow/taskworkflowstep_0"/>
+            </goto_0>
+            <noopprocess
+                jcr:created="{Date}2014-01-23T08:39:46.210+01:00"
+                jcr:createdBy="admin"
+                jcr:description="A no operation process"
+                jcr:lastModified="{Date}2014-01-23T08:39:46.210+01:00"
+                jcr:lastModifiedBy="admin"
+                jcr:primaryType="nt:unstructured"
+                jcr:title="No Operation"
+                sling:resourceType="cq/workflow/components/workflow/noopprocess">
+                <metaData
+                    jcr:primaryType="nt:unstructured"
+                    PROCESS="/etc/workflow/scripts/noop.ecma"
+                    PROCESS_AUTO_ADVANCE="true"/>
+            </noopprocess>
+            <and
+                jcr:created="{Date}2014-01-23T08:48:22.778+01:00"
+                jcr:createdBy="admin"
+                jcr:lastModified="{Date}2014-01-23T08:48:22.778+01:00"
+                jcr:lastModifiedBy="admin"
+                jcr:primaryType="nt:unstructured"
+                sling:resourceType="cq/workflow/components/model/and"
+                branches="2">
+                <_x0031_
+                    jcr:primaryType="nt:unstructured"
+                    sling:resourceType="cq/flow/components/parsys">
+                    <taskworkflowstep
+                        jcr:created="{Date}2013-11-28T11:31:34.685+01:00"
+                        jcr:createdBy="admin"
+                        jcr:description="Notify the initiator that their landing page has been approved."
+                        jcr:lastModified="{Date}2013-12-12T15:55:10.574-05:00"
+                        jcr:lastModifiedBy="admin"
+                        jcr:primaryType="nt:unstructured"
+                        jcr:title="Landing Page Created"
+                        sling:resourceType="cq/projects/taskworkflowstep"
+                        PROCESS="com.adobe.cq.projects.impl.workflow.ProjectTaskWorkflowProcess"
+                        PROCESS_AUTO_ADVANCE="false"
+                        PROCESS_PERSIST_ANONYMOUS_WORKITEM="true">
+                        <metaData
+                            jcr:primaryType="nt:unstructured"
+                            argActions="Close"
+                            argTaskDescription="The landing page creation has been completed. Please see payload for this task for the final result."
+                            argTaskName="Landing Page Creation Complete"
+                            argTaskPriority="Medium"
+                            PROCESS="com.adobe.cq.projects.impl.workflow.ProjectTaskWorkflowProcess"
+                            PROCESS_AUTO_ADVANCE="false"
+                            PROCESS_PERSIST_ANONYMOUS_WORKITEM="true"
+                            script="var workflowInitiator = workItem.getWorkflow().getInitiator();&#xa;&#xa;task.setCurrentAssignee(workflowInitiator);&#xa;&#xa;// set taskDueDate property to value in workflow metadata, if set&#xa;if(workflowData.getMetaDataMap().containsKey(&quot;liveDate&quot;) &amp;&amp; Packages.org.apache.commons.lang3.StringUtils.isNotBlank(workflowData.getMetaDataMap().get(&quot;liveDate&quot;, Packages.java.lang.String)) ) {&#xa;    task.setProperty(&quot;taskDueDate&quot;, workflowData.getMetaDataMap().get(&quot;liveDate&quot;, Packages.java.util.Date));&#xa;}&#xa;&#xa;// set taskPriority property to value in workflow metadata, if set&#xa;if(workflowData.getMetaDataMap().containsKey(&quot;taskPriority&quot;) &amp;&amp; Packages.org.apache.commons.lang3.StringUtils.isNotBlank(workflowData.getMetaDataMap().get(&quot;taskPriority&quot;, Packages.java.lang.String)) ) {&#xa;    task.setProperty(&quot;taskPriority&quot;, workflowData.getMetaDataMap().get(&quot;taskPriority&quot;, Packages.java.lang.String));&#xa;}"/>
+                    </taskworkflowstep>
+                </_x0031_>
+                <_x0032_
+                    jcr:primaryType="nt:unstructured"
+                    sling:resourceType="cq/flow/components/parsys">
+                    <goto
+                        jcr:created="{Date}2014-04-11T09:56:31.194+02:00"
+                        jcr:createdBy="admin"
+                        jcr:description="Skip activation if the workflow metadata doesn't contain an activation date"
+                        jcr:lastModified="{Date}2014-04-11T10:53:18.984+02:00"
+                        jcr:lastModifiedBy="admin"
+                        jcr:primaryType="nt:unstructured"
+                        jcr:title="Skip Activation"
+                        sling:resourceType="cq/workflow/components/model/goto"
+                        PROCESS="com.adobe.granite.workflow.core.process.GotoProcess"
+                        PROCESS_AUTO_ADVANCE="false">
+                        <metaData
+                            jcr:primaryType="nt:unstructured"
+                            PROCESS="com.adobe.granite.workflow.core.process.GotoProcess"
+                            PROCESS_AUTO_ADVANCE="false"
+                            script="function check() {&#xa;&#x9;return !workflowData.getMetaDataMap().containsKey(&quot;absoluteTime&quot;);&#xa;}&#xa;"
+                            TARGET_NODE_PATH="/etc/workflow/models/projects/request_landing_page/jcr:content/flow/and/2/noopprocess"/>
+                    </goto>
+                    <participant
+                        jcr:description="Waiting for activation until the scheduled time is reached"
+                        jcr:primaryType="nt:unstructured"
+                        jcr:title="Waiting for activation"
+                        sling:resourceType="cq/workflow/components/model/participant">
+                        <metaData
+                            jcr:primaryType="nt:unstructured"
+                            DO_NOTIFY="false"
+                            PARTICIPANT="admin"
+                            timeoutHandler="com.day.cq.workflow.timeout.autoadvance.AbsoluteTimeAutoAdvancer"
+                            timeoutMillis="0"/>
+                    </participant>
+                    <process_0
+                        jcr:created="{Date}2013-11-27T17:44:07.115+01:00"
+                        jcr:createdBy="admin"
+                        jcr:description="Activate the landing page"
+                        jcr:lastModified="{Date}2013-11-28T12:01:42.318+01:00"
+                        jcr:lastModifiedBy="admin"
+                        jcr:primaryType="nt:unstructured"
+                        jcr:title="Activate Landing Page"
+                        sling:resourceType="cq/workflow/components/model/process">
+                        <metaData
+                            jcr:primaryType="nt:unstructured"
+                            PROCESS="com.day.cq.mcm.campaign.impl.ActivateCampaignPage"
+                            PROCESS_AUTO_ADVANCE="true"/>
+                    </process_0>
+                    <noopprocess
+                        jcr:created="{Date}2014-04-11T09:57:14.815+02:00"
+                        jcr:createdBy="admin"
+                        jcr:description="End of activation"
+                        jcr:lastModified="{Date}2014-04-11T09:57:45.774+02:00"
+                        jcr:lastModifiedBy="admin"
+                        jcr:primaryType="nt:unstructured"
+                        jcr:title="End"
+                        sling:resourceType="cq/workflow/components/workflow/noopprocess"
+                        PROCESS="/etc/workflow/scripts/noop.ecma"
+                        PROCESS_AUTO_ADVANCE="true">
+                        <metaData
+                            jcr:primaryType="nt:unstructured"
+                            PROCESS="/etc/workflow/scripts/noop.ecma"
+                            PROCESS_AUTO_ADVANCE="true"/>
+                    </noopprocess>
+                </_x0032_>
+            </and>
+        </flow>
+        <image
+            jcr:lastModified="{Date}2014-01-10T13:55:22.545-05:00"
+            jcr:lastModifiedBy="admin"
+            jcr:primaryType="nt:unstructured"
+            imageRotate="0">
+            <file/>
+        </image>
+        <model/>
+    </jcr:content>
+</jcr:root>

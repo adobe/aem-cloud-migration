@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+    jcr:primaryType="cq:Page">
+    <jcr:content
+        cq:designPath="/etc/designs/default"
+        cq:lastModified="{Date}2014-10-15T15:52:37.325+02:00"
+        cq:lastModifiedBy="admin"
+        cq:template="/libs/cq/workflow/templates/model"
+        jcr:description="Workflow handling the edition, review and approval of a newsletter to be sent using Adobe Campaign"
+        jcr:primaryType="cq:PageContent"
+        jcr:title="Approve for Adobe Campaign"
+        sling:resourceType="cq/workflow/components/pages/model">
+        <flow
+            jcr:primaryType="nt:unstructured"
+            sling:resourceType="foundation/components/parsys">
+            <process
+                jcr:created="{Date}2014-10-15T15:33:20.733+02:00"
+                jcr:createdBy="admin"
+                jcr:description="Initialize new edition and approval workflow"
+                jcr:lastModified="{Date}2014-10-15T15:52:00.044+02:00"
+                jcr:lastModifiedBy="admin"
+                jcr:primaryType="nt:unstructured"
+                jcr:title="Initialization"
+                sling:resourceType="cq/workflow/components/model/process">
+                <metaData
+                    jcr:primaryType="nt:unstructured"
+                    PROCESS="/etc/workflow/scripts/campaign/initialize.ecma"
+                    PROCESS_AUTO_ADVANCE="true"/>
+            </process>
+            <participant
+                jcr:created="{Date}2014-10-15T15:34:03.748+02:00"
+                jcr:createdBy="admin"
+                jcr:description="Edition of newsletter content and design"
+                jcr:lastModified="{Date}2014-10-15T15:34:27.489+02:00"
+                jcr:lastModifiedBy="admin"
+                jcr:primaryType="nt:unstructured"
+                jcr:title="Edit Newsletter"
+                sling:resourceType="cq/workflow/components/model/participant">
+                <metaData
+                    jcr:primaryType="nt:unstructured"
+                    PARTICIPANT="/home/users/a/admin"/>
+            </participant>
+            <participant_1019912346
+                jcr:created="{Date}2014-10-15T15:35:05.309+02:00"
+                jcr:createdBy="admin"
+                jcr:description="Review of the newsletter design and content"
+                jcr:lastModified="{Date}2014-10-15T15:35:32.183+02:00"
+                jcr:lastModifiedBy="admin"
+                jcr:primaryType="nt:unstructured"
+                jcr:title="Newsletter Review"
+                sling:resourceType="cq/workflow/components/model/participant">
+                <metaData
+                    jcr:primaryType="nt:unstructured"
+                    PARTICIPANT="/home/users/a/admin"/>
+            </participant_1019912346>
+            <or
+                jcr:created="{Date}2014-10-15T15:35:49.366+02:00"
+                jcr:createdBy="admin"
+                jcr:lastModified="{Date}2014-10-15T15:35:49.366+02:00"
+                jcr:lastModifiedBy="admin"
+                jcr:primaryType="nt:unstructured"
+                sling:resourceType="cq/workflow/components/model/or"
+                branches="2"
+                orSplit="true">
+                <_x0031_
+                    jcr:primaryType="nt:unstructured"
+                    sling:resourceType="cq/flow/components/parsys">
+                    <goto
+                        jcr:created="{Date}2014-10-15T15:36:06.016+02:00"
+                        jcr:createdBy="admin"
+                        jcr:description="The newsletter has been rejected"
+                        jcr:lastModified="{Date}2014-10-15T15:37:01.185+02:00"
+                        jcr:lastModifiedBy="admin"
+                        jcr:primaryType="nt:unstructured"
+                        jcr:title="Newsletter Rejection"
+                        sling:resourceType="cq/workflow/components/model/goto"
+                        PROCESS="com.adobe.granite.workflow.core.process.GotoProcess"
+                        PROCESS_AUTO_ADVANCE="false">
+                        <metaData
+                            jcr:primaryType="nt:unstructured"
+                            PROCESS="com.adobe.granite.workflow.core.process.GotoProcess"
+                            PROCESS_AUTO_ADVANCE="false"
+                            script="function check() {&#xa;&#x9;return true;&#xa;}"
+                            TARGET_NODE_PATH="/etc/workflow/models/ac-newsletter-workflow-simple/jcr:content/flow/participant"/>
+                    </goto>
+                </_x0031_>
+                <_x0032_
+                    jcr:primaryType="nt:unstructured"
+                    sling:resourceType="cq/flow/components/parsys">
+                    <process
+                        jcr:created="{Date}2014-10-15T15:37:39.049+02:00"
+                        jcr:createdBy="admin"
+                        jcr:description="The newsletter has been approved. Mark newsletter as approved."
+                        jcr:lastModified="{Date}2014-10-15T15:52:33.054+02:00"
+                        jcr:lastModifiedBy="admin"
+                        jcr:primaryType="nt:unstructured"
+                        jcr:title="Newsletter Approval"
+                        sling:resourceType="cq/workflow/components/model/process">
+                        <metaData
+                            jcr:primaryType="nt:unstructured"
+                            PROCESS="/etc/workflow/scripts/campaign/approve.ecma"
+                            PROCESS_AUTO_ADVANCE="true"/>
+                    </process>
+                    <process_437403972
+                        jcr:created="{Date}2014-10-15T15:37:40.460+02:00"
+                        jcr:createdBy="admin"
+                        jcr:description="Replicates the newsletter to the publish instance(s)"
+                        jcr:lastModified="{Date}2014-10-15T15:52:37.323+02:00"
+                        jcr:lastModifiedBy="admin"
+                        jcr:primaryType="nt:unstructured"
+                        jcr:title="Newsletter Publication"
+                        sling:resourceType="cq/workflow/components/model/process">
+                        <metaData
+                            jcr:primaryType="nt:unstructured"
+                            PROCESS="/etc/workflow/scripts/campaign/publish.ecma"
+                            PROCESS_AUTO_ADVANCE="true"/>
+                    </process_437403972>
+                </_x0032_>
+            </or>
+        </flow>
+        <model/>
+    </jcr:content>
+</jcr:root>

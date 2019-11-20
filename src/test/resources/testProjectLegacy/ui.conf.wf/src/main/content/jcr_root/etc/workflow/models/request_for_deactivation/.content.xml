@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+    jcr:primaryType="cq:Page">
+    <jcr:content
+        cq:lastModified="{Date}2013-10-09T16:02:07.176+03:00"
+        cq:lastModifiedBy="admin"
+        cq:tags="[workflow:wcm]"
+        cq:template="/libs/cq/workflow/templates/model"
+        jcr:description="This is the default request for deactivation workflow"
+        jcr:primaryType="cq:PageContent"
+        jcr:title="Request for Deactivation"
+        sling:resourceType="cq/workflow/components/pages/model"
+        multiResourceSupport="true">
+        <flow
+            jcr:primaryType="nt:unstructured"
+            sling:resourceType="foundation/components/parsys">
+            <participant
+                jcr:description="Please deactivate page"
+                jcr:lastModified="{Date}2013-10-09T16:02:07.137+03:00"
+                jcr:lastModifiedBy="admin"
+                jcr:primaryType="nt:unstructured"
+                jcr:title="Request for deactivation"
+                sling:resourceType="cq/workflow/components/model/participant">
+                <metaData
+                    jcr:primaryType="nt:unstructured"
+                    DO_NOTIFY="true"
+                    PARTICIPANT="administrators"/>
+            </participant>
+            <participant_0
+                jcr:created="{Date}2013-10-09T15:59:40.954+03:00"
+                jcr:createdBy="admin"
+                jcr:description="Waiting for deactivation until the scheduled time is reached"
+                jcr:lastModified="{Date}2013-10-09T16:00:20.576+03:00"
+                jcr:lastModifiedBy="admin"
+                jcr:primaryType="nt:unstructured"
+                jcr:title="Waiting for deactivation"
+                sling:resourceType="cq/workflow/components/model/participant">
+                <metaData
+                    jcr:primaryType="nt:unstructured"
+                    PARTICIPANT="administrators"
+                    timeoutHandler="com.day.cq.workflow.timeout.autoadvance.AbsoluteTimeAutoAdvancer"
+                    timeoutMillis="0"/>
+            </participant_0>
+            <process
+                jcr:description="Deactivates the page/asset."
+                jcr:lastModified="{Date}2013-10-09T16:01:09.453+03:00"
+                jcr:lastModifiedBy="admin"
+                jcr:primaryType="nt:unstructured"
+                jcr:title="Deactivate Page/Asset"
+                sling:resourceType="cq/workflow/components/model/process">
+                <metaData
+                    jcr:primaryType="nt:unstructured"
+                    PROCESS="com.day.cq.wcm.workflow.process.DeactivatePageProcess"
+                    PROCESS_AUTO_ADVANCE="true"/>
+            </process>
+        </flow>
+        <model/>
+    </jcr:content>
+</jcr:root>

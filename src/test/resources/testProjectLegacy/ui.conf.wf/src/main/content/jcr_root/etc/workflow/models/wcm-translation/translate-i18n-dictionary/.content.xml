@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+    jcr:primaryType="cq:Page">
+    <jcr:content
+        cq:designPath="/etc/designs/default"
+        cq:tags="[workflow:wcm]"
+        cq:template="/libs/cq/workflow/templates/model"
+        jcr:description="Workflow to prepare I18n-Dictionary and translation-project"
+        jcr:primaryType="cq:PageContent"
+        jcr:title="WCM: Prepare and Translate I18n-Dictionary"
+        sling:resourceType="cq/workflow/components/pages/model">
+        <flow
+            jcr:primaryType="nt:unstructured"
+            sling:resourceType="foundation/components/parsys">
+            <process-1
+                jcr:description="Prepare I18n dictionary language copy."
+                jcr:primaryType="nt:unstructured"
+                jcr:title="Prepare I18n dictionary language copy"
+                sling:resourceType="cq/workflow/components/model/process">
+                <metaData
+                    jcr:primaryType="nt:unstructured"
+                    PROCESS="com.adobe.cq.wcm.translation.impl.process.I18nDictPrepareLanguageCopyProcess"
+                    PROCESS_AUTO_ADVANCE="true"/>
+            </process-1>
+            <process-2
+                jcr:description="Prepare I18n dictionary translation project."
+                jcr:primaryType="nt:unstructured"
+                jcr:title="Prepare I18n dictionary translation project"
+                sling:resourceType="cq/workflow/components/model/process">
+                <metaData
+                    jcr:primaryType="nt:unstructured"
+                    PROCESS="com.adobe.cq.wcm.translation.impl.process.I18nDictPrepareTranslationProjectProcess"
+                    PROCESS_AUTO_ADVANCE="true"/>
+            </process-2>
+        </flow>
+        <model/>
+    </jcr:content>
+</jcr:root>

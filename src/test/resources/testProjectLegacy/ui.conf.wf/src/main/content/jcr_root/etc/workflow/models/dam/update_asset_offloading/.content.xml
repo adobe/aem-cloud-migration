@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+    jcr:primaryType="cq:Page">
+    <jcr:content
+        cq:lastModified="{Date}2014-01-15T11:52:54.455+05:30"
+        cq:lastModifiedBy="admin"
+        cq:tags="[workflow:dam]"
+        cq:template="/libs/cq/workflow/templates/model"
+        jcr:description="This workflow allows for offloading the update assets workflow"
+        jcr:primaryType="cq:PageContent"
+        jcr:title="DAM Update Asset Offloading"
+        sling:resourceType="cq/workflow/components/pages/model">
+        <flow
+            jcr:primaryType="nt:unstructured"
+            sling:resourceType="foundation/components/parsys">
+            <gatekeeperprocess
+                jcr:created="{Date}2014-01-15T11:52:54.398+05:30"
+                jcr:createdBy="admin"
+                jcr:description="This process prevents the asset being updated after the asset got restored."
+                jcr:lastModified="{Date}2014-01-15T11:52:54.398+05:30"
+                jcr:lastModifiedBy="admin"
+                jcr:primaryType="nt:unstructured"
+                jcr:title="Gate Keeper"
+                sling:resourceType="dam/components/workflow/gatekeeperprocess">
+                <metaData
+                    jcr:primaryType="nt:unstructured"
+                    PROCESS="com.day.cq.dam.core.process.GateKeeperProcess"
+                    PROCESS_AUTO_ADVANCE="true"/>
+            </gatekeeperprocess>
+            <process
+                jcr:description="This step offloads the update asset workflow."
+                jcr:primaryType="nt:unstructured"
+                jcr:title="DAM Workflow Offloading"
+                sling:resourceType="dam/components/workflow/assetoffloadingprocess">
+                <metaData
+                    jcr:primaryType="nt:unstructured"
+                    EXTERNAL_PROCESS="com.day.cq.dam.core.process.AssetOffloadingProcess"
+                    jobTopic="com/adobe/granite/workflow/offloading"
+                    offloadingInputIncludeWorkflowModel="true"
+                    offloadingInputIncludeWorkflowPayload="true"
+                    offloadingOutputIncludeWorkflowModel="true"
+                    offloadingOutputIncludeWorkflowPayload="true"
+                    period="5"
+                    PROCESS_ARGS=""
+                    PROCESS_AUTO_ADVANCE="true"
+                    timeout="3600"
+                    workflowModel="/etc/workflow/models/dam/update_asset/jcr:content/model"/>
+            </process>
+        </flow>
+        <model/>
+    </jcr:content>
+</jcr:root>

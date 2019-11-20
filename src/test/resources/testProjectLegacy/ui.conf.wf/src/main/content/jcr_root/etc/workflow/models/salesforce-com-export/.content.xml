@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0" xmlns:rep="internal"
+    jcr:mixinTypes="[rep:AccessControllable]"
+    jcr:primaryType="cq:Page">
+    <jcr:content
+        cq:designPath="/etc/designs/default"
+        cq:lastModified="{Date}2012-10-19T17:35:53.319+05:30"
+        cq:lastModifiedBy="admin"
+        cq:template="/libs/cq/workflow/templates/model"
+        jcr:description="Workflow that exports CQ profiles to Salesforce.com "
+        jcr:primaryType="cq:PageContent"
+        jcr:title="Salesforce.com Export"
+        sling:resourceType="cq/workflow/components/pages/model">
+        <flow
+            jcr:primaryType="nt:unstructured"
+            sling:resourceType="foundation/components/parsys">
+            <salesforceexporter
+                jcr:created="{Date}2012-09-19T16:08:11.387+05:30"
+                jcr:createdBy="admin"
+                jcr:description="A process to export profile data to Salesforce.com"
+                jcr:lastModified="{Date}2012-10-19T17:35:53.315+05:30"
+                jcr:lastModifiedBy="admin"
+                jcr:primaryType="nt:unstructured"
+                jcr:title="Salesforce.com Export"
+                sling:resourceType="mcm/salesforce/components/salesforceexporter"
+                PROCESS="/etc/workflow/scripts/workflow-export.ecma"
+                PROCESS_AUTO_ADVANCE="true">
+                <metaData
+                    cq:cloudserviceconfig="/etc/cloudservices/salesforce/developer"
+                    jcr:primaryType="nt:unstructured"
+                    PROCESS="com.adobe.cq.mcm.salesforce.SalesforceExportProcess"
+                    PROCESS_AUTO_ADVANCE="true"
+                    recreateLead="true"/>
+            </salesforceexporter>
+        </flow>
+        <image
+            jcr:lastModified="{Date}2012-09-19T16:35:40.842+05:30"
+            jcr:lastModifiedBy="admin"
+            jcr:primaryType="nt:unstructured"
+            imageRotate="0"/>
+        <model/>
+    </jcr:content>
+</jcr:root>

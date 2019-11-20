@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+    jcr:primaryType="cq:Page">
+    <jcr:content
+        cq:designPath="/etc/designs/default"
+        cq:lastModified="{Date}2014-03-06T17:30:33.263+02:00"
+        cq:lastModifiedBy="admin"
+        cq:tags="[workflow:wcm]"
+        cq:template="/libs/cq/workflow/templates/model"
+        jcr:description="Workflow to sync translation job"
+        jcr:primaryType="cq:PageContent"
+        jcr:title="WCM: Sync Translation Job"
+        sling:resourceType="cq/workflow/components/pages/model">
+        <flow
+            jcr:primaryType="nt:unstructured"
+            sling:resourceType="foundation/components/parsys">
+            <process
+                jcr:created="{Date}2014-02-17T10:16:21.773+02:00"
+                jcr:createdBy="admin"
+                jcr:description="Sync translation page with children if requested."
+                jcr:lastModified="{Date}2014-02-17T10:22:43.259+02:00"
+                jcr:lastModifiedBy="admin"
+                jcr:primaryType="nt:unstructured"
+                jcr:title="Sync Translation Pages"
+                sling:resourceType="cq/workflow/components/model/process">
+                <metaData
+                    jcr:primaryType="nt:unstructured"
+                    PROCESS="com.adobe.cq.wcm.translation.impl.process.SyncTranslationProcess"
+                    PROCESS_AUTO_ADVANCE="true"/>
+            </process>
+        </flow>
+        <image
+            jcr:lastModified="{Date}2014-02-17T10:15:28.911+02:00"
+            jcr:lastModifiedBy="admin"
+            jcr:primaryType="nt:unstructured"
+            imageRotate="0"/>
+        <model/>
+    </jcr:content>
+</jcr:root>

@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+    jcr:isCheckedOut="{Boolean}false"
+    jcr:primaryType="cq:WorkflowModel"
+    jcr:uuid="65dbee92-1327-4a25-bbe3-7d76f51387d1"
+    sling:resourceType="cq/workflow/components/model"
+    description="This workflow allows you to assign content to a user, review, and then approve."
+    title="Project Approval Workflow">
+    <metaData
+        cq:lastModified="{Long}1391432399621"
+        cq:lastModifiedBy="admin"
+        jcr:primaryType="nt:unstructured"/>
+    <nodes jcr:primaryType="nt:unstructured">
+        <node0
+            jcr:primaryType="cq:WorkflowNode"
+            title="Start"
+            type="START">
+            <metaData jcr:primaryType="nt:unstructured"/>
+        </node0>
+        <node1
+            jcr:primaryType="cq:WorkflowNode"
+            description="This is the first step in the workflow which was assigned from the start workflow dialog in the project."
+            title="Original Assignee"
+            type="PROCESS">
+            <metaData
+                jcr:primaryType="nt:unstructured"
+                argActions="[Owner,Observer,Editor]"
+                argTaskName="Task From Workflow launched by project"
+                argTaskPriority="High"
+                onCreateScript="/etc/workflow/scripts/projects/simpleTaskConfiguration.ecma"
+                PROCESS="com.adobe.cq.projects.impl.workflow.ProjectTaskWorkflowProcess"
+                PROCESS_AUTO_ADVANCE="false"
+                PROCESS_PERSIST_ANONYMOUS_WORKITEM="true"/>
+        </node1>
+        <node2
+            jcr:primaryType="cq:WorkflowNode"
+            description="This a subsequent step in the workflow which is assigned to a group based on the previously chosen action"
+            title="Project Task Creation Step"
+            type="PROCESS">
+            <metaData
+                jcr:primaryType="nt:unstructured"
+                argActions="[Owner,Observer,Editor,Done]"
+                argTaskDescription="This task was created in a workflow and assigned to a user based on previous task action selection."
+                argTaskName="Project Task assigned based on route choice"
+                argTaskPriority="High"
+                onCreateScript="/etc/workflow/scripts/projects/AssignBasedOnAction.ecma"
+                PROCESS="com.adobe.cq.projects.impl.workflow.ProjectTaskWorkflowProcess"
+                PROCESS_AUTO_ADVANCE="false"
+                PROCESS_PERSIST_ANONYMOUS_WORKITEM="true"/>
+        </node2>
+        <node3
+            jcr:primaryType="cq:WorkflowNode"
+            description="Goto Step"
+            title="Go back and assign if not done"
+            type="PROCESS">
+            <metaData
+                jcr:primaryType="nt:unstructured"
+                PROCESS="com.adobe.granite.workflow.core.process.GotoProcess"
+                PROCESS_AUTO_ADVANCE="false"
+                script="function check() {&#xa;&#xa;    if (workflowData.getMetaDataMap().get(&quot;lastTaskAction&quot;,&quot;&quot;) == &quot;Done&quot;) {&#xa;        return false&#xa;    }&#xa;    return true;&#xa;}"
+                TARGET_NODE_ID="node2"
+                TARGET_NODE_PATH="/etc/workflow/models/projects/approval_workflow/jcr:content/flow/taskworkflowstep"/>
+        </node3>
+        <node4
+            jcr:primaryType="cq:WorkflowNode"
+            title="End"
+            type="END">
+            <metaData jcr:primaryType="nt:unstructured"/>
+        </node4>
+    </nodes>
+    <transitions jcr:primaryType="nt:unstructured">
+        <node0_x0023_node1
+            jcr:primaryType="cq:WorkflowTransition"
+            from="node0"
+            rule=""
+            to="node1">
+            <metaData jcr:primaryType="nt:unstructured"/>
+        </node0_x0023_node1>
+        <node1_x0023_node2
+            jcr:primaryType="cq:WorkflowTransition"
+            from="node1"
+            rule=""
+            to="node2">
+            <metaData jcr:primaryType="nt:unstructured"/>
+        </node1_x0023_node2>
+        <node2_x0023_node3
+            jcr:primaryType="cq:WorkflowTransition"
+            from="node2"
+            rule=""
+            to="node3">
+            <metaData jcr:primaryType="nt:unstructured"/>
+        </node2_x0023_node3>
+        <node3_x0023_node4
+            jcr:primaryType="cq:WorkflowTransition"
+            from="node3"
+            to="node4">
+            <metaData jcr:primaryType="nt:unstructured"/>
+        </node3_x0023_node4>
+    </transitions>
+</jcr:root>
