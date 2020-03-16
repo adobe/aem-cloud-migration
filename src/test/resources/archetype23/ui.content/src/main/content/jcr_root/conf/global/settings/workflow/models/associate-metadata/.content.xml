@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ~ ADOBE CONFIDENTIAL
+  ~ ___________________
+  ~
+  ~ Copyright 2019 Adobe
+  ~ All Rights Reserved.
+  ~
+  ~ NOTICE: All information contained herein is, and remains
+  ~ the property of Adobe and its suppliers, if any. The intellectual
+  ~ and technical concepts contained herein are proprietary to Adobe
+  ~ and its suppliers and are protected by all applicable intellectual
+  ~ property laws, including trade secret and copyright laws.
+  ~ Dissemination of this information or reproduction of this material
+  ~ is strictly forbidden unless prior written permission is obtained
+  ~ from Adobe.
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+    jcr:primaryType="cq:Page">
+    <jcr:content
+        cq:designPath="/libs/settings/wcm/designs/default"
+        cq:lastModified="{Date}2019-06-03T22:32:04.043+05:30"
+        cq:lastModifiedBy="admin"
+        cq:template="/libs/cq/workflow/templates/model"
+        jcr:description="Workflow that associates updated armoury data"
+        jcr:primaryType="cq:PageContent"
+        jcr:title="Associate Metadata"
+        sling:resourceType="cq/workflow/components/pages/model"
+        transient="true">
+        <flow
+            jcr:primaryType="nt:unstructured"
+            sling:resourceType="foundation/components/parsys">
+            <process
+                jcr:created="{Date}2019-06-03T22:10:24.379+05:30"
+                jcr:createdBy="admin"
+                jcr:description="This step checks if the appropriate metadata change has occurred to process this workflow."
+                jcr:lastModified="{Date}2019-06-03T22:11:36.534+05:30"
+                jcr:lastModifiedBy="admin"
+                jcr:primaryType="nt:unstructured"
+                jcr:title="Gatekeeper Process"
+                sling:resourceType="cq/workflow/components/model/process">
+                <metaData
+                    jcr:primaryType="nt:unstructured"
+                    PROCESS="com.ua.workflow.CheckMetadataChangeProcess"
+                    PROCESS_AUTO_ADVANCE="true"/>
+            </process>
+            <process_630693958
+                jcr:created="{Date}2019-06-03T22:11:49.046+05:30"
+                jcr:createdBy="admin"
+                jcr:lastModified="{Date}2019-06-03T22:12:44.065+05:30"
+                jcr:lastModifiedBy="admin"
+                jcr:primaryType="nt:unstructured"
+                jcr:title="Apply Metadata"
+                sling:resourceType="cq/workflow/components/model/process">
+                <metaData
+                    jcr:primaryType="nt:unstructured"
+                    PROCESS="com.adobe.sample.workflow.UpdateAssetMetadataProcess"
+                    PROCESS_AUTO_ADVANCE="true"/>
+            </process_630693958>
+            <process_773252855
+                jcr:created="{Date}2019-06-03T22:12:49.435+05:30"
+                jcr:createdBy="admin"
+                jcr:description="Set metadata lastModified date"
+                jcr:lastModified="{Date}2019-06-03T22:32:04.040+05:30"
+                jcr:lastModifiedBy="admin"
+                jcr:primaryType="nt:unstructured"
+                jcr:title="Set last modified date"
+                sling:resourceType="cq/workflow/components/model/process">
+                <metaData
+                    jcr:primaryType="nt:unstructured"
+                    PROCESS="com.day.cq.dam.core.process.AssetSetLastModifiedProcess"
+                    PROCESS_ARGS="relativeLastModifiedPath:metadata/jcr:lastModified,relativeLastModifiedByPath:metadata/jcr:lastModifiedBy"
+                    PROCESS_AUTO_ADVANCE="true"/>
+            </process_773252855>
+            <publishmarketingasse
+                jcr:created="{Date}2019-07-12T15:03:08.921+05:30"
+                jcr:createdBy="admin"
+                jcr:description="This step checks for marketing assets within photography folder. If new material code is added, it publishes the asset"
+                jcr:lastModified="{Date}2019-07-12T15:10:35.372+05:30"
+                jcr:lastModifiedBy="admin"
+                jcr:primaryType="nt:unstructured"
+                jcr:title="Publish marketing photography (product and onBody) assets on Material Code Addition"
+                sling:resourceType="sample/components/workflowstep/publishmarketingasset">
+                <metaData
+                    jcr:primaryType="nt:unstructured"
+                    PROCESS="com.adobe.sample.workflow.marketing.AutoPublishAssetsProcess"
+                    PROCESS_AUTO_ADVANCE="true"/>
+            </publishmarketingasse>
+        </flow>
+    </jcr:content>
+</jcr:root>

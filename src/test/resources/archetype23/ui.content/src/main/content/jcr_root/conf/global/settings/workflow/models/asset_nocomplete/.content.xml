@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ~ ADOBE CONFIDENTIAL
+  ~ ___________________
+  ~
+  ~ Copyright 2019 Adobe
+  ~ All Rights Reserved.
+  ~
+  ~ NOTICE: All information contained herein is, and remains
+  ~ the property of Adobe and its suppliers, if any. The intellectual
+  ~ and technical concepts contained herein are proprietary to Adobe
+  ~ and its suppliers and are protected by all applicable intellectual
+  ~ property laws, including trade secret and copyright laws.
+  ~ Dissemination of this information or reproduction of this material
+  ~ is strictly forbidden unless prior written permission is obtained
+  ~ from Adobe.
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+    jcr:primaryType="cq:Page">
+    <jcr:content
+        cq:lastModified="{Date}2018-11-20T18:52:36.225+05:30"
+        cq:lastModifiedBy="admin"
+        cq:tags="[workflow:dam,workflow:wcm]"
+        cq:template="/libs/cq/workflow/templates/model"
+        cq:workflowDetailsPage="/mnt/overlay/dam/gui/content/s7dam/jobmonitoring/encodingjobdetails.html${item}?item=${payload}"
+        jcr:description="This workflow manages the update of assets"
+        jcr:primaryType="cq:PageContent"
+        jcr:title="DAM Update Asset"
+        sling:resourceType="cq/workflow/components/pages/model"
+        transient="true">
+        <flow
+            jcr:primaryType="nt:unstructured"
+            sling:resourceType="foundation/components/parsys">
+            <process
+                jcr:description="This process checks if the complete update process has to be executed. The workflow should terminate  eg. the asset got restored right before to make sure that trhe restored content is preserved."
+                jcr:primaryType="nt:unstructured"
+                jcr:title="Continue updating?"
+                sling:resourceType="cq/workflow/components/model/process">
+                <metaData
+                    jcr:primaryType="nt:unstructured"
+                    PROCESS="com.day.cq.dam.core.process.GateKeeperProcess"
+                    PROCESS_ARGS=""
+                    PROCESS_AUTO_ADVANCE="true"/>
+            </process>
+            <metadataprocessorpro
+                jcr:description="A process to extract and import metadata, create references and apply processing profile, if the payload of the step is an asset or part of an asset."
+                jcr:primaryType="nt:unstructured"
+                jcr:title="Metadata Processor"
+                sling:resourceType="dam/components/workflow/metadataprocessorprocess">
+                <metaData
+                    jcr:primaryType="nt:unstructured"
+                    PROCESS="com.day.cq.dam.core.process.MetadataProcessorProcess"
+                    PROCESS_AUTO_ADVANCE="true"/>
+            </metadataprocessorpro>
+            <fileextraction
+                jcr:primaryType="nt:unstructured"
+                jcr:title="Extracting File Name"
+                sling:resourceType="ua-brand-aem-project/components/workflowstep/fileextraction">
+                <metaData
+                    jcr:primaryType="nt:unstructured"
+                    CONFIGS="[^(([^[auto_dim7_]]+_)(([^-]+)-([^_.]+))),^[^[V5]-]+-(([^-]+)-([^_]+))_([^.]+),^[^[PS]-]+-(([^-]+)-([^_]+))_([^.]+),^[^[PS]_]+_(([^-]+)-([^_]+))_([^.]+),^[^[PS]]+(([^-]+)-([^_]+))_([^.]+),^PS(([^[0-9]-]+)-([^.]+)),^(([^-]+)-([^_]+))_([^[_a-zA-Z0-9].]+),^(([^-]+)-([^_]+))_([^[DEFAULT].]+),^(([^-]+)-([^_]+))_([^[SOLE].]+),^(([^-]+)-([^_]+))_([^[HEEL].]+),^(([^-]+)-([^_]+))_([^[TOE].]+),^(([^-]+)-([^_]+))_([^[A].]+),^(([^-]+)-([^_]+))-([^.]+),^(([^-]+)-([^.]+))]"
+                    PROCESS="com.ua.workflow.AddNewMetaDataProcess"
+                    PROCESS_AUTO_ADVANCE="true"/>
+            </fileextraction>
+            <process_285335565
+                jcr:primaryType="nt:unstructured"
+                jcr:title="XMP Keyword Process"
+                sling:resourceType="cq/workflow/components/model/process">
+                <metaData
+                    jcr:primaryType="nt:unstructured"
+                    PROCESS="com.ua.workflow.XmpKeywordProcess"
+                    PROCESS_AUTO_ADVANCE="true"/>
+            </process_285335565>
+            <process2
+                jcr:description="Extracts video poster frame"
+                jcr:primaryType="nt:unstructured"
+                jcr:title="FFmpeg thumbnails"
+                sling:resourceType="cq/workflow/components/model/process">
+                <metaData
+                    jcr:primaryType="nt:unstructured"
+                    PROCESS="com.day.cq.dam.video.FFMpegThumbnailProcess"
+                    PROCESS_ARGS="count:4,index:2,[140:100],[48:48],[319:319]"
+                    PROCESS_AUTO_ADVANCE="true"/>
+            </process2>
+            <commandlineprocess
+                jcr:description="Generate thumbnails for eps files using image magick"
+                jcr:primaryType="nt:unstructured"
+                jcr:title="EPS thumbnails (powered by ImageMagick)"
+                sling:resourceType="dam/components/workflow/commandlineprocess"
+                PROCESS="com.day.cq.dam.core.process.CommandLineProcess"
+                PROCESS_AUTO_ADVANCE="true">
+                <metaData
+                    jcr:primaryType="nt:unstructured"
+                    COMMANDS="[convert -define jpeg:size=319x319 ${filename} -thumbnail 319x319 cq5dam.thumbnail.319.319.png,magick ${filename} cq5dam-${basename}-v.jpeg,magick ${filename} cq5dam-${basename}-v.png,convert -resize 25% ${filename} cq5dam-red-25-per.png]"
+                    MIME_TYPES="[image/eps,image/x-eps,application/postscript,application/eps,application/x-eps,image/tiff,image/jpeg,image/png,image/gif,image/bmp,image/vnd.adobe.photoshop]"
+                    PROCESS="com.day.cq.dam.core.process.CommandLineProcess"
+                    PROCESS_AUTO_ADVANCE="true"
+                    THUMBNAILS="[48:48,140:100,319:319]"/>
+            </commandlineprocess>
+            <createpdfpreviewproc
+                jcr:description="Rasterize PDF and Adobe Illustrator documents to a preview image rendition"
+                jcr:primaryType="nt:unstructured"
+                jcr:title="Rasterize PDF/AI Image Preview Rendition"
+                sling:resourceType="dam/components/workflow/createpdfpreviewprocess"
+                PROCESS="com.day.cq.dam.core.process.CreatePdfPreviewProcess"
+                PROCESS_AUTO_ADVANCE="true">
+                <metaData
+                    jcr:primaryType="nt:unstructured"
+                    MAX_HEIGHT="2048"
+                    MAX_WIDTH="2048"
+                    MIME_TYPES="[application/pdf,application/postscript,application/illustrator]"
+                    PROCESS="com.day.cq.dam.core.process.CreatePdfPreviewProcess"
+                    PROCESS_AUTO_ADVANCE="true"
+                    RESOLUTION="72"/>
+            </createpdfpreviewproc>
+            <thumbnailprocess
+                jcr:description="This process will create one or more thumbnails for the asset, create web enabled rendition and update folder thumbnail."
+                jcr:primaryType="nt:unstructured"
+                jcr:title="Process Thumbnails"
+                sling:resourceType="dam/components/workflow/thumbnailprocess"
+                PROCESS="com.day.cq.dam.core.process.ThumbnailProcess"
+                PROCESS_AUTO_ADVANCE="true">
+                <metaData
+                    jcr:primaryType="nt:unstructured"
+                    CONFIGS="[140:100:false,48:48:false,319:319:false]"
+                    CREATE_FPO_MIMETYPES="[image/pjpeg,image/jpeg,image/jpg,image/gif,image/x-png,image/tiff,image/png,application/x-photoshop,application/photoshop,image/vnd.adobe.photoshop,application/vnd.adobe.photoshop,image/bmp,image/x-tiff]"
+                    FPO_QUALITY="10"
+                    HEIGHT="1280"
+                    MIME_TYPE="image/jpeg"
+                    MIMETYPE="image/jpeg"
+                    PROCESS="com.day.cq.dam.core.process.ThumbnailProcess"
+                    PROCESS_AUTO_ADVANCE="true"
+                    QUALITY="90"
+                    SKIP="[audio/mpeg,video/(.*)]"
+                    WIDTH="1280"/>
+            </thumbnailprocess>
+            <moveassetfileextract
+                jcr:lastModified="{Date}2018-11-20T18:52:36.206+05:30"
+                jcr:lastModifiedBy="admin"
+                jcr:primaryType="nt:unstructured"
+                jcr:title="Moving Assets to Correct Location"
+                sling:resourceType="ua-brand-aem-project/components/workflowstep/moveassetfileextraction">
+                <metaData
+                    jcr:primaryType="nt:unstructured"
+                    assetShareExclusion="/content/dam/product/lineart"
+                    folderpaths="[/content/dam/product/splashlight,/content/dam/product/invodo,/content/dam/product/kids-hq,/content/dam/product/united-sports-brand,/content/dam/product/t22-lacrosse,/content/dam/product/psi-91,/content/dam/product/all-star,/content/dam/product/jbl,/content/dam/product/eyeking,/content/dam/product/thermos,/content/dam/product/incipio,/content/dam/product/gildan,/content/dam/product/apac,/content/dam/product/emea,/content/dam/product/latam,/content/dam/product/lineart/upload,/content/dam/product/lineart]"
+                    imagebasePath="/content/dam/product/photography"
+                    lineartbasePath="/content/dam/product/lineart"
+                    manualpaths="[/content/dam/product/splashlight/manual-upload,/content/dam/product/invodo/manual-upload,/content/dam/product/kids-hq/manual-upload,/content/dam/product/united-sports-brand/manual-upload,/content/dam/product/t22-lacrosse/manual-upload,/content/dam/product/psi-91/manual-upload,/content/dam/product/all-star/manual-upload,/content/dam/product/jbl/manual-upload,/content/dam/product/thermos/manual-upload,/content/dam/product/incipio/manual-upload,/content/dam/product/gildan/manual-upload,/content/dam/product/eyeking/manual-upload,/content/dam/product/apac/manual-upload,/content/dam/product/emea/manual-upload,/content/dam/product/latam/manual-upload,/content/dam/product/lineart/upload/manual-upload,/content/dam/product/invodo/uncategorized,/content/dam/product/splashlight/uncategorized,/content/dam/product/kids-hq/uncategorized,/content/dam/product/gear-for-sports/uncategorized,/content/dam/product/stance/uncategorized,/content/dam/product/united-sports-brand/uncategorized,/content/dam/product/t22-lacrosse/uncategorized,/content/dam/product/psi-91/uncategorized,/content/dam/product/all-star/uncategorized,/content/dam/product/jbl/uncategorized,/content/dam/product/eyeking/uncategorized,/content/dam/product/thermos/uncategorized,/content/dam/product/incipio/uncategorized,/content/dam/product/gildan/uncategorized,/content/dam/product/apac/uncategorized,/content/dam/product/emea/uncategorized,/content/dam/product/latam/uncategorized,/content/dam/product/lineart/upload/uncategorized]"
+                    PROCESS="com.ua.workflow.AssetMoveProcess"
+                    PROCESS_AUTO_ADVANCE="true"
+                    s7Enable="true"
+                    s7FtpUploadModelPath="/var/workflow/models/scene7ftpupload"
+                    s7ModelPath="/var/workflow/models/scene7"
+                    s7VideoFTPEnable="true"
+                    videobasePath="/content/dam/product/video"/>
+            </moveassetfileextract>
+        </flow>
+    </jcr:content>
+</jcr:root>

@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+    jcr:isCheckedOut="{Boolean}false"
+    jcr:primaryType="cq:WorkflowModel"
+    jcr:uuid="e8696590-cb06-48b7-b419-f4b0dba7f648"
+    sling:resourceType="cq/workflow/components/model"
+    description="No Description"
+    title="Scene7 FTP Video Upload">
+    <metaData
+        cq:generatingPage="/conf/global/settings/workflow/models/scene7ftpupload/jcr:content"
+        cq:lastModified="{Long}1542793895551"
+        cq:lastModifiedBy="admin"
+        jcr:primaryType="nt:unstructured"
+        transient="true"/>
+    <nodes jcr:primaryType="nt:unstructured">
+        <node0
+            jcr:primaryType="cq:WorkflowNode"
+            title="Start"
+            type="START">
+            <metaData jcr:primaryType="nt:unstructured"/>
+        </node0>
+        <node1
+            jcr:primaryType="cq:WorkflowNode"
+            title="Add S7 metadata to Video"
+            type="PROCESS">
+            <metaData
+                jcr:primaryType="nt:unstructured"
+                PROCESS="com.ua.workflow.AddS7MetadataProcess"
+                PROCESS_AUTO_ADVANCE="true"
+                s7ApiServer="https://s7sps1apissl.scene7.com"
+                s7CloudConfigPath="/conf/asset-share-commons/settings/cloudconfigs/scene7"
+                s7Domain="https://s7d4.scene7.com"
+                s7NameSpace="Underarmour"/>
+        </node1>
+        <node2
+            jcr:primaryType="cq:WorkflowNode"
+            title="Upload Video to FTP"
+            type="PROCESS">
+            <metaData
+                jcr:primaryType="nt:unstructured"
+                PROCESS="com.ua.workflow.S7FTPVideoUploadProcess"
+                PROCESS_AUTO_ADVANCE="true"/>
+        </node2>
+        <node3
+            jcr:primaryType="cq:WorkflowNode"
+            description="Replicate Asset to asset share"
+            title="Replicate Asset"
+            type="PROCESS">
+            <metaData
+                jcr:primaryType="nt:unstructured"
+                assetShareExclusion="/content/dam/product/lineart"
+                PROCESS="com.ua.workflow.ReplicationProcess"
+                PROCESS_AUTO_ADVANCE="true"/>
+        </node3>
+        <node4
+            jcr:primaryType="cq:WorkflowNode"
+            title="End"
+            type="END">
+            <metaData jcr:primaryType="nt:unstructured"/>
+        </node4>
+    </nodes>
+    <transitions jcr:primaryType="nt:unstructured">
+        <node0_x0023_node1
+            jcr:primaryType="cq:WorkflowTransition"
+            from="node0"
+            rule=""
+            to="node1">
+            <metaData jcr:primaryType="nt:unstructured"/>
+        </node0_x0023_node1>
+        <node1_x0023_node2
+            jcr:primaryType="cq:WorkflowTransition"
+            from="node1"
+            rule=""
+            to="node2">
+            <metaData jcr:primaryType="nt:unstructured"/>
+        </node1_x0023_node2>
+        <node2_x0023_node3
+            jcr:primaryType="cq:WorkflowTransition"
+            from="node2"
+            rule=""
+            to="node3">
+            <metaData jcr:primaryType="nt:unstructured"/>
+        </node2_x0023_node3>
+        <node3_x0023_node4
+            jcr:primaryType="cq:WorkflowTransition"
+            from="node3"
+            to="node4">
+            <metaData jcr:primaryType="nt:unstructured"/>
+        </node3_x0023_node4>
+    </transitions>
+</jcr:root>

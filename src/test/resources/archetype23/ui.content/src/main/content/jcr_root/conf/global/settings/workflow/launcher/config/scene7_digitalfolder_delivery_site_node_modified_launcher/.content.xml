@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
+    jcr:primaryType="cq:WorkflowLauncher"
+    condition=""
+    conditions="[\0]"
+    description="This launcher publishes the assets to scene7 from the assets modified in the digital/delivery_site/delivery_scene7 folder"
+    disabledFeatures="[]"
+    enabled="{Boolean}true"
+    eventType="{Long}16"
+    excludeList=""
+    features="[]"
+    glob="/content/dam/projects/marketing/seasonal(/.*)/04_digital/delivery_site/delivery_scene7(?!/jcr:content/folderThumbnail)(/.*)"
+    nodetype="nt:file"
+    runModes="author"
+    workflow="/var/workflow/models/scene7-digitalfolder"/>

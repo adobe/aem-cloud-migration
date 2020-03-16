@@ -24,8 +24,12 @@
                 <extensions>true</extensions>
                 <configuration>
                     <group>aem-cloud-migration</group>
+                    <name>migration-apps</name>
                     <acHandling>merge_preserve</acHandling>
                     <packageType>application</packageType>
+                    <properties>
+                        <cloudManagerTarget>none</cloudManagerTarget>
+                    </properties>
                 </configuration>
             </plugin>
             <plugin>
