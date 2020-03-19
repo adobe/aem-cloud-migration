@@ -22,7 +22,6 @@ import javax.xml.transform.TransformerException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import com.adobe.skyline.migration.MigrationConstants;
@@ -36,20 +35,26 @@ public class MavenProjectDAO {
 
     private String existingProjectPath;
     private ChangeTrackingService changeTracker;
+    private ContainerProjectDAO containerProjectDAO;
 
     private File reactorPomFile;
     private Document reactorPomXml;
 
-    public MavenProjectDAO(String existingProjectPath, ChangeTrackingService changeTracker) throws CustomerDataException {
-        try {
-            this.existingProjectPath = existingProjectPath;
-            this.changeTracker = changeTracker;
+    private String reactorGroupId;
+    private String reactorArtifactId;
+    private String reactorVersion;
 
-            this.reactorPomFile = new File(existingProjectPath, MigrationConstants.POM_XML);
-            this.reactorPomXml = XmlUtil.loadXml(this.reactorPomFile);
-        } catch (IOException | SAXException | ParserConfigurationException e) {
-            throw new CustomerDataException("Unable to parse reactor POM file.", e);
-        }
+    /**
+     * Overloaded constructor to support use cases where the customer has already migrated to the new cloud service
+     * structure for their content packages as well as cases where they haven't.
+     */
+    public MavenProjectDAO(String existingProjectPath, ChangeTrackingService changeTracker, ContainerProjectDAO containerProjectDao) throws CustomerDataException {
+        this.containerProjectDAO = containerProjectDao;
+        init(existingProjectPath, changeTracker);
+    }
+
+    public MavenProjectDAO(String existingProjectPath, ChangeTrackingService changeTracker) throws CustomerDataException {
+        init(existingProjectPath, changeTracker);
     }
 
     /**
@@ -77,8 +82,28 @@ public class MavenProjectDAO {
             changeTracker.trackProjectCreated(projectName);
             copyProject(templatePath, targetPath);
             addProjectToReactor(projectName);
+
+            if (containerProjectDAO != null) {
+                containerProjectDAO.addProject(reactorGroupId, projectName);
+            }
         } catch (IOException | TransformerException e) {
             throw new ProjectCreationException(e);
+        }
+    }
+
+    private void init(String existingProjectPath, ChangeTrackingService changeTracker) throws CustomerDataException {
+        try {
+            this.existingProjectPath = existingProjectPath;
+            this.changeTracker = changeTracker;
+            this.reactorPomFile = new File(existingProjectPath, MigrationConstants.POM_XML);
+            this.reactorPomXml = XmlUtil.loadXml(this.reactorPomFile);
+
+            Element projectTag = reactorPomXml.getDocumentElement();
+            this.reactorGroupId = projectTag.getElementsByTagName(MigrationConstants.GROUPID_TAG_NAME).item(0).getTextContent();
+            this.reactorArtifactId = projectTag.getElementsByTagName(MigrationConstants.ARTIFACTID_TAG_NAME).item(0).getTextContent();
+            this.reactorVersion = projectTag.getElementsByTagName(MigrationConstants.VERSION_TAG_NAME).item(0).getTextContent();
+        } catch (IOException | SAXException | ParserConfigurationException e) {
+            throw new CustomerDataException("Unable to parse reactor POM file.", e);
         }
     }
 
@@ -103,15 +128,9 @@ public class MavenProjectDAO {
     }
 
     private void replaceParentProperties(File pom) throws IOException {
-        Element projectTag = reactorPomXml.getDocumentElement();
-
-        String groupId = projectTag.getElementsByTagName(MigrationConstants.GROUPID_TAG_NAME).item(0).getTextContent();
-        String artifactId = projectTag.getElementsByTagName(MigrationConstants.ARTIFACTID_TAG_NAME).item(0).getTextContent();
-        String version = projectTag.getElementsByTagName(MigrationConstants.VERSION_TAG_NAME).item(0).getTextContent();
-
-        FileUtil.findAndReplaceInFile(pom, "\\$\\{PARENT-GROUPID\\}", groupId);
-        FileUtil.findAndReplaceInFile(pom, "\\$\\{PARENT-ARTIFACTID\\}", artifactId);
-        FileUtil.findAndReplaceInFile(pom, "\\$\\{PARENT-VERSION\\}", version);
+        FileUtil.findAndReplaceInFile(pom, "\\$\\{PARENT-GROUPID\\}", reactorGroupId);
+        FileUtil.findAndReplaceInFile(pom, "\\$\\{PARENT-ARTIFACTID\\}", reactorArtifactId);
+        FileUtil.findAndReplaceInFile(pom, "\\$\\{PARENT-VERSION\\}", reactorVersion);
     }
 
     private void addProjectToReactor(String projectName) throws TransformerException, IOException {

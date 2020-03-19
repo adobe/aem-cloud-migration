@@ -57,22 +57,28 @@ class MigrationOrchestrator {
         WorkflowModelDAO modelDAO = new WorkflowModelDAO();
         FilterFileDAO appsFilterDAO = new FilterFileDAO(customerProjectPath + "/" + MigrationConstants.MIGRATION_PROJECT_APPS);
         FilterFileDAO contentFilterDAO = new FilterFileDAO(customerProjectPath + "/" + MigrationConstants.MIGRATION_PROJECT_CONTENT);
-        ProcessingProfileDAO ppDao = new ProcessingProfileDAO(customerProjectPath + "/" + MigrationConstants.MIGRATION_PROJECT_CONTENT);
+        ProcessingProfileDAO ppDAO = new ProcessingProfileDAO(customerProjectPath + "/" + MigrationConstants.MIGRATION_PROJECT_CONTENT);
         WorkflowRunnerConfigDAO runnerConfigDAO = new WorkflowRunnerConfigDAO(customerProjectPath + "/" + MigrationConstants.MIGRATION_PROJECT_APPS);
-        MavenProjectDAO mavenProjectDAO = new MavenProjectDAO(customerProjectPath, changeTracker);
 
-        //Initialize Parser Objects
+        //Load customer projects
         CustomerProjectLoader loader = new CustomerProjectLoader(queryService, launcherDAO, modelDAO);
+        List<WorkflowProject> projects = loader.getWorkflowProjects(customerProjectPath);
+
+        MavenProjectDAO mavenProjectDAO;
+        if (loader.isCloudManagerReady(customerProjectPath)) {
+            String containerProjectPath = loader.getContainerProjectPath(customerProjectPath);
+            ContainerProjectDAO containerProjectDAO = new ContainerProjectDAO(containerProjectPath);
+            mavenProjectDAO = new MavenProjectDAO(customerProjectPath, changeTracker, containerProjectDAO);
+        } else {
+            mavenProjectDAO = new MavenProjectDAO(customerProjectPath, changeTracker);
+        }
 
         //Initialize Transformer Objects
         LauncherDisabler launcherDisabler = new LauncherDisabler(launcherDAO, changeTracker);
         ModelTransformer modelTransformer = new ModelTransformer(config, modelDAO, changeTracker);
-        ProcessingProfileCreator ppCreator = new ProcessingProfileCreator(mapperFactory, ppDao, contentFilterDAO, changeTracker, mavenProjectDAO);
+        ProcessingProfileCreator ppCreator = new ProcessingProfileCreator(mapperFactory, ppDAO, contentFilterDAO, changeTracker, mavenProjectDAO);
         WorkflowRunnerConfigCreator runnerConfigCreator = new WorkflowRunnerConfigCreator(runnerConfigDAO, appsFilterDAO, changeTracker, mavenProjectDAO);
         MigrationReportWriter reportWriter = new MigrationReportWriter(changeTracker);
-
-        //Load customer projects
-        List<WorkflowProject> projects = loader.getWorkflowProjects(customerProjectPath);
 
         //Execute migration
         for (WorkflowProject wfProject : projects) {

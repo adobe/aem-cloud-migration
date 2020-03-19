@@ -13,16 +13,25 @@
 package com.adobe.skyline.migration.parser;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 import com.adobe.skyline.migration.MigrationConstants;
 import com.adobe.skyline.migration.dao.WorkflowLauncherDAO;
 import com.adobe.skyline.migration.dao.WorkflowModelDAO;
 import com.adobe.skyline.migration.exception.CustomerDataException;
+import com.adobe.skyline.migration.exception.MigrationRuntimeException;
 import com.adobe.skyline.migration.model.workflow.Workflow;
 import com.adobe.skyline.migration.model.workflow.WorkflowProject;
 import com.adobe.skyline.migration.util.Logger;
@@ -34,11 +43,13 @@ import com.adobe.skyline.migration.util.file.FileQueryService;
  */
 public class CustomerProjectLoader {
 
+    private XPath xPath;
     private FileQueryService queryService;
     private WorkflowLauncherDAO launcherDAO;
     private WorkflowModelDAO modelDAO;
 
     public CustomerProjectLoader(FileQueryService queryService, WorkflowLauncherDAO launcherDAO, WorkflowModelDAO modelDAO) {
+        this.xPath = XPathFactory.newInstance().newXPath();
         this.queryService = queryService;
         this.launcherDAO = launcherDAO;
         this.modelDAO = modelDAO;
@@ -59,7 +70,9 @@ public class CustomerProjectLoader {
             String modulePath = customerProjectPath + File.separator + moduleName;
             Logger.DEBUG("Module found at " + modulePath);
 
-            if (isContentPackage(modulePath)) {
+            Document moduleXml = tryXmlLoad(new File(modulePath + "/" + MigrationConstants.POM_XML));
+
+            if (isContentPackage(moduleXml)) {
                 List<String> wfLauncherPaths = getLauncherPaths(modulePath);
                 List<String> wfModelPaths = getModelPaths(modulePath);
 
@@ -77,6 +90,58 @@ public class CustomerProjectLoader {
         }
     }
 
+    public boolean isCloudManagerReady(String customerProjectPath) throws CustomerDataException {
+        File customerPom = new File(customerProjectPath + File.separator + MigrationConstants.POM_XML);
+
+        boolean hasPackageTypesDeclared = false;
+        boolean hasContainerProject = false;
+
+        for (String moduleName : getModuleNames(customerPom)) {
+            String modulePath = customerProjectPath + File.separator + moduleName;
+            Logger.DEBUG("Module found at " + modulePath);
+
+            Document moduleXml = tryXmlLoad(new File(modulePath + "/" + MigrationConstants.POM_XML));
+
+            try {
+                if (hasPackageType(moduleXml)) {
+                    hasPackageTypesDeclared = true;
+                }
+
+                if (isContainerProject(moduleXml)) {
+                    hasContainerProject = true;
+                }
+            } catch (Exception e) {
+                throw new MigrationRuntimeException("Exception occurred while checking Maven project for new-style content packages.", e);
+            }
+        }
+
+        return hasPackageTypesDeclared && hasContainerProject;
+    }
+
+    public String getContainerProjectPath(String customerProjectPath) throws CustomerDataException {
+        File customerPom = new File(customerProjectPath + File.separator + MigrationConstants.POM_XML);
+
+        if (!customerPom.exists()) {
+            throw new CustomerDataException("Unable to find a the specified pom file: " + customerPom.getPath());
+        }
+
+        for (String moduleName : getModuleNames(customerPom)) {
+            String modulePath = customerProjectPath + File.separator + moduleName;
+            Logger.DEBUG("Module found at " + modulePath);
+
+            try {
+                Document moduleXml = tryXmlLoad(new File(modulePath + "/" + MigrationConstants.POM_XML));
+                if (isContentPackage(moduleXml) && isContainerProject(moduleXml)) {
+                    return modulePath;
+                }
+            } catch (Exception e) {
+                throw new MigrationRuntimeException("Exception occurred when searching for the container content package.", e);
+            }
+        }
+
+        return null;
+    }
+
     private List<String> getModuleNames(File customerPom) throws CustomerDataException {
         List<String> moduleNames = new ArrayList<>();
 
@@ -90,11 +155,14 @@ public class CustomerProjectLoader {
         return moduleNames;
     }
 
-    private boolean isContentPackage(String modulePath) throws CustomerDataException{
-        File modulePom = new File(modulePath + File.separator + MigrationConstants.POM_XML);
-        Document moduleXml = tryXmlLoad(modulePom);
-        String packaging = moduleXml.getElementsByTagName(MigrationConstants.PACKAGING_TAG_NAME).item(0).getTextContent();
-        return packaging.equals(MigrationConstants.CONTENT_PACKAGE_PACKAGING);
+    private boolean isContentPackage(Document moduleXml) throws CustomerDataException{
+        NodeList packagingNodes = moduleXml.getElementsByTagName(MigrationConstants.PACKAGING_TAG_NAME);
+        if (packagingNodes.getLength() > 0) {
+            String packaging = packagingNodes.item(0).getTextContent();
+            return packaging.equals(MigrationConstants.CONTENT_PACKAGE_PACKAGING);
+        } else {
+            return false;
+        }
     }
 
     private List<String> getLauncherPaths(String modulePath) throws CustomerDataException {
@@ -182,5 +250,21 @@ public class CustomerProjectLoader {
         project.setWorkflows(workflows);
 
         return project;
+    }
+
+    private boolean isContainerProject(Document moduleXml) throws ParserConfigurationException, SAXException, IOException, XPathExpressionException {
+        return hasEmbeddeds(moduleXml) && !hasPackageType(moduleXml);
+    }
+
+    private boolean hasEmbeddeds(Document moduleXml) throws XPathExpressionException {
+        String embeddedsExpr = "//plugin[artifactId='filevault-package-maven-plugin']/configuration/embeddeds";
+        NodeList embeddedsList = (NodeList) xPath.compile(embeddedsExpr).evaluate(moduleXml, XPathConstants.NODESET);
+       return embeddedsList.getLength() > 0;
+    }
+
+    private boolean hasPackageType(Document moduleXml) throws XPathExpressionException {
+        String packageTypeExpr = "//plugin[artifactId='filevault-package-maven-plugin']/configuration/packageType";
+        NodeList packageTypeList = (NodeList) xPath.compile(packageTypeExpr).evaluate(moduleXml, XPathConstants.NODESET);
+        return packageTypeList.getLength() > 0;
     }
 }

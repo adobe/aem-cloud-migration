@@ -130,7 +130,7 @@ public class LauncherDisablerTest extends SkylineMigrationBaseTest {
     }
 
     private String getAbsolutePathForLauncher(String launcherName) {
-        return tempProjectRoot.getPath() + File.separator + TestConstants.WORKFLOW_PROJECT_NAME + File.separator +
+        return tempProjectRoot.getPath() + File.separator + TestConstants.CONF_WORKFLOW_PROJECT_NAME + File.separator +
                 TestConstants.CONF_LAUNCHER_PATH + launcherName + File.separator + MigrationConstants.CONTENT_XML;
     }
 }

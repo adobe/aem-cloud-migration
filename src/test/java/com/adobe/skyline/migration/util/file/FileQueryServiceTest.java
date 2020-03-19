@@ -21,11 +21,12 @@ import java.util.List;
 import org.junit.Test;
 
 import com.adobe.skyline.migration.SkylineMigrationBaseTest;
+import com.adobe.skyline.migration.testutils.TestConstants;
 
 public class FileQueryServiceTest extends SkylineMigrationBaseTest {
 
-    private static final String PATH_TO_CONF_WORKFLOW = "/ui.conf.wf/src/main/content/jcr_root/conf/global/settings/workflow";
-    private static final String PATH_TO_VAR_WORKFLOW = "/ui.conf.wf/src/main/content/jcr_root/var/workflow";
+    private static final String PATH_TO_CONF_WORKFLOW = "/" + TestConstants.CONF_WORKFLOW_PROJECT_NAME + TestConstants.CONF_WORKFLOW_PATH;
+    private static final String PATH_TO_VAR_WORKFLOW = "/" + TestConstants.CONF_WORKFLOW_PROJECT_NAME + TestConstants.VAR_WORKFLOW_PATH;
 
 
     @Test

@@ -13,13 +13,21 @@
 package com.adobe.skyline.migration.testutils;
 
 public class TestConstants {
-    public static final String TEST_PROJECT_GROUP_ID = "com.adobe";
-    public static final String TEST_PROJECT_ARTIFACT_ID = "com.adobe.sample";
+    public static final String TEST_PROJECT_GROUP_ID = "com.adobe.sample";
+    public static final String TEST_PROJECT_ARTIFACT_ID = "sample";
     public static final String TEST_PROJECT_VERSION = "1.0-SNAPSHOT";
 
-    public static final String WORKFLOW_PROJECT_NAME = "ui.conf.wf";
-    public static final String CONF_LAUNCHER_PATH = "/src/main/content/jcr_root/conf/global/settings/workflow/launcher/config/";
-    public static final String CONF_MODEL_PATH = "/src/main/content/jcr_root/conf/global/settings/workflow/models/";
-    public static final String ETC_LAUNCHER_PATH = "/src/main/content/jcr_root/etc/workflow/launcher/config/";
-    public static final String ETC_MODEL_PATH = "/src/main/content/jcr_root/etc/workflow/models/";
+    public static final String CONF_WORKFLOW_PROJECT_NAME = "ui.content";
+    public static final String CONF_WORKFLOW_PATH = "/src/main/content/jcr_root/conf/global/settings/workflow";
+    public static final String CONF_LAUNCHER_PATH = CONF_WORKFLOW_PATH + "/launcher/config/";
+    public static final String CONF_MODEL_PATH =  CONF_WORKFLOW_PATH + "/models/";
+
+    public static final String ETC_WORKFLOW_PROJECT_NAME = "ui.apps";
+    public static final String ETC_WORKFLOW_PATH = "/src/main/content/jcr_root/etc/workflow";
+    public static final String ETC_LAUNCHER_PATH = ETC_WORKFLOW_PATH + "/launcher/config/";
+    public static final String ETC_MODEL_PATH =  ETC_WORKFLOW_PATH + "/models/";
+
+    public static final String VAR_WORKFLOW_PATH = "/src/main/content/jcr_root/var/workflow";
+
+    public static final String CONTAINER_PACKAGE_PROJECT_NAME = "all";
 }

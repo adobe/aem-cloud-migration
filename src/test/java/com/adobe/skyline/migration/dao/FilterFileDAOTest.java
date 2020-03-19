@@ -42,14 +42,14 @@ public class FilterFileDAOTest extends SkylineMigrationBaseTest {
 
         this.tempProjectRoot = projectLoader.copyConfProjectToTemp(temp);
 
-        this.dao = new FilterFileDAO(tempProjectRoot + File.separator + TestConstants.WORKFLOW_PROJECT_NAME);
+        this.dao = new FilterFileDAO(tempProjectRoot + File.separator + TestConstants.CONF_WORKFLOW_PROJECT_NAME);
     }
 
     @Test
     public void testFilterAdded() throws ParserConfigurationException, SAXException, IOException {
         dao.addPath(MigrationConstants.WORKFLOW_RUNNER_CONFIG_PATH);
 
-        File filterFile = new File(tempProjectRoot + File.separator + TestConstants.WORKFLOW_PROJECT_NAME + MigrationConstants.PATH_TO_FILTER_XML);
+        File filterFile = new File(tempProjectRoot + File.separator + TestConstants.CONF_WORKFLOW_PROJECT_NAME + MigrationConstants.PATH_TO_FILTER_XML);
 
         Document filterXml = XmlUtil.loadXml(filterFile);
         Element workspaceFilterElement = filterXml.getDocumentElement();
@@ -72,7 +72,7 @@ public class FilterFileDAOTest extends SkylineMigrationBaseTest {
         dao.addPath(MigrationConstants.WORKFLOW_RUNNER_CONFIG_PATH);
         dao.addPath(MigrationConstants.WORKFLOW_RUNNER_CONFIG_PATH);
 
-        File filterFile = new File(tempProjectRoot + File.separator + TestConstants.WORKFLOW_PROJECT_NAME + MigrationConstants.PATH_TO_FILTER_XML);
+        File filterFile = new File(tempProjectRoot + File.separator + TestConstants.CONF_WORKFLOW_PROJECT_NAME + MigrationConstants.PATH_TO_FILTER_XML);
 
         Document filterXml = XmlUtil.loadXml(filterFile);
         Element workspaceFilterElement = filterXml.getDocumentElement();

@@ -48,7 +48,7 @@ public class ProcessingProfileDAOTest extends SkylineMigrationBaseTest {
         super.setUp();
 
         File tempProjectRoot = projectLoader.copyConfProjectToTemp(temp);
-        this.projectRootPath = tempProjectRoot + "/" + TestConstants.WORKFLOW_PROJECT_NAME;
+        this.projectRootPath = tempProjectRoot + "/" + TestConstants.CONF_WORKFLOW_PROJECT_NAME;
 
         this.dao = new ProcessingProfileDAO(projectRootPath);
     }
