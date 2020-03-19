@@ -135,14 +135,6 @@
         </dependency>
 
         <dependency>
-            <groupId>com.adobe.sample</groupId>
-            <artifactId>sample.ui.frontend</artifactId>
-            <version>${project.version}</version>
-            <type>zip</type>
-        </dependency>
-
-
-        <dependency>
             <groupId>com.adobe.cq</groupId>
             <artifactId>core.wcm.components.core</artifactId>
         </dependency>
