@@ -55,43 +55,58 @@ public class MigrationOrchestratorIntegrationTest extends SkylineMigrationBaseTe
     }
 
     @Test
-    public void testMigrationConfPath() throws CustomerDataException, IOException, SAXException, ParserConfigurationException, ProjectCreationException {
+    public void testMigrationMigratedProject() {
+        File testProject  = projectLoader.copyMigratedProjectToTemp(temp);
+        testConfBasedProject(testProject);
+    }
+
+    @Test
+    public void testMigrationConfPath() {
         File testProject  = projectLoader.copyConfProjectToTemp(temp);
-        new MigrationOrchestrator(testProject.getPath(), config, reportOutputDir.getPath()).exec();
+        testConfBasedProject(testProject);
+    }
 
-        assertLauncherEnabled(getAbsolutePathForConfLauncher(testProject, "ua-global-marketing-create-project-launcher"));
+    private void testConfBasedProject(File testProject) {
+        try {
+            new MigrationOrchestrator(testProject.getPath(), config, reportOutputDir.getPath()).exec();
 
-        String[] launchersToDisable = new String[]{
-                "scene7_digitalfolder",
-                "scene7_digitalfolder_delivery_shop",
-                "scene7_digitalfolder_delivery_shop_node_modified_launcher",
-                "scene7_digitalfolder_delivery_site_node_modified_launcher",
-                "update-asset-marketing-launcher",
-                "update-asset-marketing-node-modified-launcher",
-                "update_asset_create","update_asset_mod"
-        };
+            assertLauncherEnabled(getAbsolutePathForConfLauncher(testProject, "global-marketing-create-project-launcher"));
 
-        for (String launcher : launchersToDisable) {
-            assertLauncherDisabled(getAbsolutePathForConfLauncher(testProject, launcher));
+            String[] launchersToDisable = new String[]{
+                    "scene7_digitalfolder",
+                    "scene7_digitalfolder_delivery_shop",
+                    "scene7_digitalfolder_delivery_shop_node_modified_launcher",
+                    "scene7_digitalfolder_delivery_site_node_modified_launcher",
+                    "update-asset-marketing-launcher",
+                    "update-asset-marketing-node-modified-launcher",
+                    "update_asset_create","update_asset_mod"
+            };
+
+            for (String launcher : launchersToDisable) {
+                assertLauncherDisabled(getAbsolutePathForConfLauncher(testProject, launcher));
+            }
+
+            String[] damUpdateAssetStepsToRemove = new String[] {
+                    "com.day.cq.dam.core.process.GateKeeperProcess",
+                    "com.day.cq.dam.core.process.MetadataProcessorProcess",
+                    "com.day.cq.dam.video.FFMpegThumbnailProcess",
+                    "com.day.cq.dam.core.process.CommandLineProcess",
+                    "com.day.cq.dam.core.process.CreatePdfPreviewProcess",
+                    "com.day.cq.dam.core.process.ThumbnailProcess"
+            };
+
+            assertStepsRemovedFromWorkflowModel(damUpdateAssetStepsToRemove, getAbsolutePathForConfModel(testProject, "dam/update_asset"));
+            assertWorkflowRunnerConfigExistsForModel(testProject, "dam/update_asset");
+
+            List<String> expectedProfiles = Arrays.asList("migrated_from_update_asset", "migrated_from_update_asset_marketing");
+
+            assertProcessingProfilesCreated(testProject, expectedProfiles);
+            assertBothNewModulesAddedToReactor(testProject);
+            validateConfProjectReportOutput();
+        } catch (Exception e) {
+            fail("An exception occurred during testing: " + e.getMessage());
+            e.printStackTrace();
         }
-
-        String[] damUpdateAssetStepsToRemove = new String[] {
-                "com.day.cq.dam.core.process.GateKeeperProcess",
-                "com.day.cq.dam.core.process.MetadataProcessorProcess",
-                "com.day.cq.dam.video.FFMpegThumbnailProcess",
-                "com.day.cq.dam.core.process.CommandLineProcess",
-                "com.day.cq.dam.core.process.CreatePdfPreviewProcess",
-                "com.day.cq.dam.core.process.ThumbnailProcess"
-        };
-
-        assertStepsRemovedFromWorkflowModel(damUpdateAssetStepsToRemove, getAbsolutePathForConfModel(testProject, "dam/update_asset"));
-        assertWorkflowRunnerConfigExistsForModel(testProject, "dam/update_asset");
-
-        List<String> expectedProfiles = Arrays.asList("migrated_from_update_asset", "migrated_from_update_asset_marketing");
-
-        assertProcessingProfilesCreated(testProject, expectedProfiles);
-        assertBothNewModulesAddedToReactor(testProject);
-        validateConfProjectReportOutput();
     }
 
     @Test
@@ -150,25 +165,25 @@ public class MigrationOrchestratorIntegrationTest extends SkylineMigrationBaseTe
     }
 
     private String getAbsolutePathForConfLauncher(File tempProjectRoot, String launcherName) {
-        String pathRoot = tempProjectRoot.getPath() + File.separator + TestConstants.WORKFLOW_PROJECT_NAME +
+        String pathRoot = tempProjectRoot.getPath() + File.separator + TestConstants.CONF_WORKFLOW_PROJECT_NAME +
                 File.separator + TestConstants.CONF_LAUNCHER_PATH;
         return pathRoot + launcherName + File.separator + MigrationConstants.CONTENT_XML;
     }
 
     private String getAbsolutePathForEtcLauncher(File tempProjectRoot, String launcherName) {
-        String pathRoot = tempProjectRoot.getPath() + File.separator + TestConstants.WORKFLOW_PROJECT_NAME +
+        String pathRoot = tempProjectRoot.getPath() + File.separator + TestConstants.ETC_WORKFLOW_PROJECT_NAME +
                 File.separator + TestConstants.ETC_LAUNCHER_PATH;
         return pathRoot + launcherName + File.separator + MigrationConstants.CONTENT_XML;
     }
 
     private String getAbsolutePathForConfModel(File tempProjectRoot, String workflowModelName) {
-        String pathRoot = tempProjectRoot.getPath() + File.separator + TestConstants.WORKFLOW_PROJECT_NAME +
+        String pathRoot = tempProjectRoot.getPath() + File.separator + TestConstants.CONF_WORKFLOW_PROJECT_NAME +
                 File.separator + TestConstants.CONF_MODEL_PATH;
         return pathRoot + workflowModelName + File.separator + MigrationConstants.CONTENT_XML;
     }
 
     private String getAbsolutePathForEtcModel(File tempProjectRoot, String workflowModelName) {
-        String pathRoot = tempProjectRoot.getPath() + File.separator + TestConstants.WORKFLOW_PROJECT_NAME +
+        String pathRoot = tempProjectRoot.getPath() + File.separator + TestConstants.ETC_WORKFLOW_PROJECT_NAME +
                 File.separator + TestConstants.ETC_MODEL_PATH;
         return pathRoot + workflowModelName + File.separator + MigrationConstants.CONTENT_XML;
     }

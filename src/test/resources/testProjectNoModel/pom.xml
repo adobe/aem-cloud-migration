@@ -10,7 +10,7 @@
     <description>sample</description>
 
     <modules>
-        <module>ui.conf.wf</module>
+        <module>ui.content</module>
     </modules>
 
     <properties>

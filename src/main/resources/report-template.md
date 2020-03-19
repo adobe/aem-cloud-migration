@@ -5,7 +5,9 @@ This report contains the changes that have been made to your Maven project by th
 Changes to your workflow models and launchers have been made in-place.  We have also added the following new Maven projects:
 
 ${PROJECTS_CREATED}
-These projects have been added as modules to your reactor POM.  Feel free to merge the content from these projects into your existing projects if you'd like, but note that in AEM Assets as a Cloud Service deployments, we require that immutable content (under /apps or /libs) be deployed separately from mutable content (under /conf, /content, /etc, /var).  As a result, _mixed_ content packages are not supported.
+These projects have been added as modules to your reactor POM.  If you have already migrated your Maven projects to the new mutable/immutable content structures, we have also added these projects to embedded packages and dependencies in your project's container content package.
+
+If you have not yet migrated your Maven projects to this new paradigm or are unsure what this means, please see [Understand the Structure of a Project Content Package in Adobe Experience Manager Cloud Service](https://docs.adobe.com/content/help/en/experience-manager-cloud-service/implementing/developing/aem-project-content-package-structure.html) for more information.
 
 ## Workflow Launchers
 We have disabled some workflow launchers.  Depending on your source code, these will either be located under `/conf/global/settings/workflow/launcher/config` or `/etc/workflow/launcher/config`.  The Asset Compute Service will handle most asset processing in the cloud and any remaining custom workflow steps to be executed will be handled via the Custom Workflow Runner service.  We have disabled the following launchers:

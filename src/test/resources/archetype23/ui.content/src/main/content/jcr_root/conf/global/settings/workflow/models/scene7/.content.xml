@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+    jcr:primaryType="cq:Page">
+    <jcr:content
+        cq:designPath="/libs/settings/wcm/designs/default"
+		cq:lastModified="{Date}2018-11-21T15:27:14.415+05:30"
+        cq:lastModifiedBy="admin"
+        cq:template="/libs/cq/workflow/templates/model"
+        jcr:description="Workflow that uploads images to scene7"
+        jcr:primaryType="cq:PageContent"
+        jcr:title="Scene7"
+        sling:resourceType="cq/workflow/components/pages/model"
+        transient="false">
+        <flow
+            jcr:primaryType="nt:unstructured"
+            sling:resourceType="foundation/components/parsys">
+            <scene7upload
+                jcr:description="Upload assets to configured remote Scene7 service for Dynamic Media delivery"
+                jcr:primaryType="nt:unstructured"
+                jcr:title="Scene7"
+                sling:resourceType="dam/components/scene7/scene7upload"
+                advanceOnTimeout="true"
+                EXTERNAL_PROCESS="com.day.cq.dam.scene7.impl.process.Scene7UploadProcess"
+                period="30"
+                PROCESS_AUTO_ADVANCE="true"
+                timeout="3600">
+                <metaData
+                    jcr:primaryType="nt:unstructured"
+                    advanceOnTimeout="true"
+                    EXTERNAL_PROCESS="com.day.cq.dam.scene7.impl.process.Scene7UploadProcess"
+                    period="30"
+                    PROCESS_AUTO_ADVANCE="true"
+                    timeout="3600"/>
+            </scene7upload>
+            <replicateasset
+                jcr:created="{Date}2019-03-12T12:24:09.550+05:30"
+                jcr:createdBy="admin"
+                jcr:description="Replicate Asset to asset share"
+                jcr:lastModified="{Date}2019-03-12T12:25:26.919+05:30"
+                jcr:lastModifiedBy="admin"
+                jcr:primaryType="nt:unstructured"
+                jcr:title="Replicate Asset"
+                sling:resourceType="ua-brand-aem-project/components/workflowstep/replicateasset">
+                <metaData
+                    jcr:primaryType="nt:unstructured"
+                    assetShareExclusion="/content/dam/product/lineart"
+                    PROCESS="com.ua.workflow.ReplicationProcess"
+                    PROCESS_AUTO_ADVANCE="true"/>
+            </replicateasset>
+        </flow>
+    </jcr:content>
+</jcr:root>

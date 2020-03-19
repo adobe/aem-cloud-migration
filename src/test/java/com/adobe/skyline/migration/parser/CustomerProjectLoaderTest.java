@@ -26,6 +26,7 @@ import org.junit.Test;
 
 import com.adobe.skyline.migration.SkylineMigrationBaseTest;
 import com.adobe.skyline.migration.exception.CustomerDataException;
+import com.adobe.skyline.migration.testutils.TestConstants;
 
 import java.util.List;
 
@@ -161,6 +162,22 @@ public class CustomerProjectLoaderTest extends SkylineMigrationBaseTest {
         String projectPath = projectLoader.copyNoLauncherProjectToTemp(temp).getPath();
         List<WorkflowProject> projects = loader.getWorkflowProjects(projectPath);
         assertEquals("update_asset", projects.get(0).getWorkflows().get(0).getWorkflowModel().getName());
+    }
+
+    @Test
+    public void testIsCloudManagerReady() throws CustomerDataException {
+        String legacyProject = projectLoader.copyConfProjectToTemp(temp).getPath();
+        assertFalse(loader.isCloudManagerReady(legacyProject));
+
+        String readyProject = projectLoader.copyMigratedProjectToTemp(temp).getPath();
+        assertTrue(loader.isCloudManagerReady(readyProject));
+    }
+
+    @Test
+    public void testAllProjectLocated() throws CustomerDataException {
+        String reactorPath = projectLoader.copyMigratedProjectToTemp(temp).getPath();
+        String allPath = loader.getContainerProjectPath(reactorPath);
+        assertEquals(reactorPath + "/" + TestConstants.CONTAINER_PACKAGE_PROJECT_NAME, allPath); //TODO: Make a constant
     }
     
     private void validateLauncherPaths(List<WorkflowProject> projects, String launcherRoot) {

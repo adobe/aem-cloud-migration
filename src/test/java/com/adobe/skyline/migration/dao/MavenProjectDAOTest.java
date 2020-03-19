@@ -22,6 +22,8 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -37,36 +39,35 @@ import com.adobe.skyline.migration.util.XmlUtil;
 
 public class MavenProjectDAOTest extends SkylineMigrationBaseTest {
 
-    private File tempProjectRoot;
     private ChangeTrackingService changeTracker;
 
-    private MavenProjectDAO creator;
+    @Mock
+    private ContainerProjectDAO containerProjectDao;
 
     @Before
     public void setUp(){
         super.setUp();
 
-        this.tempProjectRoot = projectLoader.copyConfProjectToTemp(temp);
         this.changeTracker = new ChangeTrackingService();
-
-        try {
-            this.creator = new MavenProjectDAO(this.tempProjectRoot.getAbsolutePath(), changeTracker);
-        } catch (CustomerDataException e) {
-            fail(e.getMessage());
-        }
     }
 
     @Test
-    public void testTemplateProjectsCopied() throws ProjectCreationException, ParserConfigurationException, SAXException, IOException {
+    public void testTemplateProjectsCopied() throws ProjectCreationException, ParserConfigurationException, SAXException, IOException, CustomerDataException {
+        File tempProjectRoot = projectLoader.copyConfProjectToTemp(temp);
+        MavenProjectDAO creator = new MavenProjectDAO(tempProjectRoot.getAbsolutePath(), changeTracker, containerProjectDao);
+
         creator.createProject(MigrationConstants.MIGRATION_PROJECT_CONTENT);
         creator.createProject(MigrationConstants.MIGRATION_PROJECT_APPS);
 
-        assertProjectCreated(MigrationConstants.MIGRATION_PROJECT_CONTENT);
-        assertProjectCreated(MigrationConstants.MIGRATION_PROJECT_APPS);
+        assertProjectCreated(tempProjectRoot.getPath(), MigrationConstants.MIGRATION_PROJECT_CONTENT);
+        assertProjectCreated(tempProjectRoot.getPath(), MigrationConstants.MIGRATION_PROJECT_APPS);
     }
 
     @Test
-    public void testNewProjectsAddedToReactor() throws ProjectCreationException, ParserConfigurationException, SAXException, IOException {
+    public void testNewProjectsAddedToReactor() throws ProjectCreationException, ParserConfigurationException, SAXException, IOException, CustomerDataException {
+        File tempProjectRoot = projectLoader.copyConfProjectToTemp(temp);
+        MavenProjectDAO creator = new MavenProjectDAO(tempProjectRoot.getAbsolutePath(), changeTracker, containerProjectDao);
+
         creator.createProject(MigrationConstants.MIGRATION_PROJECT_CONTENT);
         creator.createProject(MigrationConstants.MIGRATION_PROJECT_APPS);
 
@@ -89,7 +90,22 @@ public class MavenProjectDAOTest extends SkylineMigrationBaseTest {
     }
 
     @Test
-    public void testChangesTracked() throws ProjectCreationException {
+    public void testNewProjectsAddedToAllProjectWhenPresent() throws ProjectCreationException, ParserConfigurationException, SAXException, IOException, CustomerDataException {
+        File tempProjectRoot = projectLoader.copyMigratedProjectToTemp(temp);
+        MavenProjectDAO creator = new MavenProjectDAO(tempProjectRoot.getAbsolutePath(), changeTracker, containerProjectDao);
+
+        creator.createProject(MigrationConstants.MIGRATION_PROJECT_CONTENT);
+        creator.createProject(MigrationConstants.MIGRATION_PROJECT_APPS);
+
+        Mockito.verify(containerProjectDao).addProject(TestConstants.TEST_PROJECT_GROUP_ID, MigrationConstants.MIGRATION_PROJECT_CONTENT);
+        Mockito.verify(containerProjectDao).addProject(TestConstants.TEST_PROJECT_GROUP_ID, MigrationConstants.MIGRATION_PROJECT_APPS);
+    }
+
+    @Test
+    public void testChangesTracked() throws ProjectCreationException, CustomerDataException {
+        File tempProjectRoot = projectLoader.copyConfProjectToTemp(temp);
+        MavenProjectDAO creator = new MavenProjectDAO(tempProjectRoot.getAbsolutePath(), changeTracker, containerProjectDao);
+
         creator.createProject(MigrationConstants.MIGRATION_PROJECT_CONTENT);
         creator.createProject(MigrationConstants.MIGRATION_PROJECT_APPS);
 
@@ -100,7 +116,10 @@ public class MavenProjectDAOTest extends SkylineMigrationBaseTest {
     }
 
     @Test
-    public void testProjectExistsCheck() throws ProjectCreationException {
+    public void testProjectExistsCheck() throws ProjectCreationException, CustomerDataException {
+        File tempProjectRoot = projectLoader.copyConfProjectToTemp(temp);
+        MavenProjectDAO creator = new MavenProjectDAO(tempProjectRoot.getAbsolutePath(), changeTracker, containerProjectDao);
+
         assertFalse(creator.projectExists(MigrationConstants.MIGRATION_PROJECT_CONTENT));
         assertFalse(creator.projectExists(MigrationConstants.MIGRATION_PROJECT_APPS));
 
@@ -111,8 +130,8 @@ public class MavenProjectDAOTest extends SkylineMigrationBaseTest {
         assertTrue(creator.projectExists(MigrationConstants.MIGRATION_PROJECT_APPS));
     }
 
-    private void assertProjectCreated(String projectName) throws IOException, SAXException, ParserConfigurationException {
-        File project = new File(tempProjectRoot, projectName);
+    private void assertProjectCreated(String projectRoot, String projectName) throws IOException, SAXException, ParserConfigurationException {
+        File project = new File(projectRoot, projectName);
         assertTrue(project.exists());
         assertParentPropertiesSet(project);
     }
@@ -152,5 +171,4 @@ public class MavenProjectDAOTest extends SkylineMigrationBaseTest {
         assertTrue(versionMatched);
         assertTrue(relativePathMatched);
     }
-
 }

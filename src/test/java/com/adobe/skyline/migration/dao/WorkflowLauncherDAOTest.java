@@ -71,14 +71,14 @@ public class WorkflowLauncherDAOTest extends SkylineMigrationBaseTest {
         launcher.setName(name);
         launcher.setRelativePath(TestConstants.CONF_LAUNCHER_PATH + name + "/"
                 + MigrationConstants.CONTENT_XML);
-        launcher.setLauncherFile(new File(getAbsolutePathForLauncher(name)));
+        launcher.setLauncherFile(new File(getAbsolutePathForConfLauncher(name)));
 
         return launcher;
     }
 
     private void assertDisabled(String launcherName) {
         try {
-            File targetLauncher = new File(getAbsolutePathForLauncher(launcherName));
+            File targetLauncher = new File(getAbsolutePathForConfLauncher(launcherName));
             Document targetLauncherXml = XmlUtil.loadXml(targetLauncher);
             String enabled = targetLauncherXml.getFirstChild().getAttributes().getNamedItem(
                     MigrationConstants.ENABLED_PROP).getTextContent();
@@ -90,8 +90,8 @@ public class WorkflowLauncherDAOTest extends SkylineMigrationBaseTest {
         }
     }
 
-    private String getAbsolutePathForLauncher(String launcherName) {
-        return tempProjectRoot.getPath() + File.separator + TestConstants.WORKFLOW_PROJECT_NAME + File.separator +
+    private String getAbsolutePathForConfLauncher(String launcherName) {
+        return tempProjectRoot.getPath() + File.separator + TestConstants.CONF_WORKFLOW_PROJECT_NAME + File.separator +
                 TestConstants.CONF_LAUNCHER_PATH + launcherName + File.separator + MigrationConstants.CONTENT_XML;
     }
 }

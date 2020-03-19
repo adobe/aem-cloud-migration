@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workspaceFilter version="1.0">
+    <filter root="/conf/global/settings/workflow"/>
+    <filter root="/conf/sample" mode="merge"/>
+    <filter root="/content/sample" mode="merge"/>
+    <filter root="/content/dam/sample" mode="merge"/>
+    <filter root="/content/experience-fragments/sample" mode="merge"/>
+    <filter root="/var/workflow" mode="merge"/>
+</workspaceFilter>

@@ -22,16 +22,20 @@ import com.adobe.skyline.migration.util.file.FileUtil;
 
 public class TestProjectLoader {
 
-    public File copyMissingWorkflowProjectToTemp(TemporaryFolder temp) {
-        return copyResourceDirectoryToTemp("testMissingWFProject", temp);
+    public File copyMigratedProjectToTemp(TemporaryFolder temp) {
+        return copyResourceDirectoryToTemp("archetype23", temp);
     }
 
     public File copyConfProjectToTemp(TemporaryFolder temp) {
-        return copyResourceDirectoryToTemp("testProjectNew", temp);
+        return copyResourceDirectoryToTemp("archetype17", temp);
     }
 
     public File copyEtcProjectToTemp(TemporaryFolder temp) {
-        return copyResourceDirectoryToTemp("testProjectLegacy", temp);
+        return copyResourceDirectoryToTemp("archetype11", temp);
+    }
+
+    public File copyMissingWorkflowProjectToTemp(TemporaryFolder temp) {
+        return copyResourceDirectoryToTemp("testMissingWFProject", temp);
     }
 
     public File copyNoModelProjectToTemp(TemporaryFolder temp) {

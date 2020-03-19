@@ -1,3 +1,0 @@
-# Sample AEM project template
-
-This is a project template for AEM-based applications that was created from the AEM Project Archetype at https://github.com/adobe/aem-project-archetype.  It has been modified to remove some unneeded projects.  Additionally, workflow configurations have been added to the ui.content project to simulate how a real customer would deploy their workflow models and launchers.

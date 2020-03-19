@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
+    jcr:primaryType="cq:WorkflowLauncher"
+    condition=""
+    conditions="[sling:resourceType==cq/gui/components/projects/admin/card/projectcard]"
+    description="Marketing Create Project Workflow Launcher"
+    disabledFeatures="[]"
+    enabled="{Boolean}true"
+    eventType="{Long}1"
+    excludeList=""
+    features="[]"
+    glob="/content/projects/marketing/seasonal"
+    nodetype="nt:unstructured"
+    runModes="author"
+    workflow="/var/workflow/models/global-marketing-create-project-workflow"/>
