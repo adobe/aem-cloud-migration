@@ -87,6 +87,58 @@
                     PROCESS_AUTO_ADVANCE="true"
                     RESOLUTION="72"/>
             </createpdfpreviewproc>
+            <or
+                jcr:created="{Date}2019-08-28T11:54:56.916-04:00"
+                jcr:createdBy="admin"
+                jcr:lastModified="{Date}2019-10-04T10:17:10.512+05:30"
+                jcr:lastModifiedBy="admin"
+                jcr:primaryType="nt:unstructured"
+                jcr:title="upload to Scene7?"
+                sling:resourceType="cq/workflow/components/model/or"
+                branches="2"
+                orSplit="true"
+                script1="function check() {&#xd;&#xa;    var doSync = false;&#xd;&#xa;  &#xd;&#xa;    try {&#xd;&#xa;        var path = workflowData.getPayload().toString();&#xd;&#xa;  &#xd;&#xa;        if (path === null) {&#xd;&#xa;            return doSync;&#xd;&#xa;        }&#xd;&#xa;  &#xd;&#xa;        path = path.replaceAll(&quot;/jcr:content/renditions/original&quot;, &quot;&quot;);&#xd;&#xa;  &#xd;&#xa;        log.info(&quot;Checking if asset should be uploaded to Scene7 - &quot; + path);&#xd;&#xa;  &#xd;&#xa;        var payloadNode = workflowSession.getSession().getNode(path);&#xd;&#xa;  &#xd;&#xa;var resolver = sling.getRequest().getResource().getResourceResolver();&#xd;&#xa;var res= resolver.getResource(path);&#xd;&#xa; &#xd;&#xa;&#xd;&#xa;var iProperties = new com.day.cq.commons.inherit.HierarchyNodeInheritanceValueMap(res);&#xd;&#xa;var&#x9;&#x9;inheritedPropertyValue = iProperties.getInherited(&quot;eaemSyncToScene7&quot;, &quot;false&quot;);       &#xd;&#xa;&#xd;&#xa;&#x9;    log.info(&quot;inprp ::&quot;+inheritedPropertyValue);&#xd;&#xa;&#x9;   if (payloadNode === null) {&#xd;&#xa;            return doSync;&#xd;&#xa;        }&#xd;&#xa;  if(inheritedPropertyValue.equals(&quot;true&quot;)){&#xd;&#xa;log.info(&quot;inherit is true&quot;);&#xd;&#xa;     doSync=true;&#xd;&#xa;    }&#xd;&#xa;        &#xd;&#xa;&#x9;&#x9; &#xd;&#xa;&#x9;&#x9;if(path.indexOf(&quot;/content/dam/_CSS/&quot;) > -1) {&#xd;&#xa;&#x9;&#x9;doSync = true;&#xd;&#xa;&#x9;&#x9;}&#xd;&#xa;  &#xd;&#xa;        if (doSync === false) {&#xd;&#xa;            log.info(&quot;Skipping upload to Scene7 - &quot; + path);&#xd;&#xa;        } else {&#xd;&#xa;            log.info(&quot;Uploading to Scene7 - &quot; + path);&#xd;&#xa;        }&#xd;&#xa;    } catch (e) {&#xd;&#xa;        doSync = false;&#xd;&#xa;        log.error(e);&#xd;&#xa;    }&#xd;&#xa;  &#xd;&#xa;    return doSync;&#xd;&#xa;}"
+                script2="function check(){&#xd;&#xa;      return true;&#xd;&#xa;}&#xd;&#xa;">
+                <_x0031_
+                    jcr:primaryType="nt:unstructured"
+                    sling:resourceType="cq/flow/components/parsys">
+                    <scene7upload
+                        jcr:created="{Date}2017-02-28T13:55:59.285-08:00"
+                        jcr:createdBy="admin"
+                        jcr:description="Upload assets to configured remote Scene7 service for Dynamic Media delivery"
+                        jcr:lastModified="{Date}2017-02-28T13:55:59.285-08:00"
+                        jcr:lastModifiedBy="admin"
+                        jcr:primaryType="nt:unstructured"
+                        jcr:title="Scene7"
+                        sling:resourceType="dam/components/scene7/scene7upload">
+                        <metaData
+                            jcr:primaryType="nt:unstructured"
+                            advanceOnTimeout="true"
+                            EXTERNAL_PROCESS="com.day.cq.dam.scene7.impl.process.Scene7UploadProcess"
+                            period="30"
+                            PROCESS_AUTO_ADVANCE="true"
+                            timeout="3600"/>
+                    </scene7upload>
+                </_x0031_>
+                <_x0032_
+                    jcr:primaryType="nt:unstructured"
+                    sling:resourceType="cq/flow/components/parsys">
+                    <noopprocess
+                        jcr:created="{Date}2019-08-28T11:58:56.752-04:00"
+                        jcr:createdBy="admin"
+                        jcr:description="A no operation process"
+                        jcr:lastModified="{Date}2019-08-28T11:58:56.752-04:00"
+                        jcr:lastModifiedBy="admin"
+                        jcr:primaryType="nt:unstructured"
+                        jcr:title="No Operation"
+                        sling:resourceType="cq/workflow/components/workflow/noopprocess">
+                        <metaData
+                            jcr:primaryType="nt:unstructured"
+                            PROCESS="/libs/workflow/scripts/noop.ecma"
+                            PROCESS_AUTO_ADVANCE="true"/>
+                    </noopprocess>
+                </_x0032_>
+            </or>
             <thumbnailprocess
                 jcr:description="This process will create one or more thumbnails for the asset, create web enabled rendition and update folder thumbnail."
                 jcr:primaryType="nt:unstructured"

@@ -177,7 +177,7 @@ public class CustomerProjectLoaderTest extends SkylineMigrationBaseTest {
     public void testAllProjectLocated() throws CustomerDataException {
         String reactorPath = projectLoader.copyMigratedProjectToTemp(temp).getPath();
         String allPath = loader.getContainerProjectPath(reactorPath);
-        assertEquals(reactorPath + "/" + TestConstants.CONTAINER_PACKAGE_PROJECT_NAME, allPath); //TODO: Make a constant
+        assertEquals(reactorPath + "/" + TestConstants.CONTAINER_PACKAGE_PROJECT_NAME, allPath);
     }
     
     private void validateLauncherPaths(List<WorkflowProject> projects, String launcherRoot) {

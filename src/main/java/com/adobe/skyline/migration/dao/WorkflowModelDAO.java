@@ -22,7 +22,11 @@ import java.util.Map;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
-import org.w3c.dom.*;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import com.adobe.skyline.migration.MigrationConstants;
@@ -137,13 +141,21 @@ public class WorkflowModelDAO {
         List<WorkflowStep> steps = new ArrayList<>();
         for (Node stepNode : stepNodes) {
             WorkflowStep currStep = createWorkflowStep(stepNode);
-            steps.add(currStep);
+
+            if (currStep.getProcess() == null || currStep.getProcess().isEmpty()) {
+                Logger.WARN("Unable to map a workflow step in " + modelXml.getDocumentURI() + " because it does not " +
+                        "contain a PROCESS or EXTERNAL_PROCESS value.  Other workflow steps, such as OR splits, are not " +
+                        "supported at this time.");
+
+            } else {
+                steps.add(currStep);
+            }
         }
 
         return steps;
     }
 
-    private WorkflowStep createWorkflowStep(Node stepXml) {
+    private WorkflowStep createWorkflowStep(Node stepXml){
         WorkflowStep step = new WorkflowStep();
 
         List<Node> stepChildren = XmlUtil.getChildElementNodes(stepXml);
@@ -239,7 +251,7 @@ public class WorkflowModelDAO {
         lastTransitionNode.getParentNode().removeChild(lastTransitionNode);
     }
 
-    private String extractProcessValue(Node metadataNode) {
+    private String extractProcessValue(Node metadataNode){
         String processValue = null;
 
         Node processNode = metadataNode.getAttributes().getNamedItem(MigrationConstants.PROCESS_PROP);
@@ -250,7 +262,7 @@ public class WorkflowModelDAO {
             Node externalProcessNode = metadataNode.getAttributes().getNamedItem(MigrationConstants.EXTERNAL_PROCESS_PROP);
 
             if (externalProcessNode != null) {
-                processValue = externalProcessNode.getTextContent();
+            processValue = externalProcessNode.getTextContent();
             }
         }
         return processValue;
