@@ -188,7 +188,6 @@ public class MigrationConstants {
     public static final String FALSE_VALUE = "{Boolean}false";
 
     public static final String COMPLETED_PROCESS = "com.day.cq.dam.core.impl.process.DamUpdateAssetWorkflowCompletedProcess";
-    public static final String SET_LAST_MODIFIED_PROCESS = "com.day.cq.dam.core.process.AssetSetLastModifiedProcess";
     public static final String DELETE_PREVIEW_PROCESS = "com.day.cq.dam.core.process.DeleteImagePreviewProcess";
 
     public static final Map<String, WorkflowLauncher> DEFAULT_ENABLED_MODELS = new HashMap<>() {{

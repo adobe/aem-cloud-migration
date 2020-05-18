@@ -12,12 +12,13 @@
 
 package com.adobe.skyline.migration.main;
 
-import com.adobe.skyline.migration.MigrationConstants;
-import com.adobe.skyline.migration.model.WorkflowStepSupportStatus;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import com.adobe.skyline.migration.model.WorkflowStepSupportStatus;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class WorkflowStepConfigurationTest {
 
@@ -30,7 +31,7 @@ public class WorkflowStepConfigurationTest {
 
     @Test
     public void testOptionalWorkflows() {
-        assertTrue(config.isOptionalStep(MigrationConstants.SET_LAST_MODIFIED_PROCESS));
+        assertTrue(config.isOptionalStep("com.day.cq.dam.core.impl.process.SendTransientWorkflowCompletedEmailProcess"));
     }
 
     @Test
