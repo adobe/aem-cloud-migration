@@ -29,17 +29,16 @@ public class ProfileMapperFactoryImpl implements ProfileMapperFactory {
     public ProfileMapperFactoryImpl() {
         mapperMap = new HashMap<>();
 
-        ProfileMapper pdfMapper = new CreatePdfPreviewProcessMapper();
-        mapperMap.put(pdfMapper.getProcess(), pdfMapper);
+        addMapper(new CreatePdfPreviewProcessMapper());
+        addMapper(new CreateWebEnabledImageProcessMapper());
+        addMapper(new FFMpegThumbnailProcessMapper());
+        addMapper(new ThumbnailProcessMapper());
+    }
 
-        ProfileMapper webEnabledMapper = new CreateWebEnabledImageProcessMapper();
-        mapperMap.put(webEnabledMapper.getProcess(), webEnabledMapper);
-
-        ProfileMapper ffmpegMapper = new FFMpegThumbnailProcessMapper();
-        mapperMap.put(ffmpegMapper.getProcess(), ffmpegMapper);
-
-        ProfileMapper thumbnailMapper = new ThumbnailProcessMapper();
-        mapperMap.put(thumbnailMapper.getProcess(), thumbnailMapper);
+    private void addMapper(ProfileMapper mapper) {
+        for (String id : mapper.getProcessIds()) {
+            mapperMap.put(id, mapper);
+        }
     }
 
     //Get the mapper for a particular workflow step

@@ -32,10 +32,9 @@ public class CreateWebEnabledImageProcessMapper implements ProfileMapper {
     private static final String RENDITION_PREFIX = "cq5dam";
     private static final String NODE_NAME = "web";
 
-
     @Override
-    public String getProcess() {
-        return PROCESS_ID;
+    public String[] getProcessIds() {
+        return new String[] {PROCESS_ID};
     }
 
     @Override
@@ -91,6 +90,6 @@ public class CreateWebEnabledImageProcessMapper implements ProfileMapper {
         rendition.setNodeName(NODE_NAME);
         rendition.setFileName(RENDITION_PREFIX + "." + NODE_NAME + "." + width + "." + height + "." + extension);
 
-        return Arrays.asList(rendition);
+        return Collections.singletonList(rendition);
     }
 }

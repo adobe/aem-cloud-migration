@@ -23,7 +23,7 @@ import com.adobe.skyline.migration.model.workflow.WorkflowStep;
  */
 public interface ProfileMapper {
 
-    String getProcess();
+    String[] getProcessIds();
 
     List<RenditionConfig> mapToRenditions(WorkflowModel model, WorkflowStep step);
 }

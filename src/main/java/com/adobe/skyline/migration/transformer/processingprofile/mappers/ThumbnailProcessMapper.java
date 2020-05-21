@@ -24,6 +24,7 @@ import java.util.*;
 public class ThumbnailProcessMapper implements ProfileMapper {
 
     private static final String PROCESS_ID = "com.day.cq.dam.core.process.ThumbnailProcess";
+    private static final String IMPL_PROCESS_ID = "com.day.cq.dam.core.impl.process.ThumbnailProcess";
 
     private static final String PROCESS_ARGS_PROP = "PROCESS_ARGS";
     private static final String CONFIGS_PROP = "CONFIGS";
@@ -44,8 +45,8 @@ public class ThumbnailProcessMapper implements ProfileMapper {
     private static final String FPO_NODE_NAME = "fpo";
 
     @Override
-    public String getProcess() {
-        return PROCESS_ID;
+    public String[] getProcessIds() {
+        return new String[] {PROCESS_ID, IMPL_PROCESS_ID};
     }
 
     @Override

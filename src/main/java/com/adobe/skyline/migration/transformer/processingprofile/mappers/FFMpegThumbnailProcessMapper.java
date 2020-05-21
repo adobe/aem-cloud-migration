@@ -29,8 +29,8 @@ public class FFMpegThumbnailProcessMapper implements ProfileMapper {
     private static final String CONFIGS_PROP = "CONFIGS";
 
     @Override
-    public String getProcess() {
-        return PROCESS_ID;
+    public String[] getProcessIds() {
+        return new String[] {PROCESS_ID};
     }
 
     @Override

@@ -32,8 +32,8 @@ public class CreatePdfPreviewProcessMapper implements ProfileMapper {
     private static final String EXTENSION = MigrationConstants.PNG_EXTENSION;
 
     @Override
-    public String getProcess() {
-        return PROCESS_ID;
+    public String[] getProcessIds() {
+        return new String[] {PROCESS_ID};
     }
 
     @Override

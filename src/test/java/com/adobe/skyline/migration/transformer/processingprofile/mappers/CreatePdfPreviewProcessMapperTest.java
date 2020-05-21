@@ -83,7 +83,7 @@ public class CreatePdfPreviewProcessMapperTest {
         processMetadata.put("RESOLUTION", "72");
 
         WorkflowStep step = new WorkflowStep();
-        step.setProcess(mapper.getProcess());
+        step.setProcess(mapper.getProcessIds()[0]);
         step.setMetadata(processMetadata);
         return step;
     }
