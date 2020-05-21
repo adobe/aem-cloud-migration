@@ -40,7 +40,7 @@ public class ModelTransformerTest extends SkylineMigrationBaseTest {
      * src/main/resources/workflowSteps.properties.
      */
     private static final String UNSUPPORTED_STEP = "com.day.cq.dam.core.process.AssetOffloadingProcess";
-    private static final String OPTIONAL_STEP = "com.day.cq.dam.core.process.AssetSetLastModifiedProcess";
+    private static final String OPTIONAL_STEP = "com.day.cq.dam.core.impl.process.SendTransientWorkflowCompletedEmailProcess";
     private static final String SUPPORTED_STEP = "com.day.cq.dam.core.impl.process.CreateAssetLanguageCopyProcess";
     private static final WorkflowStep COMPLETED_STEP = MigrationConstants.WORKFLOW_COMPLETED_PROCESS;
 
