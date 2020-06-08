@@ -38,7 +38,7 @@
                 imagebasePath="/content/dam/product/photography"
                 lineartbasePath="/content/dam/product/lineart"
                 manualpaths="[/content/dam/product/invodo/uncategorized,/content/dam/product/splashlight/uncategorized,/content/dam/product/kids-hq/uncategorized,/content/dam/product/united-sports-brand/uncategorized,/content/dam/product/t22-lacrosse/uncategorized,/content/dam/product/psi-91/uncategorized,/content/dam/product/all-star/uncategorized,/content/dam/product/jbl/uncategorized,/content/dam/product/eyeking/uncategorized,/content/dam/product/thermos/uncategorized,/content/dam/product/incipio/uncategorized,/content/dam/product/gildan/uncategorized,/content/dam/product/apac/uncategorized,/content/dam/product/emea/uncategorized,/content/dam/product/latam/uncategorized,/content/dam/product/lineart/upload/uncategorized]"
-                PROCESS="com.ua.workflow.AssetMoveProcess"
+                PROCESS="com.adobe.test.workflow.AssetMoveProcess"
                 PROCESS_AUTO_ADVANCE="true"
                 s7Enable="true"
                 s7ModelPath="/var/workflow/models/scene7"

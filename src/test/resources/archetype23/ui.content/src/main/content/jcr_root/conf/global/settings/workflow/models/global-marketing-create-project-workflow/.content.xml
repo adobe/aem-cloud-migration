@@ -12,7 +12,7 @@
             jcr:primaryType="nt:unstructured"
             sling:resourceType="foundation/components/parsys">
             <process
-                jcr:description="Copy Folder Structure from /content/dam/ua-marketing and add same structure under newly created project."
+                jcr:description="Copy Folder Structure from /content/dam/marketing and add same structure under newly created project."
                 jcr:primaryType="nt:unstructured"
                 jcr:title="Create Folder Structure"
                 sling:resourceType="cq/workflow/components/model/process">

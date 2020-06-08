@@ -25,7 +25,7 @@
             type="PROCESS">
             <metaData
                 jcr:primaryType="nt:unstructured"
-                PROCESS="com.ua.workflow.AddS7MetadataProcess"
+                PROCESS="com.adobe.test.workflow.AddS7MetadataProcess"
                 PROCESS_AUTO_ADVANCE="true"
                 s7ApiServer="https://s7sps1apissl.scene7.com"
                 s7CloudConfigPath="/conf/asset-share-commons/settings/cloudconfigs/scene7"
@@ -38,7 +38,7 @@
             type="PROCESS">
             <metaData
                 jcr:primaryType="nt:unstructured"
-                PROCESS="com.ua.workflow.S7FTPVideoUploadProcess"
+                PROCESS="com.adobe.test.workflow.S7FTPVideoUploadProcess"
                 PROCESS_AUTO_ADVANCE="true"/>
         </node2>
         <node3
@@ -49,7 +49,7 @@
             <metaData
                 jcr:primaryType="nt:unstructured"
                 assetShareExclusion="/content/dam/product/lineart"
-                PROCESS="com.ua.workflow.ReplicationProcess"
+                PROCESS="com.adobe.test.workflow.ReplicationProcess"
                 PROCESS_AUTO_ADVANCE="true"/>
         </node3>
         <node4

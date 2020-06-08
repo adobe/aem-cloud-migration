@@ -43,7 +43,7 @@
             type="PROCESS">
             <metaData
                 jcr:primaryType="nt:unstructured"
-                PROCESS="com.ua.workflow.marketing.AthleteNameExtractionProcess"
+                PROCESS="com.adobe.test.workflow.marketing.AthleteNameExtractionProcess"
                 PROCESS_AUTO_ADVANCE="true"/>
         </node3>
         <node4
@@ -52,7 +52,7 @@
             type="PROCESS">
             <metaData
                 jcr:primaryType="nt:unstructured"
-                PROCESS="com.ua.workflow.XmpKeywordProcess"
+                PROCESS="com.adobe.test.workflow.XmpKeywordProcess"
                 PROCESS_AUTO_ADVANCE="true"/>
         </node4>
         <node5
@@ -127,7 +127,7 @@
             type="PROCESS">
             <metaData
                 jcr:primaryType="nt:unstructured"
-                PROCESS="com.ua.workflow.LogAssetUploadFolderProcess"
+                PROCESS="com.adobe.test.workflow.LogAssetUploadFolderProcess"
                 PROCESS_AUTO_ADVANCE="true"/>
         </node10>
         <node11
@@ -137,7 +137,7 @@
             type="PROCESS">
             <metaData
                 jcr:primaryType="nt:unstructured"
-                PROCESS="com.ua.workflow.marketing.UpdateAssetWithProjectLevelMetadataProcess"
+                PROCESS="com.adobe.test.workflow.marketing.UpdateAssetWithProjectLevelMetadataProcess"
                 PROCESS_AUTO_ADVANCE="true"/>
         </node11>
         <node12
@@ -147,7 +147,7 @@
             type="PROCESS">
             <metaData
                 jcr:primaryType="nt:unstructured"
-                PROCESS="com.ua.workflow.marketing.AutoPublishAssetsProcess"
+                PROCESS="com.adobe.test.workflow.marketing.AutoPublishAssetsProcess"
                 PROCESS_AUTO_ADVANCE="true"/>
         </node12>
         <node13

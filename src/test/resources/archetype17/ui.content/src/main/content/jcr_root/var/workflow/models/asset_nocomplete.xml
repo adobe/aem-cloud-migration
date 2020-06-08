@@ -65,7 +65,7 @@
             <metaData
                 jcr:primaryType="nt:unstructured"
                 CONFIGS="[^(([^[auto_dim7_]]+_)(([^-]+)-([^_.]+))),^[^[V5]-]+-(([^-]+)-([^_]+))_([^.]+),^[^[PS]-]+-(([^-]+)-([^_]+))_([^.]+),^[^[PS]_]+_(([^-]+)-([^_]+))_([^.]+),^[^[PS]]+(([^-]+)-([^_]+))_([^.]+),^PS(([^[0-9]-]+)-([^.]+)),^(([^-]+)-([^_]+))_([^[_a-zA-Z0-9].]+),^(([^-]+)-([^_]+))_([^[DEFAULT].]+),^(([^-]+)-([^_]+))_([^[SOLE].]+),^(([^-]+)-([^_]+))_([^[HEEL].]+),^(([^-]+)-([^_]+))_([^[TOE].]+),^(([^-]+)-([^_]+))_([^[A].]+),^(([^-]+)-([^_]+))-([^.]+),^(([^-]+)-([^.]+))]"
-                PROCESS="com.ua.workflow.AddNewMetaDataProcess"
+                PROCESS="com.adobe.test.workflow.AddNewMetaDataProcess"
                 PROCESS_AUTO_ADVANCE="true"/>
         </node3>
         <node4
@@ -74,7 +74,7 @@
             type="PROCESS">
             <metaData
                 jcr:primaryType="nt:unstructured"
-                PROCESS="com.ua.workflow.XmpKeywordProcess"
+                PROCESS="com.adobe.test.workflow.XmpKeywordProcess"
                 PROCESS_AUTO_ADVANCE="true"/>
         </node4>
         <node5
@@ -145,7 +145,7 @@
                 imagebasePath="/content/dam/product/photography"
                 lineartbasePath="/content/dam/product/lineart"
                 manualpaths="[/content/dam/product/splashlight/manual-upload,/content/dam/product/invodo/manual-upload,/content/dam/product/kids-hq/manual-upload,/content/dam/product/united-sports-brand/manual-upload,/content/dam/product/t22-lacrosse/manual-upload,/content/dam/product/psi-91/manual-upload,/content/dam/product/all-star/manual-upload,/content/dam/product/jbl/manual-upload,/content/dam/product/thermos/manual-upload,/content/dam/product/incipio/manual-upload,/content/dam/product/gildan/manual-upload,/content/dam/product/eyeking/manual-upload,/content/dam/product/apac/manual-upload,/content/dam/product/emea/manual-upload,/content/dam/product/latam/manual-upload,/content/dam/product/lineart/upload/manual-upload,/content/dam/product/invodo/uncategorized,/content/dam/product/splashlight/uncategorized,/content/dam/product/kids-hq/uncategorized,/content/dam/product/gear-for-sports/uncategorized,/content/dam/product/stance/uncategorized,/content/dam/product/united-sports-brand/uncategorized,/content/dam/product/t22-lacrosse/uncategorized,/content/dam/product/psi-91/uncategorized,/content/dam/product/all-star/uncategorized,/content/dam/product/jbl/uncategorized,/content/dam/product/eyeking/uncategorized,/content/dam/product/thermos/uncategorized,/content/dam/product/incipio/uncategorized,/content/dam/product/gildan/uncategorized,/content/dam/product/apac/uncategorized,/content/dam/product/emea/uncategorized,/content/dam/product/latam/uncategorized,/content/dam/product/lineart/upload/uncategorized]"
-                PROCESS="com.ua.workflow.AssetMoveProcess"
+                PROCESS="com.adobe.test.workflow.AssetMoveProcess"
                 PROCESS_AUTO_ADVANCE="true"
                 s7Enable="true"
                 s7FtpUploadModelPath="/var/workflow/models/scene7ftpupload"

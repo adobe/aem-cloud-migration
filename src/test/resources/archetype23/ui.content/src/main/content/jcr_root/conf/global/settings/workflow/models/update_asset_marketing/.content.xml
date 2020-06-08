@@ -37,7 +37,7 @@
                 sling:resourceType="cq/workflow/components/model/process">
                 <metaData
                     jcr:primaryType="nt:unstructured"
-                    PROCESS="com.ua.workflow.marketing.AthleteNameExtractionProcess"
+                    PROCESS="com.adobe.test.workflow.marketing.AthleteNameExtractionProcess"
                     PROCESS_AUTO_ADVANCE="true"/>
             </process_1722707917>
             <process_1011609455
@@ -46,7 +46,7 @@
                 sling:resourceType="cq/workflow/components/model/process">
                 <metaData
                     jcr:primaryType="nt:unstructured"
-                    PROCESS="com.ua.workflow.XmpKeywordProcess"
+                    PROCESS="com.adobe.test.workflow.XmpKeywordProcess"
                     PROCESS_AUTO_ADVANCE="true"/>
             </process_1011609455>
             <process_115799162
@@ -173,7 +173,7 @@
                 sling:resourceType="cq/workflow/components/model/process">
                 <metaData
                     jcr:primaryType="nt:unstructured"
-                    PROCESS="com.ua.workflow.LogAssetUploadFolderProcess"
+                    PROCESS="com.adobe.test.workflow.LogAssetUploadFolderProcess"
                     PROCESS_AUTO_ADVANCE="true"/>
             </process_248053912>
             <add-project-level-metadata
@@ -183,7 +183,7 @@
                 sling:resourceType="cq/workflow/components/model/process">
                 <metaData
                     jcr:primaryType="nt:unstructured"
-                    PROCESS="com.ua.workflow.marketing.UpdateAssetWithProjectLevelMetadataProcess"
+                    PROCESS="com.adobe.test.workflow.marketing.UpdateAssetWithProjectLevelMetadataProcess"
                     PROCESS_AUTO_ADVANCE="true"/>
             </add-project-level-metadata>
             <auto-publish-photography-styleguide-assets
@@ -193,7 +193,7 @@
                 sling:resourceType="cq/workflow/components/model/process">
                 <metaData
                     jcr:primaryType="nt:unstructured"
-                    PROCESS="com.ua.workflow.marketing.AutoPublishAssetsProcess"
+                    PROCESS="com.adobe.test.workflow.marketing.AutoPublishAssetsProcess"
                     PROCESS_AUTO_ADVANCE="true"/>
             </auto-publish-photography-styleguide-assets>
         </flow>
