@@ -42,7 +42,7 @@
                 sling:resourceType="cq/workflow/components/model/process">
                 <metaData
                     jcr:primaryType="nt:unstructured"
-                    PROCESS="com.ua.workflow.CheckMetadataChangeProcess"
+                    PROCESS="com.adobe.test.workflow.CheckMetadataChangeProcess"
                     PROCESS_AUTO_ADVANCE="true"/>
             </process>
             <process_630693958

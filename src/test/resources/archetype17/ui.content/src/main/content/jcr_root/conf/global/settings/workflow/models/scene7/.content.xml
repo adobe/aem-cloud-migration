@@ -40,11 +40,11 @@
                 jcr:lastModifiedBy="admin"
                 jcr:primaryType="nt:unstructured"
                 jcr:title="Replicate Asset"
-                sling:resourceType="ua-brand-aem-project/components/workflowstep/replicateasset">
+                sling:resourceType="brand-aem-project/components/workflowstep/replicateasset">
                 <metaData
                     jcr:primaryType="nt:unstructured"
                     assetShareExclusion="/content/dam/product/lineart"
-                    PROCESS="com.ua.workflow.ReplicationProcess"
+                    PROCESS="com.adobe.test.workflow.ReplicationProcess"
                     PROCESS_AUTO_ADVANCE="true"/>
             </replicateasset>
         </flow>

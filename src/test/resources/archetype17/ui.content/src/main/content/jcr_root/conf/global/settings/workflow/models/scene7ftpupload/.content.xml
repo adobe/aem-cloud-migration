@@ -20,10 +20,10 @@
                 jcr:lastModifiedBy="admin"
                 jcr:primaryType="nt:unstructured"
                 jcr:title="Add S7 metadata to Video"
-                sling:resourceType="ua-brand-aem-project/components/workflowstep/addscene7metadata">
+                sling:resourceType="brand-aem-project/components/workflowstep/addscene7metadata">
                 <metaData
                     jcr:primaryType="nt:unstructured"
-                    PROCESS="com.ua.workflow.AddS7MetadataProcess"
+                    PROCESS="com.adobe.test.workflow.AddS7MetadataProcess"
                     PROCESS_AUTO_ADVANCE="true"
                     s7ApiServer="https://s7sps1apissl.scene7.com"
                     s7CloudConfigPath="/conf/asset-share-commons/settings/cloudconfigs/scene7"
@@ -40,7 +40,7 @@
                 sling:resourceType="cq/workflow/components/model/process">
                 <metaData
                     jcr:primaryType="nt:unstructured"
-                    PROCESS="com.ua.workflow.S7FTPVideoUploadProcess"
+                    PROCESS="com.adobe.test.workflow.S7FTPVideoUploadProcess"
                     PROCESS_AUTO_ADVANCE="true"/>
             </process_182478813>
             <replicateasset
@@ -51,11 +51,11 @@
                 jcr:lastModifiedBy="admin"
                 jcr:primaryType="nt:unstructured"
                 jcr:title="Replicate Asset"
-                sling:resourceType="ua-brand-aem-project/components/workflowstep/replicateasset">
+                sling:resourceType="brand-aem-project/components/workflowstep/replicateasset">
                 <metaData
                     jcr:primaryType="nt:unstructured"
                     assetShareExclusion="/content/dam/product/lineart"
-                    PROCESS="com.ua.workflow.ReplicationProcess"
+                    PROCESS="com.adobe.test.workflow.ReplicationProcess"
                     PROCESS_AUTO_ADVANCE="true"/>
             </replicateasset>
         </flow>
