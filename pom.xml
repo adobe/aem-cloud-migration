@@ -6,7 +6,7 @@
     <groupId>com.adobe</groupId>
     <artifactId>wf-migrator</artifactId>
     <name>AEM Assets as a Cloud Service - Workflow Migration Tool</name>
-    <version>0.2.5</version>
+    <version>0.2.6</version>
     <packaging>jar</packaging>
 
     <properties>
