@@ -12,8 +12,6 @@
 
 package com.adobe.skyline.migration.main;
 
-import static org.junit.Assert.*;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -23,8 +21,6 @@ import java.util.Scanner;
 
 import javax.xml.parsers.ParserConfigurationException;
 
-import com.adobe.skyline.migration.exception.ProjectCreationException;
-import com.adobe.skyline.migration.util.XmlUtil;
 import org.junit.Before;
 import org.junit.Test;
 import org.w3c.dom.Document;
@@ -35,8 +31,17 @@ import org.xml.sax.SAXException;
 
 import com.adobe.skyline.migration.MigrationConstants;
 import com.adobe.skyline.migration.SkylineMigrationBaseTest;
+import com.adobe.skyline.migration.dao.FilterFileDAO;
 import com.adobe.skyline.migration.exception.CustomerDataException;
+import com.adobe.skyline.migration.exception.ProjectCreationException;
 import com.adobe.skyline.migration.testutils.TestConstants;
+import com.adobe.skyline.migration.util.XmlUtil;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 @SuppressWarnings("SameParameterValue")
 public class MigrationOrchestratorIntegrationTest extends SkylineMigrationBaseTest {
@@ -96,6 +101,7 @@ public class MigrationOrchestratorIntegrationTest extends SkylineMigrationBaseTe
             };
 
             assertStepsRemovedFromWorkflowModel(damUpdateAssetStepsToRemove, getAbsolutePathForConfModel(testProject, "dam/update_asset"));
+            assertVarNodesRemoved(testProject);
             assertWorkflowRunnerConfigExistsForModel(testProject, "dam/update_asset");
 
             List<String> expectedProfiles = Arrays.asList("migrated_from_update_asset", "migrated_from_update_asset_marketing");
@@ -210,6 +216,20 @@ public class MigrationOrchestratorIntegrationTest extends SkylineMigrationBaseTe
             }
         } catch (Exception e) {
             fail("Exception occurred while evaluating workflow model configuration: " + e.getMessage());
+        }
+    }
+
+    private void assertVarNodesRemoved(File testProject) {
+        File[] children = testProject.listFiles();
+        if (children != null) {
+            for (File child : children) {
+                File filterXml = new File(child, MigrationConstants.PATH_TO_FILTER_XML);
+                if (filterXml.exists()) {
+                    FilterFileDAO dao = new FilterFileDAO(child.getPath());
+                    assertFalse(dao.hasPath(MigrationConstants.VAR_ROOT + "/workflow"));
+                    assertFalse(dao.hasPath(MigrationConstants.VAR_ROOT + "/workflow/models"));
+                }
+            }
         }
     }
 
@@ -356,6 +376,11 @@ public class MigrationOrchestratorIntegrationTest extends SkylineMigrationBaseTe
                 assertTrue(scanner.nextLine().startsWith("###")); //Workflow model description
                 skipLines(scanner, 1);
                 validateNumberOfTableRows(scanner, 8);
+            }
+
+            if (line.equals("## Paths Deleted")) {
+                skipLines(scanner, 4);
+                validateNumberOfTableRows(scanner, 1);
             }
 
             if (line.equals("## Asset Compute Service Processing Profiles")) {

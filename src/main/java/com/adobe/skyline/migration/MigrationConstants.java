@@ -12,12 +12,15 @@
 
 package com.adobe.skyline.migration;
 
-import com.adobe.skyline.migration.model.workflow.Workflow;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import com.adobe.skyline.migration.model.workflow.WorkflowLauncher;
 import com.adobe.skyline.migration.model.workflow.WorkflowStep;
-
-import java.io.File;
-import java.util.*;
 
 public class MigrationConstants {
 
@@ -121,6 +124,7 @@ public class MigrationConstants {
     public static final String NO_LAUNCHER_MSG = "No workflow launchers were disabled.";
     public static final String NO_RUNNER_CFG_MSG = "No workflow runner configurations were created.";
     public static final String NO_MODEL_UPDATE_MSG = "No workflow models were modified.";
+    public static final String NO_PATHS_DELETED_MSG = "No paths were deleted.";
     public static final String NO_PROFILE_MSG = "No processing profiles were created.";
     public static final String NO_PROJECT_MSG = "No Maven projects were created.";
 

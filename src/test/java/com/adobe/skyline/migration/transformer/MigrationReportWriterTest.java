@@ -12,22 +12,30 @@
 
 package com.adobe.skyline.migration.transformer;
 
-import com.adobe.skyline.migration.MigrationConstants;
-import com.adobe.skyline.migration.model.ChangeTrackingService;
-import com.adobe.skyline.migration.model.ProcessingProfile;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Scanner;
 
-import static org.junit.Assert.*;
-import static com.adobe.skyline.migration.model.WorkflowStepSupportStatus.*;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
+
+import com.adobe.skyline.migration.MigrationConstants;
+import com.adobe.skyline.migration.model.ChangeTrackingService;
+import com.adobe.skyline.migration.model.ProcessingProfile;
+
+import static com.adobe.skyline.migration.model.WorkflowStepSupportStatus.DMS7_OOTB;
+import static com.adobe.skyline.migration.model.WorkflowStepSupportStatus.NUI_MIGRATED;
+import static com.adobe.skyline.migration.model.WorkflowStepSupportStatus.NUI_OOTB;
+import static com.adobe.skyline.migration.model.WorkflowStepSupportStatus.REQUIRED;
+import static com.adobe.skyline.migration.model.WorkflowStepSupportStatus.UNNECESSARY;
+import static com.adobe.skyline.migration.model.WorkflowStepSupportStatus.UNSUPPORTED;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class MigrationReportWriterTest {
 
@@ -217,6 +225,41 @@ public class MigrationReportWriterTest {
     }
 
     @Test
+    public void testDeletedPathsWritten() throws FileNotFoundException {
+        changeTracker.trackVarPathDeleted("/path/to/var/workflow");
+        changeTracker.trackVarPathDeleted("/path/to/var/workflow2");
+
+        writer.write(temp.getRoot());
+
+        File migrationReport = new File(temp.getRoot(), MigrationConstants.REPORT_FILENAME);
+        Scanner scanner = new Scanner(migrationReport);
+
+        boolean matched1 = false;
+        boolean matched2 = false;
+
+        while (scanner.hasNext()) {
+            String line = scanner.nextLine();
+
+            if (line.equals("## Paths Deleted")) {
+                skipLines(scanner, 4);
+
+                String firstListed = scanner.nextLine();
+                String secondListed = scanner.nextLine();
+
+                if (firstListed.contains("/path/to/var/workflow") || secondListed.contains("/path/to/var/workflow")) {
+                    matched1 = true;
+                } if (firstListed.contains("/path/to/var/workflow2") || secondListed.contains("/path/to/var/workflow2")) {
+                    matched2 = true;
+                }
+
+                break;
+            }
+        }
+
+        assertTrue(matched1 && matched2);
+    }
+
+    @Test
     public void testProcessingProfilesWritten() throws FileNotFoundException {
         ProcessingProfile profile1 = new ProcessingProfile();
         profile1.setName("profile1");
@@ -314,6 +357,11 @@ public class MigrationReportWriterTest {
             if (line.equals("## Workflow Model Updates")) {
                 skipLines(scanner, 4);
                 assertEquals(MigrationConstants.NO_MODEL_UPDATE_MSG, scanner.nextLine());
+            }
+
+            if (line.equals("## Paths Deleted")) {
+                skipLines(scanner, 2);
+                assertEquals(MigrationConstants.NO_PATHS_DELETED_MSG, scanner.nextLine());
             }
 
             if (line.equals("## Asset Compute Service Processing Profiles")) {

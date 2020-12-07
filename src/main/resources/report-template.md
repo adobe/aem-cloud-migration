@@ -27,6 +27,10 @@ Many workflow models will combine Adobe-provided asset processing steps with cus
 We have made changes to the following workflow models:
 
 ${WORKFLOW_MODELS_TRANSFORMED}
+## Paths Deleted
+Workflow nodes under /var paths are no longer required for deployment to AEM as a Cloud Service.  These nodes will automatically be generated at system startup for any workflow models that have previously been synced.  In order to prevent potential deployment issues, the following /var paths have been removed from your Maven projects and filter files:
+
+${VAR_PATHS_DELETED}
 ## Asset Compute Service Processing Profiles
 By inspecting your workflow step configurations, we were able to automatically generate processing profiles for the Asset Compute Service to encompass configurations that you have customized.  These configurations can be found in the (`aem-cloud-migration.content`) project.
 

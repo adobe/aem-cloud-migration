@@ -12,7 +12,11 @@
 
 package com.adobe.skyline.migration.model;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 public class ChangeTrackingService {
 
@@ -21,6 +25,7 @@ public class ChangeTrackingService {
     private Map<String, Map<String, WorkflowStepSupportStatus>> modelStepsModified;
     private List<ProcessingProfile> processingProfilesCreated;
     private List<String> projectsCreated;
+    private List<String> varPathsDeleted;
 
     public ChangeTrackingService() {
         this.disabledLaunchers = new ArrayList<>();
@@ -28,6 +33,7 @@ public class ChangeTrackingService {
         this.modelStepsModified = new HashMap<>();
         this.processingProfilesCreated = new ArrayList<>();
         this.projectsCreated = new ArrayList<>();
+        this.varPathsDeleted = new ArrayList<>();
     }
 
     public void trackLauncherDisabled(String launcherName) {
@@ -77,5 +83,13 @@ public class ChangeTrackingService {
 
     public List<String> getProjectsCreated() {
         return projectsCreated;
+    }
+
+    public void trackVarPathDeleted(String path) {
+        varPathsDeleted.add(path);
+    }
+
+    public List<String> getVarPathsDeleted() {
+        return varPathsDeleted;
     }
 }

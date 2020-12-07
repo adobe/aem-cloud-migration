@@ -12,7 +12,12 @@
 
 package com.adobe.skyline.migration.util.file;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.Enumeration;
@@ -24,6 +29,20 @@ import java.util.jar.JarFile;
  * Utility for file-based CRUD operations
  */
 public class FileUtil {
+
+    public static void deleteRecursively(File file) {
+        File[] children = file.listFiles();
+
+        for (File child : children) {
+            if (child.isDirectory()) {
+                deleteRecursively(child);
+            } else {
+                child.delete();
+            }
+        }
+
+        file.delete();
+    }
 
     public static void copyDirectoryRecursively(File sourceFolder, File destinationFolder) throws IOException {
         if (sourceFolder.isDirectory())

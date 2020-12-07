@@ -16,14 +16,24 @@ import java.io.File;
 import java.util.List;
 
 import com.adobe.skyline.migration.MigrationConstants;
-import com.adobe.skyline.migration.dao.*;
+import com.adobe.skyline.migration.dao.ContainerProjectDAO;
+import com.adobe.skyline.migration.dao.FilterFileDAO;
+import com.adobe.skyline.migration.dao.MavenProjectDAO;
+import com.adobe.skyline.migration.dao.ProcessingProfileDAO;
+import com.adobe.skyline.migration.dao.WorkflowLauncherDAO;
+import com.adobe.skyline.migration.dao.WorkflowModelDAO;
+import com.adobe.skyline.migration.dao.WorkflowRunnerConfigDAO;
 import com.adobe.skyline.migration.exception.CustomerDataException;
 import com.adobe.skyline.migration.exception.ProjectCreationException;
 import com.adobe.skyline.migration.model.ChangeTrackingService;
 import com.adobe.skyline.migration.model.workflow.Workflow;
 import com.adobe.skyline.migration.model.workflow.WorkflowProject;
 import com.adobe.skyline.migration.parser.CustomerProjectLoader;
-import com.adobe.skyline.migration.transformer.*;
+import com.adobe.skyline.migration.transformer.LauncherDisabler;
+import com.adobe.skyline.migration.transformer.MigrationReportWriter;
+import com.adobe.skyline.migration.transformer.ModelTransformer;
+import com.adobe.skyline.migration.transformer.VarNodeCleaner;
+import com.adobe.skyline.migration.transformer.WorkflowRunnerConfigCreator;
 import com.adobe.skyline.migration.transformer.processingprofile.ProcessingProfileCreator;
 import com.adobe.skyline.migration.transformer.processingprofile.ProfileMapperFactory;
 import com.adobe.skyline.migration.transformer.processingprofile.ProfileMapperFactoryImpl;
@@ -91,6 +101,10 @@ class MigrationOrchestrator {
                     runnerConfigCreator.createWorkflowConfigs(workflow);
                 }
             }
+
+            FilterFileDAO wfProjectFilterDAO = new FilterFileDAO(wfProject.getPath());
+            VarNodeCleaner varNodeCleaner = new VarNodeCleaner(wfProjectFilterDAO, changeTracker);
+            varNodeCleaner.cleanNodes(wfProject);
         }
 
         reportWriter.write(new File(reportOutputDirectory));
