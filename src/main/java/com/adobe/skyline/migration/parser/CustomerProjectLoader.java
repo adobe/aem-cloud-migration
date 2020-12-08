@@ -13,11 +13,9 @@
 package com.adobe.skyline.migration.parser;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
@@ -25,7 +23,6 @@ import javax.xml.xpath.XPathFactory;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
 
 import com.adobe.skyline.migration.MigrationConstants;
 import com.adobe.skyline.migration.dao.WorkflowLauncherDAO;
@@ -155,7 +152,7 @@ public class CustomerProjectLoader {
         return moduleNames;
     }
 
-    private boolean isContentPackage(Document moduleXml) throws CustomerDataException{
+    private boolean isContentPackage(Document moduleXml) {
         NodeList packagingNodes = moduleXml.getElementsByTagName(MigrationConstants.PACKAGING_TAG_NAME);
         if (packagingNodes.getLength() > 0) {
             String packaging = packagingNodes.item(0).getTextContent();
@@ -243,7 +240,7 @@ public class CustomerProjectLoader {
 
     private WorkflowProject createCustomerProject(String modulePath, List<String> wfLauncherPaths, List<String> workflowModelPaths) {
         WorkflowProject project = new WorkflowProject();
-
+        project.setPath(modulePath);
 
         WorkflowBuilder workflowBuilder = new WorkflowBuilder(launcherDAO, modelDAO, modulePath);
         List<Workflow> workflows = workflowBuilder.buildWorkflows(wfLauncherPaths, workflowModelPaths);
@@ -252,7 +249,7 @@ public class CustomerProjectLoader {
         return project;
     }
 
-    private boolean isContainerProject(Document moduleXml) throws ParserConfigurationException, SAXException, IOException, XPathExpressionException {
+    private boolean isContainerProject(Document moduleXml) throws XPathExpressionException {
         return hasEmbeddeds(moduleXml) && !hasPackageType(moduleXml);
     }
 

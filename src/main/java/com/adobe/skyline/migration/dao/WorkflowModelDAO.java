@@ -73,10 +73,6 @@ public class WorkflowModelDAO {
     public void removeWorkflowStepFromModel(String workflowStep, WorkflowModel model) throws CustomerDataException {
         try {
             removeStepFromConfigFile(workflowStep, model);
-
-            if (model.getRuntimeFile() != null) {
-                removeStepFromVarFile(workflowStep, model);
-            }
         } catch (Exception e) {
             throw new CustomerDataException("Unable to update the workflow model for " + model.getName(), e);
         }
@@ -85,10 +81,6 @@ public class WorkflowModelDAO {
     public void addWorkflowStepToModel(WorkflowStep workflowStep, WorkflowModel model) throws CustomerDataException {
         try {
             addStepToConfigFile(workflowStep, model);
-
-            if (model.getRuntimeFile() != null) {
-                addStepToVarFile(workflowStep, model);
-            }
         } catch (Exception e) {
             throw new CustomerDataException("Unable to add new workflow step to model: ", e);
         }
@@ -99,7 +91,6 @@ public class WorkflowModelDAO {
         Logger.DEBUG("confPath: " + confPath);
 
         File confFile = new File(codeRoot + confPath + File.separator +  MigrationConstants.CONTENT_XML);
-        File varFile = new File(codeRoot + varPath.replace(MigrationConstants.JCR_CONTENT, MigrationConstants.JCR_CONTENT_ON_DISK) + "." + MigrationConstants.XML_EXTENSION);
 
         Logger.DEBUG("confFile path: " + confFile.getPath());
 
@@ -111,10 +102,6 @@ public class WorkflowModelDAO {
             model.setConfigurationPage(confPath);
             model.setConfigurationFile(confFile);
             model.setRuntimeComponent(varPath);
-
-            if (varFile.exists()) {
-                model.setRuntimeFile(varFile);
-            }
 
             try {
                 Document workflowDocument = XmlUtil.loadXml(confFile);
@@ -203,54 +190,6 @@ public class WorkflowModelDAO {
         XmlUtil.writeXml(modelXml, model.getConfigurationFile());
     }
 
-    private void removeStepFromVarFile(String workflowStep, WorkflowModel model) throws IOException, SAXException, ParserConfigurationException, TransformerException {
-        Document varXml = XmlUtil.loadXml(model.getRuntimeFile());
-        int nodeIndex = getWorkflowNodeIndexForProcess(varXml, workflowStep);
-        if (nodeIndex > -1) {
-            removeWorkflowNode(varXml, nodeIndex);
-            removeTransition(varXml);
-            XmlUtil.writeXml(varXml, model.getRuntimeFile());
-        } else {
-            Logger.DEBUG("Unable to find " + workflowStep + " in " + model.getRuntimeComponent());
-        }
-
-    }
-
-    private int getWorkflowNodeIndexForProcess(Document xml, String workflowStep) {
-        List<Node> nodes = XmlUtil.getChildElementNodes(xml.getElementsByTagName(MigrationConstants.NODES_NODE).item(0));
-        for (Node currNode : nodes) {
-            Node metadataNode = XmlUtil.getChildElementNodes(currNode).get(0);
-            String process = extractProcessValue(metadataNode);
-            if (workflowStep.equals(process)) {
-                return getIndex(currNode);
-            }
-        }
-        return -1;
-    }
-
-    private void removeWorkflowNode(Document xml, int nodeIndex) {
-        List<Node> nodes = XmlUtil.getChildElementNodes(xml.getElementsByTagName(MigrationConstants.NODES_NODE).item(0));
-
-        boolean nodeRemoved = false;
-
-        for (Node currNode : nodes) {
-            //Once we have removed the node, renumber the nodes after it to fill in the gap
-            if (nodeRemoved) {
-                int currIndex = getIndex(currNode);
-                xml.renameNode(currNode, null, MigrationConstants.NODE_PREFIX + (currIndex - 1));
-            } else if (getIndex(currNode) == nodeIndex) {
-                currNode.getParentNode().removeChild(currNode);
-                nodeRemoved = true;
-            }
-        }
-    }
-
-    private void removeTransition(Document xml) {
-        List<Node> nodes = XmlUtil.getChildElementNodes(xml.getElementsByTagName(MigrationConstants.TRANSITIONS_NODE).item(0));
-        Node lastTransitionNode = nodes.get(nodes.size() - 1);
-        lastTransitionNode.getParentNode().removeChild(lastTransitionNode);
-    }
-
     private String extractProcessValue(Node metadataNode){
         String processValue = null;
 
@@ -266,11 +205,6 @@ public class WorkflowModelDAO {
             }
         }
         return processValue;
-    }
-
-    private int getIndex(Node workflowNode) {
-        String nodeName = workflowNode.getNodeName(); //Current node name will be in a format like node7
-        return Integer.parseInt(nodeName.substring(4)); //Remove the node prefix to return the node index
     }
 
     private void addStepToConfigFile(WorkflowStep workflowStep, WorkflowModel model) throws IOException, SAXException, ParserConfigurationException, TransformerException {
@@ -292,67 +226,5 @@ public class WorkflowModelDAO {
         flowNode.appendChild(processNode);
 
         XmlUtil.writeXml(modelXml, model.getConfigurationFile());
-    }
-
-    private void addStepToVarFile(WorkflowStep workflowStep, WorkflowModel model) throws IOException, SAXException, ParserConfigurationException, TransformerException {
-        Document modelXml = XmlUtil.loadXml(model.getRuntimeFile());
-
-        addProcessNode(workflowStep, modelXml);
-        addTransitionNode(modelXml);
-
-        XmlUtil.writeXml(modelXml, model.getRuntimeFile());
-    }
-
-    /**
-     * The final process node in a runtime model is END.  Therefore, we actually need to add our step just before the
-     * final node.
-     */
-    private void addProcessNode(WorkflowStep workflowStep, Document modelXml) {
-        Node nodesNode = modelXml.getElementsByTagName(MigrationConstants.NODES_NODE).item(0);
-        List<Node> nodes = XmlUtil.getChildElementNodes(nodesNode);
-
-        Element workflowNode = getNewProcessNode(workflowStep, modelXml, nodes);
-
-        Node endNode = nodes.get(nodes.size()-1); //Get the last item in the list
-        modelXml.renameNode(endNode, null, "node" + nodes.size()); //Increment the node name for the END node
-
-        nodesNode.insertBefore(workflowNode, endNode);
-    }
-
-    private Element getNewProcessNode(WorkflowStep workflowStep, Document modelXml, List<Node> nodes) {
-        int finalNode = nodes.size() - 1;
-
-        Element metadataNode = modelXml.createElement(MigrationConstants.METADATA_XML_NODE);
-        metadataNode.setAttribute(MigrationConstants.JCR_PRIMARY_TYPE_PROP, MigrationConstants.NT_UNSTRUCTURED_TYPE_VALUE);
-        metadataNode.setAttribute(MigrationConstants.PROCESS_PROP, workflowStep.getProcess());
-        metadataNode.setAttribute(MigrationConstants.PROCESS_AUTO_ADVANCE_PROP, "true");
-
-        Element workflowNode = modelXml.createElement(MigrationConstants.NODE_PREFIX + finalNode);
-        workflowNode.setAttribute(MigrationConstants.JCR_PRIMARY_TYPE_PROP, MigrationConstants.WORKFLOW_NODE_TYPE_VALUE);
-        workflowNode.setAttribute(MigrationConstants.DESCRIPTION_PROP, workflowStep.getDescription());
-        workflowNode.setAttribute(MigrationConstants.TITLE_PROP, workflowStep.getTitle());
-        workflowNode.setAttribute(MigrationConstants.TYPE_PROP, MigrationConstants.PROCESS_PROP);
-        workflowNode.appendChild(metadataNode);
-
-        return workflowNode;
-    }
-
-    private void addTransitionNode(Document modelXml) {
-        Node transitionsNode = modelXml.getElementsByTagName(MigrationConstants.TRANSITIONS_NODE).item(0);
-        List<Node> nodes = XmlUtil.getChildElementNodes(transitionsNode);
-        int lastNode = nodes.size();
-        int nextNode = lastNode + 1;
-        String transitionNodeName = MigrationConstants.NODE_PREFIX + lastNode + MigrationConstants.NODE_SPACE + MigrationConstants.NODE_PREFIX + nextNode;
-
-        Element metadataNode = modelXml.createElement(MigrationConstants.METADATA_XML_NODE);
-        metadataNode.setAttribute(MigrationConstants.JCR_PRIMARY_TYPE_PROP, MigrationConstants.NT_UNSTRUCTURED_TYPE_VALUE);
-
-        Element transitionNode = modelXml.createElement(transitionNodeName);
-        transitionNode.setAttribute(MigrationConstants.JCR_PRIMARY_TYPE_PROP, MigrationConstants.WORKFLOW_TRANSITION_TYPE_VALUE);
-        transitionNode.setAttribute(MigrationConstants.FROM_PROP, MigrationConstants.NODE_PREFIX + lastNode);
-        transitionNode.setAttribute(MigrationConstants.TO_PROP, MigrationConstants.NODE_PREFIX + nextNode);
-        transitionNode.appendChild(metadataNode);
-
-        transitionsNode.appendChild(transitionNode);
     }
 }

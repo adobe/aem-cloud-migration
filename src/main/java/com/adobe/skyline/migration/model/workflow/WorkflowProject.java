@@ -17,10 +17,19 @@ import java.util.List;
 
 public class WorkflowProject {
 
+    private String path;
     private List<Workflow> workflows;
 
     public WorkflowProject() {
         this.workflows = new ArrayList<>();
+    }
+
+    public String getPath() {
+        return path;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
     }
 
     public List<Workflow> getWorkflows() {

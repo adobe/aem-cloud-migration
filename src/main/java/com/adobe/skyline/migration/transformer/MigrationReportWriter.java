@@ -46,6 +46,7 @@ public class MigrationReportWriter {
             writeLaunchersDisabled(reportFile);
             writeRunnerConfigs(reportFile);
             writeModifiedWorkflowSteps(reportFile);
+            writePathsDeleted(reportFile);
             writeProcessingProfiles(reportFile);
             writeProjects(reportFile);
         } catch (IOException e) {
@@ -163,6 +164,32 @@ public class MigrationReportWriter {
         }
 
         FileUtil.findAndReplaceInFile(reportFile, "\\$\\{WORKFLOW_MODELS_TRANSFORMED\\}", wfStepBuilder.toString());
+    }
+
+    private void writePathsDeleted(File reportFile) throws IOException {
+        StringBuilder mdBuilder = new StringBuilder();
+
+        if (changeTracker.getVarPathsDeleted().size() > 0) {
+            List<List<String>> tableValues = new LinkedList<>();
+
+            List<String> headerValues = new LinkedList<>(Arrays.asList("Action", "Path"));
+            tableValues.add(headerValues);
+            List<String> underlineRow = new LinkedList<>(Arrays.asList("------", "-------"));
+            tableValues.add(underlineRow);
+
+            for (String path : changeTracker.getVarPathsDeleted()) {
+                List<String> nextRow = new LinkedList<>(Arrays.asList("Deleted", path));
+                tableValues.add(nextRow);
+            }
+
+            String mdTable = createMarkdownTable(tableValues);
+            mdBuilder.append(mdTable);
+        } else {
+            mdBuilder.append(MigrationConstants.NO_PATHS_DELETED_MSG);
+            mdBuilder.append(System.getProperty("line.separator"));
+        }
+
+        FileUtil.findAndReplaceInFile(reportFile, "\\$\\{VAR_PATHS_DELETED\\}", mdBuilder.toString());
     }
 
     private void writeProcessingProfiles(File reportFile) throws IOException {

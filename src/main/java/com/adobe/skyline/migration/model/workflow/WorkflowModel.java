@@ -20,8 +20,6 @@ public class WorkflowModel {
 
     //Path to the workflow's Component node under /var/workflow or /etc
     private String runtimeComponent;
-    //File object that is referenced by the runtimeComponent path
-    private File runtimeFile;
 
     //Path to the workflow's configuration Page node under /conf or /etc
     private String configurationPage;
@@ -44,14 +42,6 @@ public class WorkflowModel {
 
     public void setRuntimeComponent(String workflowComponent) {
         this.runtimeComponent = workflowComponent;
-    }
-
-    public File getRuntimeFile() {
-        return runtimeFile;
-    }
-
-    public void setRuntimeFile(File runtimeFile) {
-        this.runtimeFile = runtimeFile;
     }
 
     public String getConfigurationPage() {

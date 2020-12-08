@@ -12,28 +12,33 @@
 
 package com.adobe.skyline.migration.dao;
 
-import com.adobe.skyline.migration.MigrationConstants;
-import com.adobe.skyline.migration.SkylineMigrationBaseTest;
-import com.adobe.skyline.migration.testutils.TestConstants;
-import com.adobe.skyline.migration.util.XmlUtil;
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
+import java.util.regex.Pattern;
+
+import javax.xml.parsers.ParserConfigurationException;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import javax.xml.parsers.ParserConfigurationException;
-import java.io.File;
-import java.io.IOException;
-import java.util.List;
+import com.adobe.skyline.migration.MigrationConstants;
+import com.adobe.skyline.migration.SkylineMigrationBaseTest;
+import com.adobe.skyline.migration.testutils.TestConstants;
+import com.adobe.skyline.migration.util.XmlUtil;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class FilterFileDAOTest extends SkylineMigrationBaseTest {
 
     private File tempProjectRoot;
+    private File filterFile;
+
     private FilterFileDAO dao;
 
     @Before
@@ -41,6 +46,7 @@ public class FilterFileDAOTest extends SkylineMigrationBaseTest {
         super.setUp();
 
         this.tempProjectRoot = projectLoader.copyConfProjectToTemp(temp);
+        this.filterFile = new File(tempProjectRoot + File.separator + TestConstants.CONF_WORKFLOW_PROJECT_NAME + MigrationConstants.PATH_TO_FILTER_XML);
 
         this.dao = new FilterFileDAO(tempProjectRoot + File.separator + TestConstants.CONF_WORKFLOW_PROJECT_NAME);
     }
@@ -49,22 +55,7 @@ public class FilterFileDAOTest extends SkylineMigrationBaseTest {
     public void testFilterAdded() throws ParserConfigurationException, SAXException, IOException {
         dao.addPath(MigrationConstants.WORKFLOW_RUNNER_CONFIG_PATH);
 
-        File filterFile = new File(tempProjectRoot + File.separator + TestConstants.CONF_WORKFLOW_PROJECT_NAME + MigrationConstants.PATH_TO_FILTER_XML);
-
-        Document filterXml = XmlUtil.loadXml(filterFile);
-        Element workspaceFilterElement = filterXml.getDocumentElement();
-        List<Node> filterNodes = XmlUtil.getChildElementNodes(workspaceFilterElement);
-
-        boolean matched = false;
-        for (Node currNode : filterNodes) {
-            String path = ((Element) currNode).getAttribute(MigrationConstants.ROOT_PROPERTY);
-            if (MigrationConstants.WORKFLOW_RUNNER_CONFIG_PATH.equals(path)) {
-                matched = true;
-                break;
-            }
-        }
-
-        assertTrue(matched);
+        assertEquals(1, findPathMatches(MigrationConstants.WORKFLOW_RUNNER_CONFIG_PATH));
     }
 
     @Test
@@ -72,20 +63,41 @@ public class FilterFileDAOTest extends SkylineMigrationBaseTest {
         dao.addPath(MigrationConstants.WORKFLOW_RUNNER_CONFIG_PATH);
         dao.addPath(MigrationConstants.WORKFLOW_RUNNER_CONFIG_PATH);
 
-        File filterFile = new File(tempProjectRoot + File.separator + TestConstants.CONF_WORKFLOW_PROJECT_NAME + MigrationConstants.PATH_TO_FILTER_XML);
+        assertEquals(1, findPathMatches(MigrationConstants.WORKFLOW_RUNNER_CONFIG_PATH));
+    }
 
+    @Test
+    public void testFindPaths() {
+        Pattern confPattern = Pattern.compile("^/conf.*");
+
+        List<String> pathsFound = dao.findPathsWith(confPattern);
+
+        assertTrue(pathsFound.contains("/conf/global/settings/workflow"));
+        assertTrue(pathsFound.contains("/conf/sample"));
+    }
+
+    @Test
+    public void testRemovePath() throws IOException, SAXException, ParserConfigurationException {
+        assertEquals(1, findPathMatches("/conf/sample"));
+
+        dao.removePath("/conf/sample");
+
+        assertEquals(0, findPathMatches("/conf/sample"));
+    }
+
+    private int findPathMatches(String path) throws ParserConfigurationException, SAXException, IOException {
         Document filterXml = XmlUtil.loadXml(filterFile);
         Element workspaceFilterElement = filterXml.getDocumentElement();
         List<Node> filterNodes = XmlUtil.getChildElementNodes(workspaceFilterElement);
 
         int matched = 0;
         for (Node currNode : filterNodes) {
-            String path = ((Element) currNode).getAttribute(MigrationConstants.ROOT_PROPERTY);
-            if (MigrationConstants.WORKFLOW_RUNNER_CONFIG_PATH.equals(path)) {
+            String xmlPath = ((Element) currNode).getAttribute(MigrationConstants.ROOT_PROPERTY);
+            if (path.equals(xmlPath)) {
                 matched++;
             }
         }
 
-        assertEquals(1, matched);
+        return matched;
     }
 }

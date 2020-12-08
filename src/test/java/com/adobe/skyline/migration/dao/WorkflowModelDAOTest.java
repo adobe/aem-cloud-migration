@@ -12,6 +12,15 @@
 
 package com.adobe.skyline.migration.dao;
 
+import java.io.File;
+import java.util.List;
+import java.util.Map;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+
 import com.adobe.skyline.migration.MigrationConstants;
 import com.adobe.skyline.migration.SkylineMigrationBaseTest;
 import com.adobe.skyline.migration.exception.CustomerDataException;
@@ -19,19 +28,12 @@ import com.adobe.skyline.migration.model.workflow.WorkflowModel;
 import com.adobe.skyline.migration.model.workflow.WorkflowStep;
 import com.adobe.skyline.migration.testutils.TestConstants;
 import com.adobe.skyline.migration.util.XmlUtil;
-import org.junit.Before;
-import org.junit.Test;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-import org.xml.sax.SAXException;
 
-import javax.xml.parsers.ParserConfigurationException;
-import java.io.File;
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 public class WorkflowModelDAOTest extends SkylineMigrationBaseTest {
 
@@ -83,8 +85,6 @@ public class WorkflowModelDAOTest extends SkylineMigrationBaseTest {
         WorkflowModel model = modelDAO.loadWorkflowModel(projectRoot + "/" +
                 TestConstants.CONF_WORKFLOW_PROJECT_NAME, "/conf/global/settings/workflow/models/dam/update_asset");
 
-        assertNull(model.getRuntimeFile());
-
         assertNotNull(model.getRuntimeComponent());
         assertNotNull(model.getConfigurationPage());
         assertTrue(model.getConfigurationFile().exists());
@@ -135,27 +135,6 @@ public class WorkflowModelDAOTest extends SkylineMigrationBaseTest {
     }
 
     @Test
-    public void testStepRemovedFromNewVarFile() throws CustomerDataException, ParserConfigurationException, SAXException, IOException {
-        File projectRoot = projectLoader.copyConfProjectToTemp(temp);
-        String projectPath = projectRoot + "/" + TestConstants.CONF_WORKFLOW_PROJECT_NAME;
-
-        //Inspect the document to ensure that the step is present
-        Document varDocBefore = XmlUtil.loadXml(new File(projectPath + MigrationConstants.PATH_TO_JCR_ROOT + PATH_TO_VAR_UPDATE_ASSET + ".xml"));
-        assertVarNodes(12, varDocBefore);
-        assertVarTransitions(11, varDocBefore);
-
-        //Remove the step
-        WorkflowModel model = modelDAO.loadWorkflowModel(projectPath, PATH_TO_VAR_UPDATE_ASSET);
-        modelDAO.removeWorkflowStepFromModel(STEP_GATEKEEPER_PROCESS, model);
-
-        //Inspect the document ensure that the step has been removed
-        Document varDocAfter = XmlUtil.loadXml(new File(projectPath +
-                MigrationConstants.PATH_TO_JCR_ROOT + PATH_TO_VAR_UPDATE_ASSET + ".xml"));
-        assertVarNodes(11, varDocAfter);
-        assertVarTransitions(10, varDocAfter);
-    }
-
-    @Test
     public void testStepRemovedFromOldConfFile() throws CustomerDataException {
         File projectRoot = projectLoader.copyEtcProjectToTemp(temp);
         String projectPath = projectRoot + "/" + TestConstants.ETC_WORKFLOW_PROJECT_NAME;
@@ -170,28 +149,6 @@ public class WorkflowModelDAOTest extends SkylineMigrationBaseTest {
         //Reload the model and ensure the step is gone
         WorkflowModel modelAfter = modelDAO.loadWorkflowModel(projectPath, PATH_TO_ETC_UPDATE_ASSET);
         assertFalse(modelContainsStep(modelAfter, STEP_GATEKEEPER_PROCESS));
-    }
-
-    @Test
-    public void testStepRemovedFromOldVarFile() throws CustomerDataException, ParserConfigurationException, SAXException, IOException {
-        File projectRoot = projectLoader.copyEtcProjectToTemp(temp);
-        String modelXmlPath = projectRoot + "/" + TestConstants.ETC_WORKFLOW_PROJECT_NAME + MigrationConstants.PATH_TO_JCR_ROOT +
-                PATH_TO_ETC_UPDATE_ASSET + "/" + MigrationConstants.JCR_CONTENT_ON_DISK + "/" + MigrationConstants.MODEL_XML;
-
-        //Inspect the document to ensure that the step is present
-        Document varDocBefore = XmlUtil.loadXml(new File(modelXmlPath));
-        assertVarNodes(16, varDocBefore);
-        assertVarTransitions(15, varDocBefore);
-
-        //Remove the step
-        WorkflowModel model = modelDAO.loadWorkflowModel(projectRoot + "/" +
-                TestConstants.ETC_WORKFLOW_PROJECT_NAME, PATH_TO_ETC_UPDATE_ASSET);
-        modelDAO.removeWorkflowStepFromModel(STEP_GATEKEEPER_PROCESS, model);
-
-        //Inspect the document ensure that the step has been removed
-        Document varDocAfter = XmlUtil.loadXml(new File(modelXmlPath));
-        assertVarNodes(15, varDocAfter);
-        assertVarTransitions(14, varDocAfter);
     }
 
     @Test
@@ -214,28 +171,6 @@ public class WorkflowModelDAOTest extends SkylineMigrationBaseTest {
     }
 
     @Test
-    public void testStepAddedToNewVarFile() throws CustomerDataException, ParserConfigurationException, SAXException, IOException {
-        File projectRoot = projectLoader.copyConfProjectToTemp(temp);
-        String projectPath = projectRoot + "/" + TestConstants.CONF_WORKFLOW_PROJECT_NAME;
-
-        //Inspect the document to ensure that the step is not present
-        Document varDocBefore = XmlUtil.loadXml(new File(projectPath + MigrationConstants.PATH_TO_JCR_ROOT +
-                PATH_TO_VAR_ASSET_NOCOMPLETE + ".xml"));
-        assertVarNodes(11, varDocBefore);
-        assertVarTransitions(10, varDocBefore);
-
-        //Add the step
-        WorkflowModel model = modelDAO.loadWorkflowModel(projectPath, PATH_TO_VAR_ASSET_NOCOMPLETE);
-        modelDAO.addWorkflowStepToModel(WORKFLOW_COMPLETED_PROCESS_STEP, model);
-
-        //Inspect the document ensure that the step has been added
-        Document varDocAfter = XmlUtil.loadXml(new File(projectPath + MigrationConstants.PATH_TO_JCR_ROOT +
-                PATH_TO_VAR_ASSET_NOCOMPLETE + ".xml"));
-        assertVarNodes(12, varDocAfter);
-        assertVarTransitions(11, varDocAfter);
-    }
-
-    @Test
     public void testStepAddedToOldConfFile() throws CustomerDataException {
         File projectRoot = projectLoader.copyEtcProjectToTemp(temp);
         String projectPath = projectRoot + "/" + TestConstants.ETC_WORKFLOW_PROJECT_NAME;
@@ -252,30 +187,6 @@ public class WorkflowModelDAOTest extends SkylineMigrationBaseTest {
         WorkflowModel modelAfter = modelDAO.loadWorkflowModel(projectPath, PATH_TO_ETC_ASSET_NOCOMPLETE);
         assertTrue("Step was not added to the workflow model.", modelContainsStep(modelAfter,
                 WORKFLOW_COMPLETED_PROCESS_STEP.getProcess()));
-    }
-
-    @Test
-    public void testStepAddedToOldVarFile() throws CustomerDataException, ParserConfigurationException, SAXException, IOException {
-        File projectRoot = projectLoader.copyEtcProjectToTemp(temp);
-        String projectPath = projectRoot + "/" + TestConstants.ETC_WORKFLOW_PROJECT_NAME;
-
-
-        String modelXmlPath = projectPath + MigrationConstants.PATH_TO_JCR_ROOT +
-                PATH_TO_ETC_ASSET_NOCOMPLETE + "/" + MigrationConstants.JCR_CONTENT_ON_DISK + "/" + MigrationConstants.MODEL_XML;
-
-        //Inspect the document to ensure that the step is not present
-        Document varDocBefore = XmlUtil.loadXml(new File(modelXmlPath));
-        assertVarNodes(15, varDocBefore);
-        assertVarTransitions(14, varDocBefore);
-
-        //Add the step
-        WorkflowModel model = modelDAO.loadWorkflowModel(projectPath, PATH_TO_ETC_ASSET_NOCOMPLETE);
-        modelDAO.addWorkflowStepToModel(WORKFLOW_COMPLETED_PROCESS_STEP, model);
-
-        //Inspect the document ensure that the step has been added
-        Document varDocAfter = XmlUtil.loadXml(new File(modelXmlPath));
-        assertVarNodes(16, varDocAfter);
-        assertVarTransitions(15, varDocAfter);
     }
 
     @Test
