@@ -28,7 +28,6 @@
                     <argLine>${surefireArgLine}</argLine>
                     <!-- Skips unit tests if the value of skip.unit.tests property is true -->
                     <skipTests>${skip.unit.tests}</skipTests>
-                    <!-- Excludes integration tests when unit tests are run. -->
                 </configuration>
             </plugin>
             <plugin>
@@ -76,25 +75,15 @@
                         </configuration>
                     </execution>
                     <execution>
-
                         <id>post-unit-test</id>
-
                         <phase>prepare-package</phase>
-
                         <goals>
-
                             <goal>report</goal>
-
                         </goals>
-
                         <configuration>
-
                             <dataFile>${project.build.directory}/coverage-reports/jacoco-ut.exec</dataFile>
-
                             <outputDirectory>${project.build.directory}/coverage-reports</outputDirectory>
-
                         </configuration>
-
                     </execution>
                 </executions>
             </plugin>
