@@ -28,6 +28,7 @@ import com.adobe.skyline.migration.SkylineMigrationBaseTest;
 import com.adobe.skyline.migration.exception.CustomerDataException;
 import com.adobe.skyline.migration.testutils.TestConstants;
 
+import java.io.File;
 import java.nio.file.Paths;
 import java.util.List;
 
@@ -191,8 +192,8 @@ public class CustomerProjectLoaderTest extends SkylineMigrationBaseTest {
                     assertTrue(relPath.contains(MigrationConstants.CONFIG));
                     assertTrue(relPath.contains(MigrationConstants.CONTENT_XML));
 
-                    String launcherFolder = relPath.substring(0, relPath.lastIndexOf("\\"));
-                    String launcherConfigRoot = launcherFolder.substring(0, launcherFolder.lastIndexOf("\\"));
+                    String launcherFolder = relPath.substring(0, relPath.lastIndexOf(File.separator));
+                    String launcherConfigRoot = launcherFolder.substring(0, launcherFolder.lastIndexOf(File.separator));
                     assertEquals(launcherRoot, launcherConfigRoot);
                 }
             }
