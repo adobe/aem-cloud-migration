@@ -15,6 +15,7 @@ package com.adobe.skyline.migration.main;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
@@ -171,27 +172,27 @@ public class MigrationOrchestratorIntegrationTest extends SkylineMigrationBaseTe
     }
 
     private String getAbsolutePathForConfLauncher(File tempProjectRoot, String launcherName) {
-        String pathRoot = tempProjectRoot.getPath() + File.separator + TestConstants.CONF_WORKFLOW_PROJECT_NAME +
-                File.separator + TestConstants.CONF_LAUNCHER_PATH;
-        return pathRoot + launcherName + File.separator + MigrationConstants.CONTENT_XML;
+        String pathRoot = Paths.get(tempProjectRoot.getPath(), TestConstants.CONF_WORKFLOW_PROJECT_NAME,
+                TestConstants.CONF_LAUNCHER_PATH).toString();
+        return Paths.get(pathRoot, launcherName, MigrationConstants.CONTENT_XML).toString();
     }
 
     private String getAbsolutePathForEtcLauncher(File tempProjectRoot, String launcherName) {
-        String pathRoot = tempProjectRoot.getPath() + File.separator + TestConstants.ETC_WORKFLOW_PROJECT_NAME +
-                File.separator + TestConstants.ETC_LAUNCHER_PATH;
-        return pathRoot + launcherName + File.separator + MigrationConstants.CONTENT_XML;
+        String pathRoot = Paths.get(tempProjectRoot.getPath(), TestConstants.ETC_WORKFLOW_PROJECT_NAME,
+                TestConstants.ETC_LAUNCHER_PATH).toString();
+        return Paths.get(pathRoot, launcherName, MigrationConstants.CONTENT_XML).toString();
     }
 
     private String getAbsolutePathForConfModel(File tempProjectRoot, String workflowModelName) {
-        String pathRoot = tempProjectRoot.getPath() + File.separator + TestConstants.CONF_WORKFLOW_PROJECT_NAME +
-                File.separator + TestConstants.CONF_MODEL_PATH;
-        return pathRoot + workflowModelName + File.separator + MigrationConstants.CONTENT_XML;
+        String pathRoot = Paths.get(tempProjectRoot.getPath(), TestConstants.CONF_WORKFLOW_PROJECT_NAME,
+                TestConstants.CONF_MODEL_PATH).toString();
+        return Paths.get(pathRoot, workflowModelName, MigrationConstants.CONTENT_XML).toString();
     }
 
     private String getAbsolutePathForEtcModel(File tempProjectRoot, String workflowModelName) {
-        String pathRoot = tempProjectRoot.getPath() + File.separator + TestConstants.ETC_WORKFLOW_PROJECT_NAME +
-                File.separator + TestConstants.ETC_MODEL_PATH;
-        return pathRoot + workflowModelName + File.separator + MigrationConstants.CONTENT_XML;
+        String pathRoot = Paths.get(tempProjectRoot.getPath(), TestConstants.ETC_WORKFLOW_PROJECT_NAME,
+                TestConstants.ETC_MODEL_PATH).toString();
+        return Paths.get(pathRoot, workflowModelName, MigrationConstants.CONTENT_XML).toString();
     }
 
     private void assertStepsRemovedFromWorkflowModel(String[] workflowSteps, String workflowModelPath) {
@@ -289,14 +290,14 @@ public class MigrationOrchestratorIntegrationTest extends SkylineMigrationBaseTe
     }
 
     private File getRunnerConfig(File testProject) {
-        return new File(testProject.getPath() + File.separator + MigrationConstants.MIGRATION_PROJECT_APPS +
-                File.separator + MigrationConstants.PATH_TO_JCR_ROOT + MigrationConstants.WORKFLOW_RUNNER_CONFIG_PATH +
-                File.separator + MigrationConstants.WORKFLOW_RUNNER_CONFIG_FILENAME);
+        return new File(Paths.get(testProject.getPath(), MigrationConstants.MIGRATION_PROJECT_APPS,
+                MigrationConstants.PATH_TO_JCR_ROOT, MigrationConstants.WORKFLOW_RUNNER_CONFIG_PATH,
+                MigrationConstants.WORKFLOW_RUNNER_CONFIG_FILENAME).toString());
     }
 
     private void assertProcessingProfilesCreated(File testProject, List<String> profileNames) {
-        File profileRoot = new File(testProject.getPath() + File.separator + MigrationConstants.MIGRATION_PROJECT_CONTENT +
-                File.separator + MigrationConstants.PROCESSING_PROFILE_DISK_PATH);
+        File profileRoot = new File(Paths.get(testProject.getPath(), MigrationConstants.MIGRATION_PROJECT_CONTENT,
+                MigrationConstants.PROCESSING_PROFILE_DISK_PATH).toString());
         File[] children = profileRoot.listFiles();
 
         for (String profileName:profileNames) {
@@ -315,8 +316,8 @@ public class MigrationOrchestratorIntegrationTest extends SkylineMigrationBaseTe
     }
 
     private void assertNoProcessingProfilesCreated(File testProject) {
-        File profileRoot = new File(testProject.getPath() + File.separator + MigrationConstants.MIGRATION_PROJECT_CONTENT +
-                File.separator + MigrationConstants.PROCESSING_PROFILE_DISK_PATH);
+        File profileRoot = new File(Paths.get(testProject.getPath(), MigrationConstants.MIGRATION_PROJECT_CONTENT,
+                MigrationConstants.PROCESSING_PROFILE_DISK_PATH).toString());
         assertFalse(profileRoot.exists());
     }
 

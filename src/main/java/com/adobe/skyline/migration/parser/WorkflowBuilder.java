@@ -22,6 +22,7 @@ import com.adobe.skyline.migration.model.workflow.Workflow;
 import com.adobe.skyline.migration.model.workflow.WorkflowLauncher;
 import com.adobe.skyline.migration.model.workflow.WorkflowModel;
 import com.adobe.skyline.migration.util.Logger;
+import org.apache.commons.io.FilenameUtils;
 
 /**
  * Leveraged by the CustomerProjectLoader to create Workflow model objects from the customer workflow configurations.
@@ -122,11 +123,9 @@ class WorkflowBuilder {
     }
 
     private String getModelName(String modelPath) {
-        return modelPath
-                .replaceAll(".*/conf/global/settings/workflow/models/", "")
-                .replaceAll(".*/var/workflow/models/", "")
-                .replaceAll(".*/etc/workflow/models/", "")
+        modelPath =  modelPath
                 .replaceAll("/jcr:content/model", "")
                 .replaceAll("/.content.xml", "");
+        return FilenameUtils.getBaseName(modelPath);
     }
 }

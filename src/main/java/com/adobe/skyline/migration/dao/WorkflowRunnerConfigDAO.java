@@ -14,10 +14,10 @@ package com.adobe.skyline.migration.dao;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.List;
 
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.TransformerException;
 
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
@@ -36,8 +36,8 @@ public class WorkflowRunnerConfigDAO {
     private Document configDoc;
 
     public WorkflowRunnerConfigDAO(String projectPath) {
-        this.configFile = new File(projectPath + MigrationConstants.PATH_TO_JCR_ROOT +
-                MigrationConstants.WORKFLOW_RUNNER_CONFIG_PATH + "/" + MigrationConstants.WORKFLOW_RUNNER_CONFIG_FILENAME);
+        this.configFile = new File(Paths.get(projectPath ,MigrationConstants.PATH_TO_JCR_ROOT,
+                MigrationConstants.WORKFLOW_RUNNER_CONFIG_PATH, MigrationConstants.WORKFLOW_RUNNER_CONFIG_FILENAME).toString());
     }
 
     public void createConfigByExpression(String expression, String model) {

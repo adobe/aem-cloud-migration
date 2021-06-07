@@ -14,6 +14,7 @@ package com.adobe.skyline.migration.dao;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.jar.JarFile;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -61,7 +62,7 @@ public class MavenProjectDAO {
      * Check to see if a project already exists.  This is used to determine whether it should be created.
      */
     public boolean projectExists(String projectName) {
-        String fullPath = this.existingProjectPath + File.separator + projectName;
+        String fullPath = Paths.get(this.existingProjectPath, projectName).toString();
         return (new File(fullPath)).exists();
     }
 
@@ -70,7 +71,7 @@ public class MavenProjectDAO {
      */
     public void createProject(String projectName) throws ProjectCreationException {
         try {
-            String targetPath = this.existingProjectPath + File.separator + projectName;
+            String targetPath = Paths.get(this.existingProjectPath, projectName).toString();
             String templatePath = "";
 
             if (projectName.equals(MigrationConstants.MIGRATION_PROJECT_CONTENT)) {

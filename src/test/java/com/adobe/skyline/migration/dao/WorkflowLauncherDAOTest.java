@@ -16,6 +16,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 import java.io.File;
+import java.nio.file.Paths;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -69,8 +70,8 @@ public class WorkflowLauncherDAOTest extends SkylineMigrationBaseTest {
 
         launcher.setGlob(glob);
         launcher.setName(name);
-        launcher.setRelativePath(TestConstants.CONF_LAUNCHER_PATH + name + "/"
-                + MigrationConstants.CONTENT_XML);
+        launcher.setRelativePath(Paths.get(TestConstants.CONF_LAUNCHER_PATH, name,
+                MigrationConstants.CONTENT_XML).toString());
         launcher.setLauncherFile(new File(getAbsolutePathForConfLauncher(name)));
 
         return launcher;
@@ -91,7 +92,7 @@ public class WorkflowLauncherDAOTest extends SkylineMigrationBaseTest {
     }
 
     private String getAbsolutePathForConfLauncher(String launcherName) {
-        return tempProjectRoot.getPath() + File.separator + TestConstants.CONF_WORKFLOW_PROJECT_NAME + File.separator +
-                TestConstants.CONF_LAUNCHER_PATH + launcherName + File.separator + MigrationConstants.CONTENT_XML;
+        return Paths.get(tempProjectRoot.getPath(), TestConstants.CONF_WORKFLOW_PROJECT_NAME,
+                TestConstants.CONF_LAUNCHER_PATH, launcherName, MigrationConstants.CONTENT_XML).toString();
     }
 }

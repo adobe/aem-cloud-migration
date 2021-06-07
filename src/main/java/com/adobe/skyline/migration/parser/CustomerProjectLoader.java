@@ -13,8 +13,11 @@
 package com.adobe.skyline.migration.parser;
 
 import java.io.File;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
@@ -67,7 +70,7 @@ public class CustomerProjectLoader {
             String modulePath = customerProjectPath + File.separator + moduleName;
             Logger.DEBUG("Module found at " + modulePath);
 
-            Document moduleXml = tryXmlLoad(new File(modulePath + "/" + MigrationConstants.POM_XML));
+            Document moduleXml = tryXmlLoad(new File(Paths.get(modulePath, MigrationConstants.POM_XML).toString()));
 
             if (isContentPackage(moduleXml)) {
                 List<String> wfLauncherPaths = getLauncherPaths(modulePath);
@@ -88,13 +91,13 @@ public class CustomerProjectLoader {
     }
 
     public boolean isCloudManagerReady(String customerProjectPath) throws CustomerDataException {
-        File customerPom = new File(customerProjectPath + File.separator + MigrationConstants.POM_XML);
+        File customerPom = new File(Paths.get(customerProjectPath, MigrationConstants.POM_XML).toString());
 
         boolean hasPackageTypesDeclared = false;
         boolean hasContainerProject = false;
 
         for (String moduleName : getModuleNames(customerPom)) {
-            String modulePath = customerProjectPath + File.separator + moduleName;
+            String modulePath = Paths.get(customerProjectPath, moduleName).toString();
             Logger.DEBUG("Module found at " + modulePath);
 
             Document moduleXml = tryXmlLoad(new File(modulePath + "/" + MigrationConstants.POM_XML));
@@ -116,14 +119,14 @@ public class CustomerProjectLoader {
     }
 
     public String getContainerProjectPath(String customerProjectPath) throws CustomerDataException {
-        File customerPom = new File(customerProjectPath + File.separator + MigrationConstants.POM_XML);
+        File customerPom = new File(Paths.get(customerProjectPath, MigrationConstants.POM_XML).toString());
 
         if (!customerPom.exists()) {
             throw new CustomerDataException("Unable to find a the specified pom file: " + customerPom.getPath());
         }
 
         for (String moduleName : getModuleNames(customerPom)) {
-            String modulePath = customerProjectPath + File.separator + moduleName;
+            String modulePath = Paths.get(customerProjectPath, moduleName).toString();
             Logger.DEBUG("Module found at " + modulePath);
 
             try {
@@ -169,7 +172,7 @@ public class CustomerProjectLoader {
 
         for (String filterPath : filterPaths) {
             if (filterPath.startsWith(MigrationConstants.CONF_ROOT) || filterPath.startsWith(MigrationConstants.ETC_PATH)) {
-                String absolutePath = modulePath + MigrationConstants.PATH_TO_JCR_ROOT + filterPath;
+                String absolutePath = Paths.get(modulePath, MigrationConstants.PATH_TO_JCR_ROOT, filterPath).toString();
                 List<String> launchers = queryService.findFilesByNodeProperty(MigrationConstants.JCR_PRIMARY_TYPE_PROP, MigrationConstants.WORKFLOW_LAUNCHER_TYPE_VALUE, new File(absolutePath));
                 wfConfigPaths.addAll(launchers);
             }
@@ -186,7 +189,7 @@ public class CustomerProjectLoader {
 
         for (String filterPath : filterPaths) {
             if (filterPath.startsWith(MigrationConstants.CONF_ROOT) || filterPath.startsWith(MigrationConstants.ETC_PATH)) {
-                String absolutePath = modulePath + MigrationConstants.PATH_TO_JCR_ROOT + filterPath;
+                String absolutePath = Paths.get(modulePath, MigrationConstants.PATH_TO_JCR_ROOT, filterPath).toString();
                 List<String> models =  queryService.findFilesByNodeProperty(MigrationConstants.SLING_RESOURCE_TYPE_PROP, MigrationConstants.WORKFLOW_MODEL_RESOURCE_TYPE_VALUE, new File(absolutePath));
 
                 for (String fullPath : models) {
@@ -204,18 +207,19 @@ public class CustomerProjectLoader {
     }
 
     private String getRelativeModelPath(String fullPath, String modulePath) {
-        String pathToJcrRoot = modulePath + MigrationConstants.PATH_TO_JCR_ROOT;
+        String pathToJcrRoot = Paths.get(modulePath, MigrationConstants.PATH_TO_JCR_ROOT).toString();
         String relativePath = fullPath.substring(fullPath.indexOf(pathToJcrRoot) + pathToJcrRoot.length());
 
-        return relativePath
-                .replace("/jcr:content/model", "")
-                .replace("/.content.xml", "");
+        return Arrays.stream(relativePath
+                .replace(File.separator + "jcr:content" + File.separator + "model", "")
+                .replace(File.separator + ".content.xml", "")
+                .split(File.separator.replace("\\","\\\\"))).collect(Collectors.joining("/"));
     }
 
     private List<String> getFilterPaths(String modulePath) throws CustomerDataException {
         List<String> filterPaths = new ArrayList<>();
 
-        File filterFile = new File(modulePath + MigrationConstants.PATH_TO_FILTER_XML);
+        File filterFile = new File(Paths.get(modulePath, MigrationConstants.PATH_TO_FILTER_XML).toString());
 
         if (filterFile.exists()) {
             Document filterXml = tryXmlLoad(filterFile);
