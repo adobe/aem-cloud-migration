@@ -98,7 +98,7 @@ public final class MigrationConstants {
     public static final String ORIGINAL_RENDITION_PATTERN_SUFFIX = "renditions/original";
 
     //Workflow Runner Constants
-    public static final String WORKFLOW_RUNNER_CONFIG_PATH = Paths.get("", APPS, MIGRATION_PROJECT_NODE, CONFIG).toString();
+    public static final String WORKFLOW_RUNNER_CONFIG_PATH = "/" + APPS + "/" + MIGRATION_PROJECT_NODE + "/" + CONFIG;
     public static final String WORKFLOW_RUNNER_CONFIG_FILENAME = "com.adobe.cq.dam.processor.nui.impl.workflow.CustomDamWorkflowRunnerImpl.xml";
     public static final String WORKFLOW_RUNNER_CONFIG_BY_EXPRESSION = "postProcWorkflowsByExpression";
     public static final String WORKFLOW_RUNNER_CONFIG_BY_PATH = "postProcWorkflowsByPath";
