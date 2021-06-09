@@ -14,7 +14,7 @@ package com.adobe.skyline.migration.dao;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Paths;
+import java.nio.file.Path;
 import java.util.List;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -51,13 +51,13 @@ public class ContainerProjectDAOTest extends SkylineMigrationBaseTest {
     @Test
     public void testNewProjectsAddedToAllProjectWhenPresent() throws ParserConfigurationException, SAXException, IOException {
         File tempProjectRoot = projectLoader.copyMigratedProjectToTemp(temp);
-        ContainerProjectDAO dao = new ContainerProjectDAO(Paths.get(tempProjectRoot.getAbsolutePath(),
+        ContainerProjectDAO dao = new ContainerProjectDAO(Path.of(tempProjectRoot.getAbsolutePath(),
                 TestConstants.CONTAINER_PACKAGE_PROJECT_NAME).toString());
 
         dao.addProject(TestConstants.TEST_PROJECT_GROUP_ID, MigrationConstants.MIGRATION_PROJECT_CONTENT);
         dao.addProject(TestConstants.TEST_PROJECT_GROUP_ID, MigrationConstants.MIGRATION_PROJECT_APPS);
 
-        File allPom = new File(Paths.get(tempProjectRoot.getPath(), TestConstants.CONTAINER_PACKAGE_PROJECT_NAME,
+        File allPom = new File(Path.of(tempProjectRoot.getPath(), TestConstants.CONTAINER_PACKAGE_PROJECT_NAME,
                 MigrationConstants.POM_XML).toString());
         Document doc = XmlUtil.loadXml(allPom);
 
@@ -70,12 +70,12 @@ public class ContainerProjectDAOTest extends SkylineMigrationBaseTest {
     @Test
     public void testFilterAdded() throws ParserConfigurationException, SAXException, IOException {
         File tempProjectRoot = projectLoader.copyMigratedProjectToTemp(temp);
-        ContainerProjectDAO dao = new ContainerProjectDAO(Paths.get(tempProjectRoot.getAbsolutePath(),
+        ContainerProjectDAO dao = new ContainerProjectDAO(Path.of(tempProjectRoot.getAbsolutePath(),
                 TestConstants.CONTAINER_PACKAGE_PROJECT_NAME).toString());
 
         dao.addProject(TestConstants.TEST_PROJECT_GROUP_ID, MigrationConstants.MIGRATION_PROJECT_CONTENT);
 
-        File filterFile = new File(Paths.get(tempProjectRoot.getPath(), TestConstants.CONTAINER_PACKAGE_PROJECT_NAME,
+        File filterFile = new File(Path.of(tempProjectRoot.getPath(), TestConstants.CONTAINER_PACKAGE_PROJECT_NAME,
                 MigrationConstants.PATH_TO_FILTER_XML).toString());
 
         Document filterXml = XmlUtil.loadXml(filterFile);

@@ -14,7 +14,7 @@ package com.adobe.skyline.migration.dao;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Paths;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -45,7 +45,7 @@ public class WorkflowModelDAO {
     public WorkflowModel loadWorkflowModel(String moduleAbsoluteRoot, String workflowModelPath) throws CustomerDataException {
         Logger.DEBUG("workflowModelPath: " + workflowModelPath);
 
-        String codeRoot = Paths.get(moduleAbsoluteRoot, MigrationConstants.PATH_TO_JCR_ROOT).toString();
+        String codeRoot = Path.of(moduleAbsoluteRoot, MigrationConstants.PATH_TO_JCR_ROOT).toString();
 
         String varPath = "";
         String confPath = "";
@@ -91,7 +91,7 @@ public class WorkflowModelDAO {
         Logger.DEBUG("codeRoot: " + codeRoot);
         Logger.DEBUG("confPath: " + confPath);
 
-        File confFile = new File(Paths.get(codeRoot, confPath, MigrationConstants.CONTENT_XML).toString());
+        File confFile = new File(Path.of(codeRoot, confPath, MigrationConstants.CONTENT_XML).toString());
 
         Logger.DEBUG("confFile path: " + confFile.getPath());
 

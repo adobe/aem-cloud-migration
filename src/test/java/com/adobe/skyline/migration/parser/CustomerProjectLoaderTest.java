@@ -29,7 +29,7 @@ import com.adobe.skyline.migration.exception.CustomerDataException;
 import com.adobe.skyline.migration.testutils.TestConstants;
 
 import java.io.File;
-import java.nio.file.Paths;
+import java.nio.file.Path;
 import java.util.List;
 
 public class CustomerProjectLoaderTest extends SkylineMigrationBaseTest {
@@ -179,7 +179,7 @@ public class CustomerProjectLoaderTest extends SkylineMigrationBaseTest {
     public void testAllProjectLocated() throws CustomerDataException {
         String reactorPath = projectLoader.copyMigratedProjectToTemp(temp).getPath();
         String allPath = loader.getContainerProjectPath(reactorPath);
-        assertEquals(Paths.get(reactorPath, TestConstants.CONTAINER_PACKAGE_PROJECT_NAME).toString(), allPath);
+        assertEquals(Path.of(reactorPath, TestConstants.CONTAINER_PACKAGE_PROJECT_NAME).toString(), allPath);
     }
     
     private void validateLauncherPaths(List<WorkflowProject> projects, String launcherRoot) {

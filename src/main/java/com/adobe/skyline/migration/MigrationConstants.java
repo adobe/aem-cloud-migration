@@ -13,7 +13,7 @@
 package com.adobe.skyline.migration;
 
 import java.io.File;
-import java.nio.file.Paths;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -54,7 +54,7 @@ public final class MigrationConstants {
     public static final String CONTENT_DAM_PATH = "/" + CONTENT + "/" + DAM;
     public static final String COLLECTIONS = "collections";
     public static final String METADATA = "metadata";
-    public static final String MIGRATION_PACKAGE_PATH = Paths.get("", "apps", "aem-cloud-migration-packages").toString();
+    public static final String MIGRATION_PACKAGE_PATH = Path.of("", "apps", "aem-cloud-migration-packages").toString();
 
     //Filter File Constants
     public static final String FILTER_XML = "filter.xml";
@@ -77,9 +77,9 @@ public final class MigrationConstants {
     public static final String PACKAGING_TAG_NAME = "packaging";
     public static final String CONTENT_PACKAGE_PACKAGING = "content-package";
     public static final String CONTENT_XML = ".content.xml";
-    public static final String PATH_TO_CONTENT = Paths.get("", SRC, MAIN, CONTENT).toString();
-    public static final String PATH_TO_FILTER_XML = Paths.get(PATH_TO_CONTENT, META_INF, VAULT, FILTER_XML).toString();
-    public static final String PATH_TO_JCR_ROOT = Paths.get(PATH_TO_CONTENT, JCR_ROOT_ON_DISK).toString();
+    public static final String PATH_TO_CONTENT = Path.of("", SRC, MAIN, CONTENT).toString();
+    public static final String PATH_TO_FILTER_XML = Path.of(PATH_TO_CONTENT, META_INF, VAULT, FILTER_XML).toString();
+    public static final String PATH_TO_JCR_ROOT = Path.of(PATH_TO_CONTENT, JCR_ROOT_ON_DISK).toString();
 
     public static final String MIGRATION_PROJECT_BASE_NAME = "aem-cloud-migration";
     public static final String MIGRATION_PROJECT_CONTENT = MIGRATION_PROJECT_BASE_NAME + ".content";
@@ -93,8 +93,8 @@ public final class MigrationConstants {
     public static final String MODEL_XML = "model.xml";
 
     //Workflow Launcher Constants
-    public static final String PATH_TO_CONF_GLOBAL_LAUNCHER_CONFIG = File.separator + Paths.get(PATH_TO_JCR_ROOT, CONF, GLOBAL,  SETTINGS, WORKFLOW, LAUNCHER, CONFIG).toString();
-    public static final String PATH_TO_ETC_LAUNCHER_CONFIG = File.separator + Paths.get(PATH_TO_JCR_ROOT, ETC, WORKFLOW, LAUNCHER, CONFIG).toString();
+    public static final String PATH_TO_CONF_GLOBAL_LAUNCHER_CONFIG = File.separator + Path.of(PATH_TO_JCR_ROOT, CONF, GLOBAL,  SETTINGS, WORKFLOW, LAUNCHER, CONFIG).toString();
+    public static final String PATH_TO_ETC_LAUNCHER_CONFIG = File.separator + Path.of(PATH_TO_JCR_ROOT, ETC, WORKFLOW, LAUNCHER, CONFIG).toString();
     public static final String ORIGINAL_RENDITION_PATTERN_SUFFIX = "renditions/original";
 
     //Workflow Runner Constants
@@ -104,8 +104,8 @@ public final class MigrationConstants {
     public static final String WORKFLOW_RUNNER_CONFIG_BY_PATH = "postProcWorkflowsByPath";
 
     //Processing Profile Constants
-    public static final String PROCESSING_PROFILE_JCR_PATH = Paths.get(CONF, GLOBAL, SETTINGS, DAM, PROCESSING).toString();
-    public static final String PROCESSING_PROFILE_DISK_PATH = Paths.get(PATH_TO_JCR_ROOT, PROCESSING_PROFILE_JCR_PATH).toString();
+    public static final String PROCESSING_PROFILE_JCR_PATH = Path.of(CONF, GLOBAL, SETTINGS, DAM, PROCESSING).toString();
+    public static final String PROCESSING_PROFILE_DISK_PATH = Path.of(PATH_TO_JCR_ROOT, PROCESSING_PROFILE_JCR_PATH).toString();
     public static final String PROCESSING_PROFILE_RESOURCE_TYPE = "dam/processing/profile";
     public static final String RENDITION_RESOURCE_TYPE = "dam/processing/profile/rendition";
     public static final String INCLUDE_MIMETYPES_PROP = "includeMimeTypes";

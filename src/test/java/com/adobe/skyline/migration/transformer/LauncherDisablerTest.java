@@ -18,7 +18,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 import java.io.File;
-import java.nio.file.Paths;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -131,7 +131,7 @@ public class LauncherDisablerTest extends SkylineMigrationBaseTest {
     }
 
     private String getAbsolutePathForLauncher(String launcherName) {
-        return Paths.get(tempProjectRoot.getPath(), TestConstants.CONF_WORKFLOW_PROJECT_NAME,
+        return Path.of(tempProjectRoot.getPath(), TestConstants.CONF_WORKFLOW_PROJECT_NAME,
                 TestConstants.CONF_LAUNCHER_PATH, launcherName, MigrationConstants.CONTENT_XML).toString();
     }
 }
