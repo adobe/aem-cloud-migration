@@ -23,7 +23,7 @@ import java.util.Map;
 import com.adobe.skyline.migration.model.workflow.WorkflowLauncher;
 import com.adobe.skyline.migration.model.workflow.WorkflowStep;
 
-public final class MigrationConstants {
+public class MigrationConstants {
 
     //Node Name Constants
     public static final String VAR = "var";
@@ -54,8 +54,7 @@ public final class MigrationConstants {
     public static final String CONTENT_DAM_PATH = "/" + CONTENT + "/" + DAM;
     public static final String COLLECTIONS = "collections";
     public static final String METADATA = "metadata";
-    public static final String MIGRATION_PACKAGE_PATH = Path.of("", "apps", "aem-cloud-migration-packages").toString();
-
+    public static final String MIGRATION_PACKAGE_PATH = "/apps/aem-cloud-migration-packages";
     //Filter File Constants
     public static final String FILTER_XML = "filter.xml";
     public static final String FILTER_TAG_NAME = "filter";

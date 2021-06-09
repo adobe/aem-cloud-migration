@@ -36,7 +36,7 @@ public class WorkflowRunnerConfigDAO {
     private Document configDoc;
 
     public WorkflowRunnerConfigDAO(String projectPath) {
-        this.configFile = new File(Paths.get(projectPath ,MigrationConstants.PATH_TO_JCR_ROOT,
+        this.configFile = new File(Paths.get(projectPath, MigrationConstants.PATH_TO_JCR_ROOT,
                 MigrationConstants.WORKFLOW_RUNNER_CONFIG_PATH, MigrationConstants.WORKFLOW_RUNNER_CONFIG_FILENAME).toString());
     }
 

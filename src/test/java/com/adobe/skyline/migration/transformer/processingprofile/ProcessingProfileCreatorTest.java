@@ -89,7 +89,7 @@ public class ProcessingProfileCreatorTest extends SkylineMigrationBaseTest {
 
         List<ProcessingProfile> createdProfiles = changeTracker.getProcessingProfilesCreated();
         assertEquals(1, createdProfiles.size());
-        assertEquals("Migrated from " + WORKFLOW_NAME ,createdProfiles.get(0).getName());
+        assertEquals("Migrated from " + WORKFLOW_NAME, createdProfiles.get(0).getName());
     }
 
     @Test
