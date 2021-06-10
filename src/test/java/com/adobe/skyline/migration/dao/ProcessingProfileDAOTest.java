@@ -28,7 +28,7 @@ import org.xml.sax.SAXException;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -48,14 +48,14 @@ public class ProcessingProfileDAOTest extends SkylineMigrationBaseTest {
         super.setUp();
 
         File tempProjectRoot = projectLoader.copyConfProjectToTemp(temp);
-        this.projectRootPath = tempProjectRoot + "/" + TestConstants.CONF_WORKFLOW_PROJECT_NAME;
+        this.projectRootPath = Path.of(tempProjectRoot.toString(), TestConstants.CONF_WORKFLOW_PROJECT_NAME).toString();
 
         this.dao = new ProcessingProfileDAO(projectRootPath);
     }
 
     @Test
     public void testProcessingRootPageCreated() throws ParserConfigurationException, SAXException, IOException {
-        File profileRootFile = new File(projectRootPath + "/" + MigrationConstants.PROCESSING_PROFILE_DISK_PATH + "/.content.xml");
+        File profileRootFile = new File(Path.of(projectRootPath, MigrationConstants.PROCESSING_PROFILE_DISK_PATH, ".content.xml").toString());
         assertFalse(profileRootFile.exists());
 
         ProcessingProfile profile = createTestProfile();
@@ -82,7 +82,7 @@ public class ProcessingProfileDAOTest extends SkylineMigrationBaseTest {
 
     @Test
     public void testProfileAdded() throws ParserConfigurationException, SAXException, IOException {
-        File profilePath = new File(projectRootPath + "/" + MigrationConstants.PROCESSING_PROFILE_DISK_PATH + "/" + PROFILE_NAME);
+        File profilePath = new File(Path.of(projectRootPath, MigrationConstants.PROCESSING_PROFILE_DISK_PATH, PROFILE_NAME).toString());
         assertFalse(profilePath.exists());
 
         ProcessingProfile profile = createTestProfile();
@@ -142,7 +142,7 @@ public class ProcessingProfileDAOTest extends SkylineMigrationBaseTest {
 
     @Test
     public void testEmptyMimetypesIncluded() throws ParserConfigurationException, SAXException, IOException {
-        File profilePath = new File(projectRootPath + "/" + MigrationConstants.PROCESSING_PROFILE_DISK_PATH + "/" + PROFILE_NAME);
+        File profilePath = new File(Path.of(projectRootPath,MigrationConstants.PROCESSING_PROFILE_DISK_PATH, PROFILE_NAME).toString());
 
         RenditionConfig renditionConfig1 = createThumbnailRendition();
         ProcessingProfile profile = new ProcessingProfile();
@@ -178,9 +178,9 @@ public class ProcessingProfileDAOTest extends SkylineMigrationBaseTest {
 
     @Test
     public void testDuplicateProfileNames() {
-        File profile1Path = new File(projectRootPath + "/" + MigrationConstants.PROCESSING_PROFILE_DISK_PATH + "/" + PROFILE_NAME);
-        File profile2Path = new File(projectRootPath + "/" + MigrationConstants.PROCESSING_PROFILE_DISK_PATH + "/" + PROFILE_NAME + "-1");
-        File profile3Path = new File(projectRootPath + "/" + MigrationConstants.PROCESSING_PROFILE_DISK_PATH + "/" + PROFILE_NAME + "-2");
+        File profile1Path = new File(Path.of(projectRootPath, MigrationConstants.PROCESSING_PROFILE_DISK_PATH, PROFILE_NAME).toString());
+        File profile2Path = new File(Path.of(projectRootPath, MigrationConstants.PROCESSING_PROFILE_DISK_PATH, PROFILE_NAME + "-1").toString());
+        File profile3Path = new File(Path.of(projectRootPath, MigrationConstants.PROCESSING_PROFILE_DISK_PATH, PROFILE_NAME + "-2").toString());
 
         assertFalse(profile1Path.exists());
         assertFalse(profile2Path.exists());
@@ -212,9 +212,9 @@ public class ProcessingProfileDAOTest extends SkylineMigrationBaseTest {
 
         dao.addProfile(profile);
 
-        File rendition1Path = new File(projectRootPath + "/" + MigrationConstants.PROCESSING_PROFILE_DISK_PATH + "/" + PROFILE_NAME + "/thumbnail");
+        File rendition1Path = new File(Path.of(projectRootPath, MigrationConstants.PROCESSING_PROFILE_DISK_PATH, PROFILE_NAME, "thumbnail").toString());
         assertTrue(rendition1Path.exists());
-        File rendition2Path = new File(projectRootPath + "/" + MigrationConstants.PROCESSING_PROFILE_DISK_PATH + "/" + PROFILE_NAME + "/thumbnail-1");
+        File rendition2Path = new File(Path.of(projectRootPath, MigrationConstants.PROCESSING_PROFILE_DISK_PATH, PROFILE_NAME, "thumbnail-1").toString());
         assertTrue(rendition2Path.exists());
     }
 

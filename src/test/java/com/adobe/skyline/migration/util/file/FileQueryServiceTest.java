@@ -16,6 +16,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.util.List;
 
 import org.junit.Test;
@@ -25,8 +26,8 @@ import com.adobe.skyline.migration.testutils.TestConstants;
 
 public class FileQueryServiceTest extends SkylineMigrationBaseTest {
 
-    private static final String PATH_TO_CONF_WORKFLOW = "/" + TestConstants.CONF_WORKFLOW_PROJECT_NAME + TestConstants.CONF_WORKFLOW_PATH;
-    private static final String PATH_TO_VAR_WORKFLOW = "/" + TestConstants.CONF_WORKFLOW_PROJECT_NAME + TestConstants.VAR_WORKFLOW_PATH;
+    private static final String PATH_TO_CONF_WORKFLOW = Path.of(TestConstants.CONF_WORKFLOW_PROJECT_NAME, TestConstants.CONF_WORKFLOW_PATH).toString();
+    private static final String PATH_TO_VAR_WORKFLOW = Path.of(TestConstants.CONF_WORKFLOW_PROJECT_NAME, TestConstants.VAR_WORKFLOW_PATH).toString();
 
 
     @Test
@@ -41,9 +42,9 @@ public class FileQueryServiceTest extends SkylineMigrationBaseTest {
         boolean varFound = false;
 
         for (String path : result) {
-            if(path.equals(projectPath + PATH_TO_CONF_WORKFLOW)) {
+            if(path.equals(Path.of(projectPath, PATH_TO_CONF_WORKFLOW).toString())) {
                 confFound = true;
-            } else if (path.equals(projectPath + PATH_TO_VAR_WORKFLOW)) {
+            } else if (path.equals(Path.of(projectPath, PATH_TO_VAR_WORKFLOW).toString())) {
                 varFound = true;
             }
         }
@@ -56,7 +57,7 @@ public class FileQueryServiceTest extends SkylineMigrationBaseTest {
         String projectPath = projectLoader.copyConfProjectToTemp(temp).getPath();
         String subDirectoryName = "workflow";
 
-        List<String> result = queryService.findFileByName(subDirectoryName, new File(projectPath + PATH_TO_CONF_WORKFLOW));
+        List<String> result = queryService.findFileByName(subDirectoryName, new File(Path.of(projectPath, PATH_TO_CONF_WORKFLOW).toString()));
         assertEquals("File not found.", 1, result.size());
     }
 

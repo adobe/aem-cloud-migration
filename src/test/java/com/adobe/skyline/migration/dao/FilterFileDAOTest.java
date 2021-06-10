@@ -14,6 +14,7 @@ package com.adobe.skyline.migration.dao;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -46,9 +47,9 @@ public class FilterFileDAOTest extends SkylineMigrationBaseTest {
         super.setUp();
 
         this.tempProjectRoot = projectLoader.copyConfProjectToTemp(temp);
-        this.filterFile = new File(tempProjectRoot + File.separator + TestConstants.CONF_WORKFLOW_PROJECT_NAME + MigrationConstants.PATH_TO_FILTER_XML);
+        this.filterFile = new File(Path.of(tempProjectRoot.getPath(), TestConstants.CONF_WORKFLOW_PROJECT_NAME, MigrationConstants.PATH_TO_FILTER_XML).toString());
 
-        this.dao = new FilterFileDAO(tempProjectRoot + File.separator + TestConstants.CONF_WORKFLOW_PROJECT_NAME);
+        this.dao = new FilterFileDAO(Path.of(tempProjectRoot.getPath(), TestConstants.CONF_WORKFLOW_PROJECT_NAME).toString());
     }
 
     @Test

@@ -13,6 +13,7 @@
 package com.adobe.skyline.migration;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -54,7 +55,6 @@ public class MigrationConstants {
     public static final String COLLECTIONS = "collections";
     public static final String METADATA = "metadata";
     public static final String MIGRATION_PACKAGE_PATH = "/apps/aem-cloud-migration-packages";
-
     //Filter File Constants
     public static final String FILTER_XML = "filter.xml";
     public static final String FILTER_TAG_NAME = "filter";
@@ -76,9 +76,9 @@ public class MigrationConstants {
     public static final String PACKAGING_TAG_NAME = "packaging";
     public static final String CONTENT_PACKAGE_PACKAGING = "content-package";
     public static final String CONTENT_XML = ".content.xml";
-    public static final String PATH_TO_CONTENT = "/" + SRC + "/" + MAIN + "/" + CONTENT;
-    public static final String PATH_TO_FILTER_XML = PATH_TO_CONTENT + "/" + META_INF + "/" + VAULT + "/" + FILTER_XML;
-    public static final String PATH_TO_JCR_ROOT = PATH_TO_CONTENT + "/" + JCR_ROOT_ON_DISK;
+    public static final String PATH_TO_CONTENT = Path.of("", SRC, MAIN, CONTENT).toString();
+    public static final String PATH_TO_FILTER_XML = Path.of(PATH_TO_CONTENT, META_INF, VAULT, FILTER_XML).toString();
+    public static final String PATH_TO_JCR_ROOT = Path.of(PATH_TO_CONTENT, JCR_ROOT_ON_DISK).toString();
 
     public static final String MIGRATION_PROJECT_BASE_NAME = "aem-cloud-migration";
     public static final String MIGRATION_PROJECT_CONTENT = MIGRATION_PROJECT_BASE_NAME + ".content";
@@ -92,8 +92,8 @@ public class MigrationConstants {
     public static final String MODEL_XML = "model.xml";
 
     //Workflow Launcher Constants
-    public static final String PATH_TO_CONF_GLOBAL_LAUNCHER_CONFIG = PATH_TO_JCR_ROOT + CONF_ROOT + File.separator + GLOBAL + File.separator + SETTINGS + File.separator + WORKFLOW + File.separator + LAUNCHER + File.separator + CONFIG;
-    public static final String PATH_TO_ETC_LAUNCHER_CONFIG = PATH_TO_JCR_ROOT + ETC_PATH + File.separator + LAUNCHER + File.separator + CONFIG;
+    public static final String PATH_TO_CONF_GLOBAL_LAUNCHER_CONFIG = File.separator + Path.of(PATH_TO_JCR_ROOT, CONF, GLOBAL,  SETTINGS, WORKFLOW, LAUNCHER, CONFIG).toString();
+    public static final String PATH_TO_ETC_LAUNCHER_CONFIG = File.separator + Path.of(PATH_TO_JCR_ROOT, ETC, WORKFLOW, LAUNCHER, CONFIG).toString();
     public static final String ORIGINAL_RENDITION_PATTERN_SUFFIX = "renditions/original";
 
     //Workflow Runner Constants
@@ -103,8 +103,8 @@ public class MigrationConstants {
     public static final String WORKFLOW_RUNNER_CONFIG_BY_PATH = "postProcWorkflowsByPath";
 
     //Processing Profile Constants
-    public static final String PROCESSING_PROFILE_JCR_PATH = CONF_ROOT + File.separator + GLOBAL + File.separator + SETTINGS + File.separator + DAM + File.separator + PROCESSING;
-    public static final String PROCESSING_PROFILE_DISK_PATH = PATH_TO_JCR_ROOT + PROCESSING_PROFILE_JCR_PATH;
+    public static final String PROCESSING_PROFILE_JCR_PATH = Path.of(CONF, GLOBAL, SETTINGS, DAM, PROCESSING).toString();
+    public static final String PROCESSING_PROFILE_DISK_PATH = Path.of(PATH_TO_JCR_ROOT, PROCESSING_PROFILE_JCR_PATH).toString();
     public static final String PROCESSING_PROFILE_RESOURCE_TYPE = "dam/processing/profile";
     public static final String RENDITION_RESOURCE_TYPE = "dam/processing/profile/rendition";
     public static final String INCLUDE_MIMETYPES_PROP = "includeMimeTypes";
@@ -195,11 +195,11 @@ public class MigrationConstants {
     public static final String DELETE_PREVIEW_PROCESS = "com.day.cq.dam.core.process.DeleteImagePreviewProcess";
 
     public static final Map<String, WorkflowLauncher> DEFAULT_ENABLED_MODELS = new HashMap<>() {{
-        put("dam/batch-thumbnails", buildWorkflowLauncher("/var/dam/pending-thumbs(/.*)", Arrays.asList("paths!=")));
-        put("dam/dynamic-media-encode-video", buildWorkflowLauncher("/content/dam(/.*/)renditions/original", Arrays.asList("jcr:content/jcr:mimeType==video/.*")));
-        put("dam/process_subasset", buildWorkflowLauncher("/content/dam(/.*/)(subassets)(/.*/)renditions/original", Arrays.asList("jcr:content/jcr:mimeType!=video/.*")));
-        put("dam/update_asset", buildWorkflowLauncher("/content/dam(/((?!/subassets).)*/)renditions/original", new ArrayList<>()));
-        put("dam/update_from_lightbox", buildWorkflowLauncher("/var/lightbox", new ArrayList<>()));
+        put("batch-thumbnails", buildWorkflowLauncher("/var/dam/pending-thumbs(/.*)", Arrays.asList("paths!=")));
+        put("dynamic-media-encode-video", buildWorkflowLauncher("/content/dam(/.*/)renditions/original", Arrays.asList("jcr:content/jcr:mimeType==video/.*")));
+        put("process_subasset", buildWorkflowLauncher("/content/dam(/.*/)(subassets)(/.*/)renditions/original", Arrays.asList("jcr:content/jcr:mimeType!=video/.*")));
+        put("update_asset", buildWorkflowLauncher("/content/dam(/((?!/subassets).)*/)renditions/original", new ArrayList<>()));
+        put("update_from_lightbox", buildWorkflowLauncher("/var/lightbox", new ArrayList<>()));
     }};
 
     //Object Constants

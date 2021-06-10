@@ -13,6 +13,7 @@
 package com.adobe.skyline.migration.dao;
 
 import java.io.File;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 
@@ -82,8 +83,8 @@ public class WorkflowModelDAOTest extends SkylineMigrationBaseTest {
     public void testMissingVarNode() throws CustomerDataException {
         File projectRoot = projectLoader.copyNoModelProjectToTemp(temp);
 
-        WorkflowModel model = modelDAO.loadWorkflowModel(projectRoot + "/" +
-                TestConstants.CONF_WORKFLOW_PROJECT_NAME, "/conf/global/settings/workflow/models/dam/update_asset");
+        WorkflowModel model = modelDAO.loadWorkflowModel(Paths.get(projectRoot.getPath(),
+                TestConstants.CONF_WORKFLOW_PROJECT_NAME).toString(),  "/conf/global/settings/workflow/models/dam/update_asset");
 
         assertNotNull(model.getRuntimeComponent());
         assertNotNull(model.getConfigurationPage());
@@ -94,8 +95,8 @@ public class WorkflowModelDAOTest extends SkylineMigrationBaseTest {
     public void testModelStepCreatedWithMetadata() throws CustomerDataException {
         File projectRoot = projectLoader.copyConfProjectToTemp(temp);
 
-        WorkflowModel model = modelDAO.loadWorkflowModel(projectRoot + "/" +
-                TestConstants.CONF_WORKFLOW_PROJECT_NAME, PATH_TO_CONF_UPDATE_ASSET);
+        WorkflowModel model = modelDAO.loadWorkflowModel(Paths.get(projectRoot.getPath(),
+                TestConstants.CONF_WORKFLOW_PROJECT_NAME).toString(), PATH_TO_CONF_UPDATE_ASSET);
 
         boolean metadataFound = false;
 
@@ -154,7 +155,7 @@ public class WorkflowModelDAOTest extends SkylineMigrationBaseTest {
     @Test
     public void testStepAddedToNewConfFile() throws CustomerDataException {
         File projectRoot = projectLoader.copyConfProjectToTemp(temp);
-        String projectPath = projectRoot + "/" + TestConstants.CONF_WORKFLOW_PROJECT_NAME;
+        String projectPath = Paths.get(projectRoot.getPath(), TestConstants.CONF_WORKFLOW_PROJECT_NAME).toString();
 
         //Load model and ensure it doesn't contain the step
         WorkflowModel modelBefore = modelDAO.loadWorkflowModel(projectPath, PATH_TO_CONF_ASSET_NOCOMPLETE);
@@ -173,7 +174,7 @@ public class WorkflowModelDAOTest extends SkylineMigrationBaseTest {
     @Test
     public void testStepAddedToOldConfFile() throws CustomerDataException {
         File projectRoot = projectLoader.copyEtcProjectToTemp(temp);
-        String projectPath = projectRoot + "/" + TestConstants.ETC_WORKFLOW_PROJECT_NAME;
+        String projectPath = Paths.get(projectRoot.getPath(), TestConstants.ETC_WORKFLOW_PROJECT_NAME).toString();
 
         //Load model and ensure it doesn't contain the step
         WorkflowModel modelBefore = modelDAO.loadWorkflowModel(projectPath, PATH_TO_ETC_ASSET_NOCOMPLETE);

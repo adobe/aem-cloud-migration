@@ -13,6 +13,7 @@
 package com.adobe.skyline.migration.main;
 
 import java.io.File;
+import java.nio.file.Paths;
 import java.util.List;
 
 import com.adobe.skyline.migration.MigrationConstants;
@@ -65,10 +66,10 @@ class MigrationOrchestrator {
         //Initialize Data Access Objects
         WorkflowLauncherDAO launcherDAO = new WorkflowLauncherDAO();
         WorkflowModelDAO modelDAO = new WorkflowModelDAO();
-        FilterFileDAO appsFilterDAO = new FilterFileDAO(customerProjectPath + "/" + MigrationConstants.MIGRATION_PROJECT_APPS);
-        FilterFileDAO contentFilterDAO = new FilterFileDAO(customerProjectPath + "/" + MigrationConstants.MIGRATION_PROJECT_CONTENT);
-        ProcessingProfileDAO ppDAO = new ProcessingProfileDAO(customerProjectPath + "/" + MigrationConstants.MIGRATION_PROJECT_CONTENT);
-        WorkflowRunnerConfigDAO runnerConfigDAO = new WorkflowRunnerConfigDAO(customerProjectPath + "/" + MigrationConstants.MIGRATION_PROJECT_APPS);
+        FilterFileDAO appsFilterDAO = new FilterFileDAO(Paths.get(customerProjectPath, MigrationConstants.MIGRATION_PROJECT_APPS).toString());
+        FilterFileDAO contentFilterDAO = new FilterFileDAO(Paths.get(customerProjectPath, MigrationConstants.MIGRATION_PROJECT_CONTENT).toString());
+        ProcessingProfileDAO ppDAO = new ProcessingProfileDAO(Paths.get(customerProjectPath, MigrationConstants.MIGRATION_PROJECT_CONTENT).toString());
+        WorkflowRunnerConfigDAO runnerConfigDAO = new WorkflowRunnerConfigDAO(Paths.get(customerProjectPath, MigrationConstants.MIGRATION_PROJECT_APPS).toString());
 
         //Load customer projects
         CustomerProjectLoader loader = new CustomerProjectLoader(queryService, launcherDAO, modelDAO);
@@ -108,6 +109,6 @@ class MigrationOrchestrator {
         }
 
         reportWriter.write(new File(reportOutputDirectory));
-        Logger.INFO("Migration complete.  A report file has been created at " + reportOutputDirectory + File.separator + MigrationConstants.REPORT_FILENAME + ".");
+        Logger.INFO("Migration complete.  A report file has been created at " + Paths.get(reportOutputDirectory, MigrationConstants.REPORT_FILENAME, ".").toString());
     }
 }

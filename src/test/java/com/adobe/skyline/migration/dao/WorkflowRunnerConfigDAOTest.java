@@ -26,14 +26,15 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.List;
 
 import static org.junit.Assert.*;
 
 public class WorkflowRunnerConfigDAOTest extends SkylineMigrationBaseTest {
 
-    private static final String CONFIG_FILE_REL_PATH = "/" + MigrationConstants.MIGRATION_PROJECT_APPS + MigrationConstants.PATH_TO_JCR_ROOT +
-            MigrationConstants.WORKFLOW_RUNNER_CONFIG_PATH + "/" + MigrationConstants.WORKFLOW_RUNNER_CONFIG_FILENAME;
+    private static final String CONFIG_FILE_REL_PATH = Paths.get("", MigrationConstants.MIGRATION_PROJECT_APPS, MigrationConstants.PATH_TO_JCR_ROOT,
+            MigrationConstants.WORKFLOW_RUNNER_CONFIG_PATH, MigrationConstants.WORKFLOW_RUNNER_CONFIG_FILENAME).toString();
 
     private static final String PATTERN = "\\/content\\/dam(\\/.*\\/)(marketing\\/seasonal)(\\/.*)";
     private static final String PATTERN_2 = "\\/content\\/dam(\\/.*\\/)(other_path)(\\/.*)";
@@ -52,12 +53,12 @@ public class WorkflowRunnerConfigDAOTest extends SkylineMigrationBaseTest {
 
         this.tempProjectRoot = projectLoader.copyConfProjectToTemp(temp);
 
-        this.dao = new WorkflowRunnerConfigDAO(tempProjectRoot + File.separator + MigrationConstants.MIGRATION_PROJECT_APPS);
+        this.dao = new WorkflowRunnerConfigDAO(Paths.get(tempProjectRoot.getPath(), MigrationConstants.MIGRATION_PROJECT_APPS).toString());
     }
 
     @Test
     public void testConfigFileCreated() throws IOException, ParserConfigurationException, SAXException {
-        File configFile = new File(tempProjectRoot + CONFIG_FILE_REL_PATH);
+        File configFile = new File(Paths.get(tempProjectRoot.getPath(), CONFIG_FILE_REL_PATH).toString());
         assertFalse(configFile.exists());
 
         dao.createConfigByExpression("", "");
@@ -75,7 +76,7 @@ public class WorkflowRunnerConfigDAOTest extends SkylineMigrationBaseTest {
         dao.createConfigByExpression(PATTERN, PATTERN_MODEL);
         dao.createConfigByExpression(PATTERN_2, PATTERN_MODEL);
 
-        File configFile = new File(tempProjectRoot + CONFIG_FILE_REL_PATH);
+        File configFile = new File(Paths.get(tempProjectRoot.getPath(), CONFIG_FILE_REL_PATH).toString());
         List<String> patternMappings = getPatternMappingsFromFile(configFile, MigrationConstants.WORKFLOW_RUNNER_CONFIG_BY_EXPRESSION);
 
         assertEquals(PATTERN + ":" + PATTERN_MODEL, patternMappings.get(0));
@@ -87,7 +88,7 @@ public class WorkflowRunnerConfigDAOTest extends SkylineMigrationBaseTest {
         dao.createConfigByPath(PATH, PATH_MODEL);
         dao.createConfigByPath(PATH_2, PATH_MODEL);
 
-        File configFile = new File(tempProjectRoot + CONFIG_FILE_REL_PATH);
+        File configFile = new File(Paths.get(tempProjectRoot.getPath(), CONFIG_FILE_REL_PATH).toString());
         List<String> patternMappings = getPatternMappingsFromFile(configFile, MigrationConstants.WORKFLOW_RUNNER_CONFIG_BY_PATH);
 
         assertEquals(PATH + ":" + PATH_MODEL, patternMappings.get(0));

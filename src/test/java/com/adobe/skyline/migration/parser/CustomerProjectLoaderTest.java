@@ -28,6 +28,8 @@ import com.adobe.skyline.migration.SkylineMigrationBaseTest;
 import com.adobe.skyline.migration.exception.CustomerDataException;
 import com.adobe.skyline.migration.testutils.TestConstants;
 
+import java.io.File;
+import java.nio.file.Path;
 import java.util.List;
 
 public class CustomerProjectLoaderTest extends SkylineMigrationBaseTest {
@@ -177,7 +179,7 @@ public class CustomerProjectLoaderTest extends SkylineMigrationBaseTest {
     public void testAllProjectLocated() throws CustomerDataException {
         String reactorPath = projectLoader.copyMigratedProjectToTemp(temp).getPath();
         String allPath = loader.getContainerProjectPath(reactorPath);
-        assertEquals(reactorPath + "/" + TestConstants.CONTAINER_PACKAGE_PROJECT_NAME, allPath);
+        assertEquals(Path.of(reactorPath, TestConstants.CONTAINER_PACKAGE_PROJECT_NAME).toString(), allPath);
     }
     
     private void validateLauncherPaths(List<WorkflowProject> projects, String launcherRoot) {
@@ -190,8 +192,8 @@ public class CustomerProjectLoaderTest extends SkylineMigrationBaseTest {
                     assertTrue(relPath.contains(MigrationConstants.CONFIG));
                     assertTrue(relPath.contains(MigrationConstants.CONTENT_XML));
 
-                    String launcherFolder = relPath.substring(0, relPath.lastIndexOf("/"));
-                    String launcherConfigRoot = launcherFolder.substring(0, launcherFolder.lastIndexOf("/"));
+                    String launcherFolder = relPath.substring(0, relPath.lastIndexOf(File.separator));
+                    String launcherConfigRoot = launcherFolder.substring(0, launcherFolder.lastIndexOf(File.separator));
                     assertEquals(launcherRoot, launcherConfigRoot);
                 }
             }

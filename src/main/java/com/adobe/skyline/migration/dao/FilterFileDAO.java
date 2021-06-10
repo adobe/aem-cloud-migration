@@ -14,6 +14,7 @@ package com.adobe.skyline.migration.dao;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -36,7 +37,7 @@ public class FilterFileDAO {
     private File filterFile;
 
     public FilterFileDAO(String projectPath) {
-        this.filterFile = new File(projectPath + MigrationConstants.PATH_TO_FILTER_XML);
+        this.filterFile = new File(Path.of(projectPath, MigrationConstants.PATH_TO_FILTER_XML).toString());
     }
 
     public boolean hasPath(String path) {

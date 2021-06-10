@@ -25,6 +25,8 @@ import com.adobe.skyline.migration.dao.FilterFileDAO;
 import com.adobe.skyline.migration.model.ChangeTrackingService;
 import com.adobe.skyline.migration.model.workflow.WorkflowProject;
 
+import static com.adobe.skyline.migration.MigrationConstants.*;
+import static com.adobe.skyline.migration.testutils.TestConstants.CONF_WORKFLOW_PROJECT_NAME;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.any;
@@ -73,6 +75,6 @@ public class VarNodeCleanerTest extends SkylineMigrationBaseTest {
 
         assertFalse(varWorkflowDir.exists());
         verify(filterFileDAO).removePath("/var/workflow");
-        verify(changeTrackingService).trackVarPathDeleted(endsWith("ui.content/src/main/content/jcr_root/var/workflow"));
+        verify(changeTrackingService).trackVarPathDeleted(endsWith(CONF_WORKFLOW_PROJECT_NAME + File.separator + SRC + File.separator + MAIN + File.separator + CONTENT + File.separator + JCR_ROOT_ON_DISK + File.separator + VAR + File.separator + WORKFLOW));
     }
 }
