@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+    jcr:primaryType="cq:Page">
+    <jcr:content
+        cq:template="/libs/dam/templates/videoprofile"
+        jcr:description="High quality for Firefox 3.5+ using Theora and Vorbis inside an ogg file."
+        jcr:lastModified="{Date}2011-01-28T23:04:46.490+01:00"
+        jcr:primaryType="nt:unstructured"
+        jcr:title="Firefox HQ ogg"
+        width="320"
+        height="240"
+        sling:resourceType="dam/components/video/profile"
+        audioBitrate="128"
+        audioChannels="2"
+        audioCodec="libvorbis"
+        audioSamplingRate="44100"
+        extension="ogg"
+        htmlType="video/ogg; codecs=&quot;theora, vorbis&quot;"
+        mimeType="video/ogg"
+        renditionSelector="firefoxhq"
+        videoBitrate="4096"
+        videoBitrateTolerance="4069"
+        videoFrameRate="24000/1001"/>
+</jcr:root>

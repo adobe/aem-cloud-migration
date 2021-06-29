@@ -18,6 +18,7 @@ import java.io.IOException;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
+import com.adobe.skyline.migration.model.VideoProfileConfig;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -94,14 +95,20 @@ public class ProcessingProfileDAO {
         addSlingNamespace(renditionXml, rootEl);
 
         Element jcrContentNode = addJcrContentNode(renditionXml, rootEl);
-        jcrContentNode.setAttribute(MigrationConstants.SLING_RESOURCE_TYPE_PROP, MigrationConstants.RENDITION_RESOURCE_TYPE);
+        if (rendition instanceof VideoProfileConfig) {
+            jcrContentNode.setAttribute(MigrationConstants.SLING_RESOURCE_TYPE_PROP, MigrationConstants.VIDEO_RESOURCE_TYPE);
+            VideoProfileConfig videoProfileConfig = (VideoProfileConfig) rendition;
+            jcrContentNode.setAttribute(MigrationConstants.BITRATE_PROP, String.valueOf(videoProfileConfig.getBitRate()));
+            jcrContentNode.setAttribute(MigrationConstants.CODEC_PROP, videoProfileConfig.getCodec());
+        } else {
+            jcrContentNode.setAttribute(MigrationConstants.SLING_RESOURCE_TYPE_PROP, MigrationConstants.RENDITION_RESOURCE_TYPE);
+        }
         jcrContentNode.setAttribute(MigrationConstants.FMT_PROP, rendition.getFormat());
         jcrContentNode.setAttribute(MigrationConstants.NAME_PROP, rendition.getFileName());
         jcrContentNode.setAttribute(MigrationConstants.WIDTH_PROP, String.valueOf(rendition.getWidth()));
         jcrContentNode.setAttribute(MigrationConstants.HEIGHT_PROP, String.valueOf(rendition.getHeight()));
         jcrContentNode.setAttribute(MigrationConstants.EXCLUDE_MIMETYPES_PROP, StringUtil.concatenateCollectionToCsv(rendition.getExcludeMimeTypes()));
         jcrContentNode.setAttribute(MigrationConstants.INCLUDE_MIMETYPES_PROP, StringUtil.concatenateCollectionToCsv(rendition.getIncludeMimeTypes()));
-
         if (rendition.getQuality() > 0) {
             jcrContentNode.setAttribute(MigrationConstants.QUALITY_PROP, String.valueOf(rendition.getQuality()));
         }

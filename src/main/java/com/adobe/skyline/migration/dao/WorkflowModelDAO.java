@@ -15,6 +15,7 @@ package com.adobe.skyline.migration.dao;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -23,6 +24,7 @@ import java.util.Map;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
+import com.adobe.skyline.migration.model.workflow.UpdateAssetWorkflowModel;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
@@ -36,6 +38,9 @@ import com.adobe.skyline.migration.model.workflow.WorkflowModel;
 import com.adobe.skyline.migration.model.workflow.WorkflowStep;
 import com.adobe.skyline.migration.util.Logger;
 import com.adobe.skyline.migration.util.XmlUtil;
+
+import static com.adobe.skyline.migration.MigrationConstants.PATH_TO_CONF_VIDEO_PROFILE;
+import static com.adobe.skyline.migration.MigrationConstants.PATH_TO_ETC_VIDEO_PROFILE;
 
 /**
  * An object to abstract reading workflow models from and writing them to disk.
@@ -68,7 +73,7 @@ public class WorkflowModelDAO {
             varPath = confPath + MigrationConstants.ETC_MODEL_SUFFIX;
         }
 
-        return createWorkflowModel(codeRoot, varPath, confPath);
+        return createWorkflowModel(moduleAbsoluteRoot, codeRoot, varPath, confPath);
     }
 
     public void removeWorkflowStepFromModel(String workflowStep, WorkflowModel model) throws CustomerDataException {
@@ -87,7 +92,7 @@ public class WorkflowModelDAO {
         }
     }
 
-    private WorkflowModel createWorkflowModel(String codeRoot, String varPath, String confPath) throws CustomerDataException {
+    private WorkflowModel createWorkflowModel(String moduleAbsoluteRoot, String codeRoot, String varPath, String confPath) throws CustomerDataException {
         Logger.DEBUG("codeRoot: " + codeRoot);
         Logger.DEBUG("confPath: " + confPath);
 
@@ -98,7 +103,17 @@ public class WorkflowModelDAO {
         if (confFile.exists()) {
             String name = confPath.substring(confPath.lastIndexOf("/") + 1);
 
-            WorkflowModel model = new WorkflowModel();
+            WorkflowModel model = null;
+            if (confPath.endsWith("update_asset")) {
+                UpdateAssetWorkflowModel updateAssetWorkflowModel = new UpdateAssetWorkflowModel();
+                String videoProfilePath = getVideoProfilePath(moduleAbsoluteRoot);
+                if (videoProfilePath != null) {
+                    updateAssetWorkflowModel.setVideoProfilePath(videoProfilePath);
+                }
+                model = updateAssetWorkflowModel;
+            } else {
+                model = new WorkflowModel();
+            }
             model.setName(name);
             model.setConfigurationPage(confPath);
             model.setConfigurationFile(confFile);
@@ -115,6 +130,14 @@ public class WorkflowModelDAO {
         } else {
             return null;
         }
+    }
+
+    private String getVideoProfilePath(String modulePath) {
+        File videoFile = new File(Paths.get(modulePath, PATH_TO_CONF_VIDEO_PROFILE).toString());
+        if (!videoFile.exists()) {
+            videoFile = new File(Paths.get(modulePath, PATH_TO_ETC_VIDEO_PROFILE).toString());
+        }
+        return videoFile.getPath();
     }
 
     private List<WorkflowStep> extractWorkflowSteps(Document modelXml) {

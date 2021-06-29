@@ -41,6 +41,7 @@ public class MigrationConstants {
     public static final String APPS = "apps";
     public static final String MIGRATION_PROJECT_NODE = "aem-cloud-migration";
     public static final String PROCESSING = "processing";
+    public static final String VIDEO = "video";
 
     public static final String JCR_ROOT_ON_DISK = "jcr_root";
     public static final String JCR_CONTENT_ON_DISK = "_jcr_content";
@@ -94,6 +95,8 @@ public class MigrationConstants {
     //Workflow Launcher Constants
     public static final String PATH_TO_CONF_GLOBAL_LAUNCHER_CONFIG = File.separator + Path.of(PATH_TO_JCR_ROOT, CONF, GLOBAL,  SETTINGS, WORKFLOW, LAUNCHER, CONFIG).toString();
     public static final String PATH_TO_ETC_LAUNCHER_CONFIG = File.separator + Path.of(PATH_TO_JCR_ROOT, ETC, WORKFLOW, LAUNCHER, CONFIG).toString();
+    public static final String PATH_TO_CONF_VIDEO_PROFILE = File.separator + Path.of(PATH_TO_JCR_ROOT, CONF, GLOBAL, SETTINGS, DAM, VIDEO).toString();
+    public static final String PATH_TO_ETC_VIDEO_PROFILE = File.separator + Path.of(PATH_TO_JCR_ROOT, ETC, DAM, VIDEO).toString();
     public static final String ORIGINAL_RENDITION_PATTERN_SUFFIX = "renditions/original";
 
     //Workflow Runner Constants
@@ -107,12 +110,15 @@ public class MigrationConstants {
     public static final String PROCESSING_PROFILE_DISK_PATH = Path.of(PATH_TO_JCR_ROOT, PROCESSING_PROFILE_JCR_PATH).toString();
     public static final String PROCESSING_PROFILE_RESOURCE_TYPE = "dam/processing/profile";
     public static final String RENDITION_RESOURCE_TYPE = "dam/processing/profile/rendition";
+    public static final String VIDEO_RESOURCE_TYPE = "dam/processing/profile/video";
     public static final String INCLUDE_MIMETYPES_PROP = "includeMimeTypes";
     public static final String EXCLUDE_MIMETYPES_PROP = "excludeMimeTypes";
     public static final String NAME_PROP = "name";
     public static final String WIDTH_PROP = "wid";
     public static final String HEIGHT_PROP = "hei";
     public static final String FMT_PROP = "fmt";
+    public static final String BITRATE_PROP = "bitrate";
+    public static final String CODEC_PROP = "codec";
     public static final String QUALITY_PROP = "qlt";
     public static final String DEFAULT_MIMETYPE = "image/.*";
 

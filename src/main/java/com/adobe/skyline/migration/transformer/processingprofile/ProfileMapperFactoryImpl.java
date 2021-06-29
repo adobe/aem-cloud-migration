@@ -16,6 +16,7 @@ import com.adobe.skyline.migration.model.workflow.WorkflowStep;
 import com.adobe.skyline.migration.transformer.processingprofile.mappers.CreatePdfPreviewProcessMapper;
 import com.adobe.skyline.migration.transformer.processingprofile.mappers.CreateWebEnabledImageProcessMapper;
 import com.adobe.skyline.migration.transformer.processingprofile.mappers.FFMpegThumbnailProcessMapper;
+import com.adobe.skyline.migration.transformer.processingprofile.mappers.FFMpegTranscodeProcessMapper;
 import com.adobe.skyline.migration.transformer.processingprofile.mappers.ThumbnailProcessMapper;
 
 import java.util.HashMap;
@@ -33,6 +34,7 @@ public class ProfileMapperFactoryImpl implements ProfileMapperFactory {
         addMapper(new CreateWebEnabledImageProcessMapper());
         addMapper(new FFMpegThumbnailProcessMapper());
         addMapper(new ThumbnailProcessMapper());
+        addMapper(new FFMpegTranscodeProcessMapper());
     }
 
     private void addMapper(ProfileMapper mapper) {
