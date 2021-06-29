@@ -42,6 +42,8 @@ public class MigrationConstants {
     public static final String MIGRATION_PROJECT_NODE = "aem-cloud-migration";
     public static final String PROCESSING = "processing";
     public static final String VIDEO = "video";
+    public static final String SUPPORTED_CODEC = "h264";
+    public static final String SUPPORTED_FORMAT = "mp4";
 
     public static final String JCR_ROOT_ON_DISK = "jcr_root";
     public static final String JCR_CONTENT_ON_DISK = "_jcr_content";

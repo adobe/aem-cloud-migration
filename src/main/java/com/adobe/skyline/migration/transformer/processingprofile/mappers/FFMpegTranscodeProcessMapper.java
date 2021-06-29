@@ -35,6 +35,8 @@ import java.util.Map;
 import java.util.Set;
 
 import static com.adobe.skyline.migration.MigrationConstants.CONTENT_XML;
+import static com.adobe.skyline.migration.MigrationConstants.SUPPORTED_CODEC;
+import static com.adobe.skyline.migration.MigrationConstants.SUPPORTED_FORMAT;
 
 public class FFMpegTranscodeProcessMapper implements ProfileMapper {
 
@@ -67,14 +69,20 @@ public class FFMpegTranscodeProcessMapper implements ProfileMapper {
                     if (config.startsWith("[")) {
                         config = StringUtil.removeBrackets(config);
                     }
-                    renditions.add(getRendition(config, videoProfilePath));
+                    RenditionConfig renditionConfig = (getRendition(config, videoProfilePath));
+                    if (renditionConfig != null) {
+                        renditions.add(renditionConfig);
+                    }
                 }
             } else {
                 //new-style
                 List<String> configs = StringUtil.getListFromString(metadata.get(CONFIGS_PROP));
 
                 for (String config : configs) {
-                    renditions.add(getRendition(config, videoProfilePath));
+                    RenditionConfig renditionConfig = (getRendition(config, videoProfilePath));
+                    if (renditionConfig != null) {
+                        renditions.add(renditionConfig);
+                    }
                 }
             }
         } catch (Exception e) {
@@ -101,6 +109,10 @@ public class FFMpegTranscodeProcessMapper implements ProfileMapper {
             String codec = transcodingDetailsMap.getNamedItem("videoCodec") != null ? transcodingDetailsMap.getNamedItem("videoCodec").getTextContent() : null;
             Integer bitRate = transcodingDetailsMap.getNamedItem("videoBitrate") != null ? Integer.parseInt(transcodingDetailsMap.getNamedItem("videoBitrate").getTextContent()) : null;
             String format = transcodingDetailsMap.getNamedItem("extension") != null ? transcodingDetailsMap.getNamedItem("extension").getTextContent() : null;
+            if (!SUPPORTED_CODEC.equals(codec) || !SUPPORTED_FORMAT.equals(format)) {
+                Logger.WARN("The only supported codec & format on AEMaaCS are " + SUPPORTED_CODEC + " " + SUPPORTED_FORMAT + " respectively, the processing profile will not be created for " + codec + " " + format);
+                return null;
+            }
             Set<String> excludedMimeTypes = new HashSet<>();
             excludedMimeTypes.add("image/.*");
             excludedMimeTypes.add("application/.*");

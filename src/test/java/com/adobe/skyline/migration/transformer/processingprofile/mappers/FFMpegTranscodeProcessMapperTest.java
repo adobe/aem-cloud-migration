@@ -39,7 +39,7 @@ public class FFMpegTranscodeProcessMapperTest {
     @Test
     public void testMapping() {
         Map<String, String> processMetadata = new HashMap<>();
-        processMetadata.put("CONFIGS", "[profile:format_ogg]"); //Thumbnail sizes
+        processMetadata.put("CONFIGS", "[profile:format_ogg,profile:format_hp]");
         WorkflowStep step = new WorkflowStep();
         step.setMetadata(processMetadata);
         UpdateAssetWorkflowModel workflowModel = new UpdateAssetWorkflowModel();
@@ -52,7 +52,7 @@ public class FFMpegTranscodeProcessMapperTest {
     @Test
     public void testMappingProcessArgs() {
         Map<String, String> processMetadata = new HashMap<>();
-        processMetadata.put("PROCESS_ARGS", "profile:format_ogg"); //Older-style configuration - included for BC
+        processMetadata.put("PROCESS_ARGS", "profile:format_ogg,profile:format_hp"); //Older-style configuration - included for BC
         WorkflowStep step = new WorkflowStep();
         step.setMetadata(processMetadata);
         UpdateAssetWorkflowModel workflowModel = new UpdateAssetWorkflowModel();
@@ -73,7 +73,7 @@ public class FFMpegTranscodeProcessMapperTest {
         assertEquals(width, rendition.getWidth());
         assertTrue(rendition instanceof VideoProfileConfig);
         assertEquals(((VideoProfileConfig)rendition).getBitRate(), 4096);
-        assertEquals("ogg", rendition.getFormat());
+        assertEquals("mp4", rendition.getFormat());
         assertEquals("video", rendition.getNodeName());
         assertEquals("cq5dam.video." + width + "." + height, rendition.getFileName()); //cq5dam.thumbnail.WIDTH.HEIGHT.EXTENSION
 

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+    jcr:primaryType="cq:Page">
+    <jcr:content
+        cq:template="/libs/dam/templates/videoprofile"
+        jcr:description="A video profile with for high quality output on FullHD screens, using H.264 High Profile at Level 4.0."
+        jcr:primaryType="nt:unstructured"
+        jcr:title="Screens FullHD (H.264 - HP - Lvl4.0)"
+        width="320"
+        height="240"
+        sling:resourceType="dam/components/video/profile"
+        audioSamplingRate="44100"
+        extension="mp4"
+        htmlType="video/mp4"
+        mimeType="video/x-m4v"
+        videoCodec="h264"
+        videoBitrate="4096"
+        videoFrameRate="24000/1001"/>
+</jcr:root>
