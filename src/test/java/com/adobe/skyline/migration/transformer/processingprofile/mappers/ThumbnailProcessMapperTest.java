@@ -45,7 +45,7 @@ public class ThumbnailProcessMapperTest {
         WorkflowStep step = new WorkflowStep();
         step.setMetadata(processMetadata);
 
-        List<RenditionConfig> renditions = mapper.mapToRenditions(null, step);
+        List<RenditionConfig> renditions = mapper.mapToRenditions(null, null, step);
 
         assertEquals(4, renditions.size());
 
@@ -91,7 +91,7 @@ public class ThumbnailProcessMapperTest {
         WorkflowStep step = new WorkflowStep();
         step.setMetadata(processMetadata);
 
-        List<RenditionConfig> renditions = mapper.mapToRenditions(null, step);
+        List<RenditionConfig> renditions = mapper.mapToRenditions(null, null, step);
 
         int numThumbnails = 0;
 
@@ -115,7 +115,7 @@ public class ThumbnailProcessMapperTest {
         WorkflowStep step = new WorkflowStep();
         step.setMetadata(processMetadata);
 
-        List<RenditionConfig> renditions = mapper.mapToRenditions(null, step);
+        List<RenditionConfig> renditions = mapper.mapToRenditions(null, null, step);
 
         Set<String> skippedMimeTypes = renditions.get(0).getExcludeMimeTypes();
         assertTrue(skippedMimeTypes.contains("audio/mpeg"));
@@ -130,7 +130,7 @@ public class ThumbnailProcessMapperTest {
         WorkflowStep step = new WorkflowStep();
         step.setMetadata(processMetadata);
 
-        List<RenditionConfig> renditions = mapper.mapToRenditions(null, step);
+        List<RenditionConfig> renditions = mapper.mapToRenditions(null, null, step);
 
         assertEquals(2, renditions.size());
 
@@ -160,7 +160,7 @@ public class ThumbnailProcessMapperTest {
         WorkflowStep step = new WorkflowStep();
         step.setMetadata(processMetadata);
 
-        List<RenditionConfig> renditions = mapper.mapToRenditions(null, step);
+        List<RenditionConfig> renditions = mapper.mapToRenditions(null, null, step);
 
         assertEquals(3, renditions.size());
 
@@ -208,7 +208,7 @@ public class ThumbnailProcessMapperTest {
         WorkflowStep step = new WorkflowStep();
         step.setMetadata(processMetadata);
 
-        List<RenditionConfig> renditions = mapper.mapToRenditions(null, step);
+        List<RenditionConfig> renditions = mapper.mapToRenditions(null,null, step);
 
         boolean webFound = false;
 

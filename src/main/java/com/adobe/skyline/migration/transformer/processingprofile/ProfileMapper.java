@@ -14,6 +14,7 @@ package com.adobe.skyline.migration.transformer.processingprofile;
 
 import java.util.List;
 
+import com.adobe.skyline.migration.model.ProcessingProfile;
 import com.adobe.skyline.migration.model.RenditionConfig;
 import com.adobe.skyline.migration.model.workflow.WorkflowModel;
 import com.adobe.skyline.migration.model.workflow.WorkflowStep;
@@ -25,5 +26,5 @@ public interface ProfileMapper {
 
     String[] getProcessIds();
 
-    List<RenditionConfig> mapToRenditions(WorkflowModel model, WorkflowStep step);
+    List<RenditionConfig> mapToRenditions(ProcessingProfile processingProfile , WorkflowModel model, WorkflowStep step);
 }

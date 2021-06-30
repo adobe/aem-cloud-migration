@@ -46,7 +46,7 @@ public class CreateWebEnabledImageProcessMapperTest {
         WorkflowStep step = new WorkflowStep();
         step.setMetadata(processMetadata);
 
-        List<RenditionConfig> renditions = mapper.mapToRenditions(null, step);
+        List<RenditionConfig> renditions = mapper.mapToRenditions(null, null, step);
 
         RenditionConfig rendition = renditions.get(0);
         assertEquals(100, rendition.getHeight());

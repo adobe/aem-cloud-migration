@@ -14,6 +14,8 @@ package com.adobe.skyline.migration.transformer.processingprofile.mappers;
 
 import com.adobe.skyline.migration.MigrationConstants;
 import com.adobe.skyline.migration.exception.MigrationRuntimeException;
+import com.adobe.skyline.migration.model.ChangeTrackingService;
+import com.adobe.skyline.migration.model.ProcessingProfile;
 import com.adobe.skyline.migration.model.RenditionConfig;
 import com.adobe.skyline.migration.model.VideoProfileConfig;
 import com.adobe.skyline.migration.model.workflow.UpdateAssetWorkflowModel;
@@ -45,6 +47,11 @@ public class FFMpegTranscodeProcessMapper implements ProfileMapper {
     private static final String RENDITION_PREFIX = "cq5dam";
     private static final String PROCESS_ARGS_PROP = "PROCESS_ARGS";
     private static final String CONFIGS_PROP = "CONFIGS";
+    private ChangeTrackingService changeTrackingService;
+
+    public FFMpegTranscodeProcessMapper(ChangeTrackingService changeTrackingService) {
+        this.changeTrackingService = changeTrackingService;
+    }
 
     @Override
     public String[] getProcessIds() {
@@ -52,7 +59,7 @@ public class FFMpegTranscodeProcessMapper implements ProfileMapper {
     }
 
     @Override
-    public List<RenditionConfig> mapToRenditions(WorkflowModel model, WorkflowStep step) {
+    public List<RenditionConfig> mapToRenditions(ProcessingProfile processingProfile, WorkflowModel model, WorkflowStep step) {
         List<RenditionConfig> renditions = new ArrayList<>();
         Map<String, String> metadata = step.getMetadata();
         String videoProfilePath = "";
@@ -69,7 +76,7 @@ public class FFMpegTranscodeProcessMapper implements ProfileMapper {
                     if (config.startsWith("[")) {
                         config = StringUtil.removeBrackets(config);
                     }
-                    RenditionConfig renditionConfig = (getRendition(config, videoProfilePath));
+                    RenditionConfig renditionConfig = (getRendition(processingProfile, config, videoProfilePath));
                     if (renditionConfig != null) {
                         renditions.add(renditionConfig);
                     }
@@ -79,7 +86,7 @@ public class FFMpegTranscodeProcessMapper implements ProfileMapper {
                 List<String> configs = StringUtil.getListFromString(metadata.get(CONFIGS_PROP));
 
                 for (String config : configs) {
-                    RenditionConfig renditionConfig = (getRendition(config, videoProfilePath));
+                    RenditionConfig renditionConfig = (getRendition(processingProfile, config, videoProfilePath));
                     if (renditionConfig != null) {
                         renditions.add(renditionConfig);
                     }
@@ -92,13 +99,13 @@ public class FFMpegTranscodeProcessMapper implements ProfileMapper {
         return renditions;
     }
 
-    private RenditionConfig getRendition(String config, String videoProfilePath) throws MigrationRuntimeException{
+    private RenditionConfig getRendition(ProcessingProfile processingProfile, String config, String videoProfilePath) throws MigrationRuntimeException{
         String[] tokens = config.split(":");
         String profile = tokens[1].trim();
-        return getRenditionFromProfileNode(profile, videoProfilePath);
+        return getRenditionFromProfileNode(processingProfile, profile, videoProfilePath);
     }
 
-    private RenditionConfig getRenditionFromProfileNode(String profile, String videoProfilePath) throws MigrationRuntimeException {
+    private RenditionConfig getRenditionFromProfileNode(ProcessingProfile processingProfile, String profile, String videoProfilePath) throws MigrationRuntimeException {
         File profileFile = new File(videoProfilePath + File.separator + profile + File.separator + CONTENT_XML);
         try {
             Document profileXml = XmlUtil.loadXml(profileFile);
@@ -111,6 +118,7 @@ public class FFMpegTranscodeProcessMapper implements ProfileMapper {
             String format = transcodingDetailsMap.getNamedItem("extension") != null ? transcodingDetailsMap.getNamedItem("extension").getTextContent() : null;
             if (!SUPPORTED_CODEC.equals(codec) || !SUPPORTED_FORMAT.equals(format)) {
                 Logger.WARN("The only supported codec & format on AEMaaCS are " + SUPPORTED_CODEC + " " + SUPPORTED_FORMAT + " respectively, the processing profile will not be created for " + codec + " " + format);
+                changeTrackingService.trackFailedProcessingProfile(processingProfile);
                 return null;
             }
             Set<String> excludedMimeTypes = new HashSet<>();

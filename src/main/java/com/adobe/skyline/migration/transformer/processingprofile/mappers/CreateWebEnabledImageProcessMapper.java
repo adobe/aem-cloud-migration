@@ -13,6 +13,7 @@
 package com.adobe.skyline.migration.transformer.processingprofile.mappers;
 
 import com.adobe.skyline.migration.MigrationConstants;
+import com.adobe.skyline.migration.model.ProcessingProfile;
 import com.adobe.skyline.migration.model.RenditionConfig;
 import com.adobe.skyline.migration.model.workflow.WorkflowModel;
 import com.adobe.skyline.migration.model.workflow.WorkflowStep;
@@ -38,7 +39,7 @@ public class CreateWebEnabledImageProcessMapper implements ProfileMapper {
     }
 
     @Override
-    public List<RenditionConfig> mapToRenditions(WorkflowModel model, WorkflowStep step) {
+    public List<RenditionConfig> mapToRenditions(ProcessingProfile processingProfile, WorkflowModel model, WorkflowStep step) {
         Map<String, String> metadata = step.getMetadata();
 
         RenditionConfig rendition = new RenditionConfig();

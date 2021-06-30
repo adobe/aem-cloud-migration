@@ -13,6 +13,7 @@
 package com.adobe.skyline.migration.transformer.processingprofile.mappers;
 
 import com.adobe.skyline.migration.MigrationConstants;
+import com.adobe.skyline.migration.model.ProcessingProfile;
 import com.adobe.skyline.migration.model.RenditionConfig;
 import com.adobe.skyline.migration.model.workflow.WorkflowModel;
 import com.adobe.skyline.migration.model.workflow.WorkflowStep;
@@ -50,7 +51,7 @@ public class ThumbnailProcessMapper implements ProfileMapper {
     }
 
     @Override
-    public List<RenditionConfig> mapToRenditions(WorkflowModel model, WorkflowStep step) {
+    public List<RenditionConfig> mapToRenditions(ProcessingProfile processingProfile, WorkflowModel model, WorkflowStep step) {
         List<RenditionConfig> renditions = new ArrayList<>();
 
         Map<String, String> metadata = step.getMetadata();

@@ -42,7 +42,7 @@ public class CreatePdfPreviewProcessMapperTest {
         WorkflowModel model = new WorkflowModel();
         model.setWorkflowSteps(steps);
 
-        List<RenditionConfig> renditions = mapper.mapToRenditions(model, previewStep);
+        List<RenditionConfig> renditions = mapper.mapToRenditions(null, model, previewStep);
 
         RenditionConfig rendition = renditions.get(0);
         assertEquals(2048, rendition.getHeight());
@@ -70,7 +70,7 @@ public class CreatePdfPreviewProcessMapperTest {
         WorkflowModel model = new WorkflowModel();
         model.setWorkflowSteps(steps);
 
-        List<RenditionConfig> renditions = mapper.mapToRenditions(model, previewStep);
+        List<RenditionConfig> renditions = mapper.mapToRenditions(null, model, previewStep);
 
         assertEquals(0, renditions.size());
     }

@@ -12,6 +12,8 @@
 
 package com.adobe.skyline.migration.transformer.processingprofile.mappers;
 
+import com.adobe.skyline.migration.model.ChangeTrackingService;
+import com.adobe.skyline.migration.model.ProcessingProfile;
 import com.adobe.skyline.migration.model.RenditionConfig;
 import com.adobe.skyline.migration.model.VideoProfileConfig;
 import com.adobe.skyline.migration.model.workflow.UpdateAssetWorkflowModel;
@@ -33,7 +35,7 @@ public class FFMpegTranscodeProcessMapperTest {
 
     @Before
     public void setUp() {
-        this.mapper = new FFMpegTranscodeProcessMapper();
+        this.mapper = new FFMpegTranscodeProcessMapper(new ChangeTrackingService());
     }
 
     @Test
@@ -44,7 +46,7 @@ public class FFMpegTranscodeProcessMapperTest {
         step.setMetadata(processMetadata);
         UpdateAssetWorkflowModel workflowModel = new UpdateAssetWorkflowModel();
         workflowModel.setVideoProfilePath(getClass().getClassLoader().getResource("archetype17").getPath() + "/ui.content/src/main/content/jcr_root/conf/global/settings/dam/video");
-        List<RenditionConfig> renditions = mapper.mapToRenditions(workflowModel, step);
+        List<RenditionConfig> renditions = mapper.mapToRenditions(new ProcessingProfile(), workflowModel, step);
 
         validateRenditions(renditions);
     }
@@ -57,7 +59,7 @@ public class FFMpegTranscodeProcessMapperTest {
         step.setMetadata(processMetadata);
         UpdateAssetWorkflowModel workflowModel = new UpdateAssetWorkflowModel();
         workflowModel.setVideoProfilePath(getClass().getClassLoader().getResource("archetype17").getPath() + "/ui.content/src/main/content/jcr_root/conf/global/settings/dam/video");
-        List<RenditionConfig> renditions = mapper.mapToRenditions(workflowModel, step);
+        List<RenditionConfig> renditions = mapper.mapToRenditions(new ProcessingProfile(), workflowModel, step);
 
         validateRenditions(renditions);
     }

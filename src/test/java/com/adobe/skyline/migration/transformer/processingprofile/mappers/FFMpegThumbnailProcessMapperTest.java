@@ -44,7 +44,7 @@ public class FFMpegThumbnailProcessMapperTest {
         WorkflowStep step = new WorkflowStep();
         step.setMetadata(processMetadata);
 
-        List<RenditionConfig> renditions = mapper.mapToRenditions(null, step);
+        List<RenditionConfig> renditions = mapper.mapToRenditions(null, null, step);
 
         validateRenditions(renditions);
     }
@@ -57,7 +57,7 @@ public class FFMpegThumbnailProcessMapperTest {
         WorkflowStep step = new WorkflowStep();
         step.setMetadata(processMetadata);
 
-        List<RenditionConfig> renditions = mapper.mapToRenditions(null, step);
+        List<RenditionConfig> renditions = mapper.mapToRenditions(null, null, step);
 
         validateRenditions(renditions);
     }
