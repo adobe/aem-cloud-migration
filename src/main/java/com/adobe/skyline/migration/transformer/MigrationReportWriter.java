@@ -271,7 +271,7 @@ public class MigrationReportWriter {
 
             List<String> headerValues = new LinkedList<>(Arrays.asList("Action", "Step", "Reason"));
             tableValues.add(headerValues);
-            List<String> underlineRow = new LinkedList<>(Arrays.asList("-------", "-------", "-------"));
+            List<String> underlineRow = new LinkedList<>(Arrays.asList("------", "----", "------"));
             tableValues.add(underlineRow);
 
             for (Map.Entry<String, String> failureEntry : changeTracker.getFailedMappings().entrySet()) {
