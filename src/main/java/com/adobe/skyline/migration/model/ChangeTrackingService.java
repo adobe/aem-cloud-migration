@@ -26,7 +26,7 @@ public class ChangeTrackingService {
     private List<ProcessingProfile> processingProfilesCreated;
     private List<String> projectsCreated;
     private List<String> varPathsDeleted;
-    private List<ProcessingProfile> failedProcessingProfile;
+    private Map<String, String> failedMappings;
 
     public ChangeTrackingService() {
         this.disabledLaunchers = new ArrayList<>();
@@ -35,19 +35,19 @@ public class ChangeTrackingService {
         this.processingProfilesCreated = new ArrayList<>();
         this.projectsCreated = new ArrayList<>();
         this.varPathsDeleted = new ArrayList<>();
-        this.failedProcessingProfile = new ArrayList<>();
+        this.failedMappings = new HashMap<>();
     }
 
     public void trackLauncherDisabled(String launcherName) {
         disabledLaunchers.add(launcherName);
     }
 
-    public void trackFailedProcessingProfile(ProcessingProfile processingProfile) {
-        this.failedProcessingProfile.add(processingProfile);
+    public void trackFailedMappings(String mapping, String failure) {
+        this.failedMappings.put(mapping, failure);
     }
 
-    public List<ProcessingProfile> getFailedProcessingProfile() {
-        return failedProcessingProfile;
+    public Map<String, String> getFailedMappings() {
+        return failedMappings;
     }
 
     public List<String> getDisabledLaunchers() {

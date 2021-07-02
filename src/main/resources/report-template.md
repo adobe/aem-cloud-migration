@@ -36,3 +36,8 @@ By inspecting your workflow step configurations, we were able to automatically g
 
 ${PROCESSING_PROFILES_CREATED}
 Note that while we have created processing profiles from your workflow model configurations, we are unable to attach these profiles to your existing content structures.  After deploying these profiles to your environment, please visit /mnt/overlay/dam/gui/content/processingprofiles/processingprofiles.html to attach these configurations to one or more folders in your repository.
+
+## Migration Issues
+These issues were encountered while migrating the project by workflow migration tool.
+
+${MIGRATION_ISSUES}

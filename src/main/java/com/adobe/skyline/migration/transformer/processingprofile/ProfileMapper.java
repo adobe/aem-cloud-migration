@@ -26,5 +26,5 @@ public interface ProfileMapper {
 
     String[] getProcessIds();
 
-    List<RenditionConfig> mapToRenditions(ProcessingProfile processingProfile , WorkflowModel model, WorkflowStep step);
+    List<RenditionConfig> mapToRenditions(WorkflowModel model, WorkflowStep step);
 }

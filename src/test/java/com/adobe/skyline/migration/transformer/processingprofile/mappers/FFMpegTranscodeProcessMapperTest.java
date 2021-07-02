@@ -46,7 +46,7 @@ public class FFMpegTranscodeProcessMapperTest {
         step.setMetadata(processMetadata);
         UpdateAssetWorkflowModel workflowModel = new UpdateAssetWorkflowModel();
         workflowModel.setVideoProfilePath(getClass().getClassLoader().getResource("archetype17").getPath() + "/ui.content/src/main/content/jcr_root/conf/global/settings/dam/video");
-        List<RenditionConfig> renditions = mapper.mapToRenditions(new ProcessingProfile(), workflowModel, step);
+        List<RenditionConfig> renditions = mapper.mapToRenditions(workflowModel, step);
 
         validateRenditions(renditions);
     }
@@ -59,7 +59,7 @@ public class FFMpegTranscodeProcessMapperTest {
         step.setMetadata(processMetadata);
         UpdateAssetWorkflowModel workflowModel = new UpdateAssetWorkflowModel();
         workflowModel.setVideoProfilePath(getClass().getClassLoader().getResource("archetype17").getPath() + "/ui.content/src/main/content/jcr_root/conf/global/settings/dam/video");
-        List<RenditionConfig> renditions = mapper.mapToRenditions(new ProcessingProfile(), workflowModel, step);
+        List<RenditionConfig> renditions = mapper.mapToRenditions(workflowModel, step);
 
         validateRenditions(renditions);
     }

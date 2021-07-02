@@ -39,7 +39,7 @@ public class CreateWebEnabledImageProcessMapper implements ProfileMapper {
     }
 
     @Override
-    public List<RenditionConfig> mapToRenditions(ProcessingProfile processingProfile, WorkflowModel model, WorkflowStep step) {
+    public List<RenditionConfig> mapToRenditions(WorkflowModel model, WorkflowStep step) {
         Map<String, String> metadata = step.getMetadata();
 
         RenditionConfig rendition = new RenditionConfig();

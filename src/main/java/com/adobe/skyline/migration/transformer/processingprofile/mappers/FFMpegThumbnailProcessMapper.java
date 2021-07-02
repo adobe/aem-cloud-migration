@@ -35,7 +35,7 @@ public class FFMpegThumbnailProcessMapper implements ProfileMapper {
     }
 
     @Override
-    public List<RenditionConfig> mapToRenditions(ProcessingProfile processingProfile, WorkflowModel model, WorkflowStep step) {
+    public List<RenditionConfig> mapToRenditions(WorkflowModel model, WorkflowStep step) {
         List<RenditionConfig> renditions = new ArrayList<>();
 
         Map<String, String> metadata = step.getMetadata();

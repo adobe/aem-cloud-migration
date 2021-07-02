@@ -90,7 +90,7 @@ public class ProcessingProfileCreator {
             ProfileMapper mapper = mapperFactory.getMapper(step);
 
             if (mapper != null) {
-                List<RenditionConfig> renditions = mapper.mapToRenditions(profile, model, step);
+                List<RenditionConfig> renditions = mapper.mapToRenditions(model, step);
 
                 //Merge the mimetype includes and excludes from the launcher into those defined by the rendition configuration
                 for (RenditionConfig rendition : renditions) {

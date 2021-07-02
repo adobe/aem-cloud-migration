@@ -134,6 +134,7 @@ public class MigrationConstants {
     public static final String NO_MODEL_UPDATE_MSG = "No workflow models were modified.";
     public static final String NO_PATHS_DELETED_MSG = "No paths were deleted.";
     public static final String NO_PROFILE_MSG = "No processing profiles were created.";
+    public static final String NO_FAILURE_MSG = "No issues were encountered.";
     public static final String NO_PROJECT_MSG = "No Maven projects were created.";
 
     //Filetype Constants
