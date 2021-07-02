@@ -12,10 +12,12 @@
 
 package com.adobe.skyline.migration.transformer.processingprofile;
 
+import com.adobe.skyline.migration.model.ChangeTrackingService;
 import com.adobe.skyline.migration.model.workflow.WorkflowStep;
 import com.adobe.skyline.migration.transformer.processingprofile.mappers.CreatePdfPreviewProcessMapper;
 import com.adobe.skyline.migration.transformer.processingprofile.mappers.CreateWebEnabledImageProcessMapper;
 import com.adobe.skyline.migration.transformer.processingprofile.mappers.FFMpegThumbnailProcessMapper;
+import com.adobe.skyline.migration.transformer.processingprofile.mappers.FFMpegTranscodeProcessMapper;
 import com.adobe.skyline.migration.transformer.processingprofile.mappers.ThumbnailProcessMapper;
 
 import java.util.HashMap;
@@ -26,13 +28,14 @@ public class ProfileMapperFactoryImpl implements ProfileMapperFactory {
     //Directory of mappers by workflow process
     private Map<String, ProfileMapper> mapperMap;
 
-    public ProfileMapperFactoryImpl() {
+    public ProfileMapperFactoryImpl(ChangeTrackingService changeTrackingService) {
         mapperMap = new HashMap<>();
 
         addMapper(new CreatePdfPreviewProcessMapper());
         addMapper(new CreateWebEnabledImageProcessMapper());
         addMapper(new FFMpegThumbnailProcessMapper());
         addMapper(new ThumbnailProcessMapper());
+        addMapper(new FFMpegTranscodeProcessMapper(changeTrackingService));
     }
 
     private void addMapper(ProfileMapper mapper) {

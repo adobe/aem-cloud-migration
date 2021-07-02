@@ -14,6 +14,7 @@ package com.adobe.skyline.migration.transformer.processingprofile.mappers;
 
 import com.adobe.skyline.migration.MigrationConstants;
 import com.adobe.skyline.migration.model.RenditionConfig;
+import com.adobe.skyline.migration.model.VideoProfileConfig;
 
 import java.util.Set;
 
@@ -21,12 +22,21 @@ public class RenditionBuilder {
 
     public static RenditionConfig buildRendition(int width, int height, String nodeName, String renditionPrefix, Set<String> includeMimetypes, Set<String> excludeMimetypes) {
         RenditionConfig rendition = new RenditionConfig();
+        rendition.setFormat(MigrationConstants.PNG_EXTENSION);
+        rendition.setFileName(renditionPrefix + "." + nodeName + "." + width + "." + height + "." + MigrationConstants.PNG_EXTENSION);
+        return populateRenditionDetails(rendition, width, height, nodeName, includeMimetypes, excludeMimetypes);
+    }
 
+    public static RenditionConfig buildVideoRendition(int width, int height, String nodeName, String renditionPrefix, Set<String> includeMimetypes, Set<String> excludeMimetypes) {
+        VideoProfileConfig videoProfileConfig = new VideoProfileConfig();
+        videoProfileConfig.setFileName(renditionPrefix + "." + nodeName + "." + width + "." + height);
+        return populateRenditionDetails(videoProfileConfig, width, height, nodeName, includeMimetypes, excludeMimetypes);
+    }
+
+    public static RenditionConfig populateRenditionDetails(RenditionConfig rendition, int width, int height, String nodeName, Set<String> includeMimetypes, Set<String> excludeMimetypes) {
         rendition.setWidth(width);
         rendition.setHeight(height);
-        rendition.setFormat(MigrationConstants.PNG_EXTENSION);
         rendition.setNodeName(nodeName);
-        rendition.setFileName(renditionPrefix + "." + nodeName + "." + width + "." + height + "." + MigrationConstants.PNG_EXTENSION);
 
         if (includeMimetypes != null && includeMimetypes.size() > 0) {
             rendition.setIncludeMimeTypes(includeMimetypes);

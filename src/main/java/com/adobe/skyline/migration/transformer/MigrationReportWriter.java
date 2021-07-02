@@ -49,6 +49,7 @@ public class MigrationReportWriter {
             writePathsDeleted(reportFile);
             writeProcessingProfiles(reportFile);
             writeProjects(reportFile);
+            writeMigrationIssues(reportFile);
         } catch (IOException e) {
             throw new MigrationRuntimeException("Unable to output a migration report.", e);
         }
@@ -260,5 +261,31 @@ public class MigrationReportWriter {
         }
 
         return table.toString();
+    }
+
+    private void writeMigrationIssues(File reportFile) throws IOException {
+        StringBuilder issuesBuilder = new StringBuilder();
+
+        if (changeTracker.getFailedMappings().size() > 0) {
+            List<List<String>> tableValues = new LinkedList<>();
+
+            List<String> headerValues = new LinkedList<>(Arrays.asList("Action", "Step", "Reason"));
+            tableValues.add(headerValues);
+            List<String> underlineRow = new LinkedList<>(Arrays.asList("------", "----", "------"));
+            tableValues.add(underlineRow);
+
+            for (Map.Entry<String, String> failureEntry : changeTracker.getFailedMappings().entrySet()) {
+                List<String> nextRow = new LinkedList<>(Arrays.asList("Failed", failureEntry.getKey(), failureEntry.getValue()));
+                tableValues.add(nextRow);
+            }
+
+            String mdTable = createMarkdownTable(tableValues);
+            issuesBuilder.append(mdTable);
+        } else {
+            issuesBuilder.append(MigrationConstants.NO_FAILURE_MSG);
+            issuesBuilder.append(System.getProperty("line.separator"));
+        }
+
+        FileUtil.findAndReplaceInFile(reportFile, "\\$\\{MIGRATION_ISSUES\\}", issuesBuilder.toString());
     }
 }

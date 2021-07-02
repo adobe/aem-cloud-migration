@@ -60,8 +60,8 @@ class MigrationOrchestrator {
     void exec() throws CustomerDataException, ProjectCreationException {
         //Initialize General Services
         FileQueryService queryService = new FileQueryService();
-        ProfileMapperFactory mapperFactory = new ProfileMapperFactoryImpl();
         ChangeTrackingService changeTracker = new ChangeTrackingService();
+        ProfileMapperFactory mapperFactory = new ProfileMapperFactoryImpl(changeTracker);
 
         //Initialize Data Access Objects
         WorkflowLauncherDAO launcherDAO = new WorkflowLauncherDAO();

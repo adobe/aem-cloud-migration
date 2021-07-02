@@ -60,7 +60,7 @@ public class ProcessingProfileCreatorTest extends SkylineMigrationBaseTest {
     public void setUp() {
         super.setUp();
 
-        ProfileMapperFactory mapperFactory = new ProfileMapperFactoryImpl();
+        ProfileMapperFactory mapperFactory = new ProfileMapperFactoryImpl(null);
         changeTracker = new ChangeTrackingService();
 
         this.creator = new ProcessingProfileCreator(mapperFactory, ppDao, ffDao, changeTracker, mavenProjectDAO);
