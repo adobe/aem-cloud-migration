@@ -13,7 +13,6 @@
 package com.adobe.skyline.migration.transformer.processingprofile.mappers;
 
 import com.adobe.skyline.migration.model.ChangeTrackingService;
-import com.adobe.skyline.migration.model.ProcessingProfile;
 import com.adobe.skyline.migration.model.RenditionConfig;
 import com.adobe.skyline.migration.model.VideoProfileConfig;
 import com.adobe.skyline.migration.model.workflow.UpdateAssetWorkflowModel;

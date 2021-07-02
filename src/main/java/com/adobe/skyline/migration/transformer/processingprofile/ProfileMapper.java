@@ -14,7 +14,6 @@ package com.adobe.skyline.migration.transformer.processingprofile;
 
 import java.util.List;
 
-import com.adobe.skyline.migration.model.ProcessingProfile;
 import com.adobe.skyline.migration.model.RenditionConfig;
 import com.adobe.skyline.migration.model.workflow.WorkflowModel;
 import com.adobe.skyline.migration.model.workflow.WorkflowStep;
