@@ -196,7 +196,7 @@ public class MigrationReportWriter {
     private void writeProcessingProfiles(File reportFile) throws IOException {
         StringBuilder profileMdBuilder = new StringBuilder();
 
-        if (changeTracker.getProcessingProfilesCreated().size() > 0 || changeTracker.getFailedMappings().size() > 0) {
+        if (changeTracker.getProcessingProfilesCreated().size() > 0) {
             List<List<String>> tableValues = new LinkedList<>();
 
             List<String> headerValues = new LinkedList<>(Arrays.asList("Action", "Profile"));
@@ -206,11 +206,6 @@ public class MigrationReportWriter {
 
             for (ProcessingProfile profile : changeTracker.getProcessingProfilesCreated()) {
                 List<String> nextRow = new LinkedList<>(Arrays.asList("Created", profile.getName()));
-                tableValues.add(nextRow);
-            }
-
-            for (Map.Entry<String, String> failureEntry : changeTracker.getFailedMappings().entrySet()) {
-                List<String> nextRow = new LinkedList<>(Arrays.asList("Failed", failureEntry.getKey()));
                 tableValues.add(nextRow);
             }
 
