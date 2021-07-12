@@ -80,7 +80,7 @@ public class CustomerProjectLoaderTest extends SkylineMigrationBaseTest {
                 updateAssetFound = true;
                 assertEquals("/conf/global/settings/workflow/models/dam/update_asset", model.getConfigurationPage());
                 assertEquals("/var/workflow/models/dam/update_asset", model.getRuntimeComponent());
-                assertEquals(10, model.getWorkflowSteps().size());
+                assertEquals(11, model.getWorkflowSteps().size());
             }
         }
 

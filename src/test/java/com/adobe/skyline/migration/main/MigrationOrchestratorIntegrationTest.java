@@ -97,6 +97,7 @@ public class MigrationOrchestratorIntegrationTest extends SkylineMigrationBaseTe
                     "com.day.cq.dam.core.process.MetadataProcessorProcess",
                     "com.day.cq.dam.video.FFMpegThumbnailProcess",
                     "com.day.cq.dam.core.process.CommandLineProcess",
+                    "com.day.cq.dam.video.FFMpegTranscodeProcess",
                     "com.day.cq.dam.core.process.CreatePdfPreviewProcess",
                     "com.day.cq.dam.core.process.ThumbnailProcess"
             };
@@ -376,7 +377,7 @@ public class MigrationOrchestratorIntegrationTest extends SkylineMigrationBaseTe
 
                 assertTrue(scanner.nextLine().startsWith("###")); //Workflow model description
                 skipLines(scanner, 1);
-                validateNumberOfTableRows(scanner, 8);
+                validateNumberOfTableRows(scanner, 9);
             }
 
             if (line.equals("## Paths Deleted")) {
@@ -390,6 +391,11 @@ public class MigrationOrchestratorIntegrationTest extends SkylineMigrationBaseTe
 
             if (line.equals("## Maven Projects Added and Modified")) {
                 validateNumProjects(scanner, 2);
+            }
+
+            if (line.equals("## Migration Issues")) {
+                skipLines(scanner, 4);
+                validateNumberOfTableRows(scanner, 1);
             }
         }
     }
