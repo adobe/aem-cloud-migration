@@ -81,6 +81,17 @@
                     PROCESS_AUTO_ADVANCE="true"
                     THUMBNAILS="[48:48,140:100,319:319]"/>
             </commandlineprocess>
+            <process3
+                    jcr:description="Create web enabled video formats"
+                    jcr:primaryType="nt:unstructured"
+                    jcr:title="FFmpeg transcoding"
+                    sling:resourceType="cq/workflow/components/model/process">
+                <metaData
+                        jcr:primaryType="nt:unstructured"
+                        PROCESS="com.day.cq.dam.video.FFMpegTranscodeProcess"
+                        PROCESS_ARGS="profile:format_ogg,profile:format_hp"
+                        PROCESS_AUTO_ADVANCE="true"/>
+            </process3>
             <createpdfpreviewproc
                 jcr:description="Rasterize PDF and Adobe Illustrator documents to a preview image rendition"
                 jcr:primaryType="nt:unstructured"
