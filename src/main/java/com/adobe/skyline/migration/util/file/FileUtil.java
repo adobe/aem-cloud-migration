@@ -22,6 +22,7 @@ import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.Enumeration;
 import java.util.Scanner;
+import java.util.regex.Matcher;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
@@ -92,7 +93,7 @@ public class FileUtil {
 
     public static void findAndReplaceInFile(File in, String pattern, String replacement) throws IOException {
         String content = new String(Files.readAllBytes(in.toPath()));
-        content = content.replaceAll(pattern, replacement);
+        content = content.replaceAll(pattern, Matcher.quoteReplacement(replacement));
         Files.write(in.toPath(), content.getBytes());
     }
 

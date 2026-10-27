@@ -14,6 +14,7 @@ package com.adobe.skyline.migration.transformer.processingprofile;
 
 import com.adobe.skyline.migration.model.ChangeTrackingService;
 import com.adobe.skyline.migration.model.workflow.WorkflowStep;
+import com.adobe.skyline.migration.transformer.processingprofile.mappers.CommandLineProcessMapper;
 import com.adobe.skyline.migration.transformer.processingprofile.mappers.CreatePdfPreviewProcessMapper;
 import com.adobe.skyline.migration.transformer.processingprofile.mappers.CreateWebEnabledImageProcessMapper;
 import com.adobe.skyline.migration.transformer.processingprofile.mappers.FFMpegThumbnailProcessMapper;
@@ -36,6 +37,7 @@ public class ProfileMapperFactoryImpl implements ProfileMapperFactory {
         addMapper(new FFMpegThumbnailProcessMapper());
         addMapper(new ThumbnailProcessMapper());
         addMapper(new FFMpegTranscodeProcessMapper(changeTrackingService));
+        addMapper(new CommandLineProcessMapper(changeTrackingService));
     }
 
     private void addMapper(ProfileMapper mapper) {

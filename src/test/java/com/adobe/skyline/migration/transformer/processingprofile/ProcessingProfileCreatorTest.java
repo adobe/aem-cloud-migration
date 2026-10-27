@@ -28,10 +28,14 @@ import com.adobe.skyline.migration.transformer.processingprofile.ProfileMapperFa
 import com.adobe.skyline.migration.transformer.processingprofile.ProfileMapperFactoryImpl;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -352,6 +356,60 @@ public class ProcessingProfileCreatorTest extends SkylineMigrationBaseTest {
         creator.createProfiles(project);
 
         verify(ppDao, times(1)).addProfile(any());
+    }
+
+    @Test
+    public void testDuplicateRenditionsMerged() throws ProjectCreationException {
+        WorkflowStep jpegStep = getWebEnabledWorkflowStep();
+        jpegStep.getMetadata().put("KEEP_FORMAT_LIST", "image/jpeg");
+        WorkflowStep pngStep = getWebEnabledWorkflowStep();
+        pngStep.getMetadata().put("KEEP_FORMAT_LIST", "image/png");
+
+        ProcessingProfile profile = createSingleProfile(jpegStep, pngStep);
+
+        assertEquals(1, profile.getRenditions().size());
+        assertEquals(new HashSet<>(Arrays.asList("image/jpeg", "image/png")), profile.getRenditions().get(0).getIncludeMimeTypes());
+        assertTrue(changeTracker.getFailedMappings().isEmpty());
+    }
+
+    @Test
+    public void testDuplicateRenditionWithoutIncludesAppliesToAllTypes() throws ProjectCreationException {
+        WorkflowStep jpegStep = getWebEnabledWorkflowStep();
+        jpegStep.getMetadata().put("KEEP_FORMAT_LIST", "image/jpeg");
+        WorkflowStep allStep = getWebEnabledWorkflowStep();
+
+        ProcessingProfile profile = createSingleProfile(jpegStep, allStep);
+
+        assertEquals(1, profile.getRenditions().size());
+        assertEquals(Collections.singleton(MigrationConstants.DEFAULT_MIMETYPE), profile.getRenditions().get(0).getIncludeMimeTypes());
+    }
+
+    @Test
+    public void testConflictingRenditionsReported() throws ProjectCreationException {
+        WorkflowStep firstStep = getWebEnabledWorkflowStep();
+        WorkflowStep secondStep = getWebEnabledWorkflowStep();
+        secondStep.getMetadata().put("QUALITY", "60");
+
+        ProcessingProfile profile = createSingleProfile(firstStep, secondStep);
+
+        assertEquals(1, profile.getRenditions().size());
+        assertEquals(90, profile.getRenditions().get(0).getQuality());
+        assertEquals(1, changeTracker.getFailedMappings().size());
+    }
+
+    private ProcessingProfile createSingleProfile(WorkflowStep... steps) throws ProjectCreationException {
+        WorkflowModel model = wrapStepInModel(steps[0]);
+        for (int i = 1; i < steps.length; i++) {
+            model.getWorkflowSteps().add(steps[i]);
+        }
+        Workflow workflow = new Workflow();
+        workflow.setWorkflowModel(model);
+
+        creator.createProfiles(wrapWorkflowInProject(workflow));
+
+        ArgumentCaptor<ProcessingProfile> captor = ArgumentCaptor.forClass(ProcessingProfile.class);
+        verify(ppDao).addProfile(captor.capture());
+        return captor.getValue();
     }
 
     private WorkflowStep getPdfPreviewWorkflowStep() {

@@ -120,6 +120,8 @@ public class MigrationOrchestratorIntegrationTest extends SkylineMigrationBaseTe
                     MigrationConstants.WORKFLOW_COMPLETED_PROCESS.getProcess());
 
             assertProcessingProfilesCreated(testProject, expectedProfiles);
+            // ImageMagick format conversions in the marketing model's CommandLineProcess become renditions
+            assertProfileHasRenditions(testProject, "migrated_from_update_asset_marketing", "cq5dam-v.jpeg", "cq5dam-v.png");
             assertBothNewModulesAddedToReactor(testProject);
             validateConfProjectReportOutput(marketingModelUpdates);
         } catch (Exception e) {
@@ -336,6 +338,21 @@ public class MigrationOrchestratorIntegrationTest extends SkylineMigrationBaseTe
         }
     }
 
+    private void assertProfileHasRenditions(File testProject, String profileName, String... renditionNames) throws IOException {
+        Path profileDir = Path.of(testProject.getPath(), MigrationConstants.MIGRATION_PROJECT_CONTENT,
+                MigrationConstants.PROCESSING_PROFILE_DISK_PATH, profileName);
+        StringBuilder content = new StringBuilder();
+        try (java.util.stream.Stream<Path> files = Files.walk(profileDir)) {
+            for (Path file : (Iterable<Path>) files.filter(Files::isRegularFile)::iterator) {
+                content.append(Files.readString(file));
+            }
+        }
+
+        for (String renditionName : renditionNames) {
+            assertTrue(renditionName, content.toString().contains("name=\"" + renditionName + "\""));
+        }
+    }
+
     private void assertNoProcessingProfilesCreated(File testProject) {
         File profileRoot = new File(Path.of(testProject.getPath(), MigrationConstants.MIGRATION_PROJECT_CONTENT,
                 MigrationConstants.PROCESSING_PROFILE_DISK_PATH).toString());
@@ -415,7 +432,7 @@ public class MigrationOrchestratorIntegrationTest extends SkylineMigrationBaseTe
 
             if (line.equals("## Migration Issues")) {
                 skipLines(scanner, 4);
-                validateNumberOfTableRows(scanner, 1);
+                validateNumberOfTableRows(scanner, 2);
             }
         }
     }
