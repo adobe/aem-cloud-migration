@@ -38,6 +38,9 @@ import com.adobe.skyline.migration.exception.CustomerDataException;
 import com.adobe.skyline.migration.exception.ProjectCreationException;
 import com.adobe.skyline.migration.testutils.TestConstants;
 import com.adobe.skyline.migration.util.XmlUtil;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -287,17 +290,16 @@ public class MigrationOrchestratorIntegrationTest extends SkylineMigrationBaseTe
         }
     }
 
-    private void assertWorkflowRunnerConfigExistsForModel(File testProject, String workflowModel) throws ParserConfigurationException, SAXException, IOException {
+    private void assertWorkflowRunnerConfigExistsForModel(File testProject, String workflowModel) throws IOException {
         File runnerConfig = getRunnerConfig(testProject);
         assertTrue(runnerConfig.exists());
-        Document runnerXml = XmlUtil.loadXml(runnerConfig);
-        Element rootElem = runnerXml.getDocumentElement();
-        List<String> patterns = XmlUtil.getStringArrayListFromAttribute(rootElem, MigrationConstants.WORKFLOW_RUNNER_CONFIG_BY_EXPRESSION);
+        JsonArray patterns = JsonParser.parseString(Files.readString(runnerConfig.toPath())).getAsJsonObject()
+                .getAsJsonArray(MigrationConstants.WORKFLOW_RUNNER_CONFIG_BY_EXPRESSION);
 
         boolean matched = false;
 
-        for (String pattern:patterns) {
-            String workflow = pattern.split(":")[1];
+        for (JsonElement pattern:patterns) {
+            String workflow = pattern.getAsString().split(":")[1];
             if (workflow.contains(workflowModel)) {
                 matched = true;
                 break;

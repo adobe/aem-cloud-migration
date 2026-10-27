@@ -35,6 +35,7 @@ public class MigrationConstants {
     public static final String WORKFLOW = "workflow";
     public static final String LAUNCHER = "launcher";
     public static final String CONFIG = "config";
+    public static final String CONFIG_AUTHOR = "config.author";
     public static final String MODEL = "model";
     public static final String CONTENT = "content";
     public static final String DAM = "dam";
@@ -102,8 +103,9 @@ public class MigrationConstants {
     public static final String ORIGINAL_RENDITION_PATTERN_SUFFIX = "renditions/original";
 
     //Workflow Runner Constants
-    public static final String WORKFLOW_RUNNER_CONFIG_PATH = "/" + APPS + "/" + MIGRATION_PROJECT_NODE + "/" + CONFIG;
-    public static final String WORKFLOW_RUNNER_CONFIG_FILENAME = "com.adobe.cq.dam.processor.nui.impl.workflow.CustomDamWorkflowRunnerImpl.xml";
+    public static final String WORKFLOW_RUNNER_CONFIG_PATH = "/" + APPS + "/" + MIGRATION_PROJECT_NODE + "/" + CONFIG_AUTHOR;
+    public static final String WORKFLOW_RUNNER_PID = "com.adobe.cq.dam.processor.nui.impl.workflow.CustomDamWorkflowRunnerImpl";
+    public static final String WORKFLOW_RUNNER_CONFIG_FILENAME = WORKFLOW_RUNNER_PID + ".cfg.json";
     public static final String WORKFLOW_RUNNER_CONFIG_BY_EXPRESSION = "postProcWorkflowsByExpression";
     public static final String WORKFLOW_RUNNER_CONFIG_BY_PATH = "postProcWorkflowsByPath";
 
