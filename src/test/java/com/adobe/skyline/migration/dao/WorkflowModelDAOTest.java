@@ -243,6 +243,27 @@ public class WorkflowModelDAOTest extends SkylineMigrationBaseTest {
     }
 
     @Test
+    public void testEmptiedBranchOfKeptSplitGetsNoOpStep() throws Exception {
+        File projectRoot = projectLoader.copySplitModelProjectToTemp(temp);
+        WorkflowModel model = loadSplitModel(projectRoot);
+
+        modelDAO.removeWorkflowStepFromModel("com.day.cq.dam.core.process.CreateThumbnailProcess", model);
+
+        Document doc = XmlUtil.loadXml(model.getConfigurationFile());
+        Node or = doc.getElementsByTagName("or").item(0);
+        for (Node branch : XmlUtil.getChildElementNodes(or)) {
+            List<Node> steps = XmlUtil.getChildElementNodes(branch);
+            assertFalse("AEM rejects a split with an empty branch: " + branch.getNodeName(), steps.isEmpty());
+        }
+        Node filled = XmlUtil.getChildElementNodes(or).get(0);
+        Node noop = XmlUtil.getChildElementNodes(filled).get(0);
+        assertEquals("cq/workflow/components/workflow/noopprocess", XmlUtil.getAttribute(noop, "sling:resourceType"));
+        Node metaData = XmlUtil.getChildElementNodes(noop).get(0);
+        assertEquals("/libs/workflow/scripts/noop.ecma", XmlUtil.getAttribute(metaData, "PROCESS"));
+        assertEquals("true", XmlUtil.getAttribute(metaData, "PROCESS_AUTO_ADVANCE"));
+    }
+
+    @Test
     public void testSplitWithoutStepsIsRemoved() throws CustomerDataException {
         File projectRoot = projectLoader.copySplitModelProjectToTemp(temp);
         WorkflowModel model = loadSplitModel(projectRoot);

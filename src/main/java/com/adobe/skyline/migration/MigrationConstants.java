@@ -153,6 +153,9 @@ public class MigrationConstants {
     public static final String OR_SPLIT_PROP = "orSplit";
     public static final String OR_SPLIT_RESOURCE_TYPE_SUFFIX = "/model/or";
     public static final String AND_SPLIT_RESOURCE_TYPE_SUFFIX = "/model/and";
+    public static final String NOOP_PROCESS = "/libs/workflow/scripts/noop.ecma";
+    public static final String NOOP_RESOURCE_TYPE = "cq/workflow/components/workflow/noopprocess";
+    public static final String NOOP_NODE_NAME = "noopprocess";
     public static final String TRANSITIONS_NODE = "transitions";
     public static final String JCR_ROOT_NODE = "jcr:root";
 

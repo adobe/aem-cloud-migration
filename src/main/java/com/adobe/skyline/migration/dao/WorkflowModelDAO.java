@@ -275,23 +275,54 @@ public class WorkflowModelDAO {
 
     /**
      * Removes the step from a flow and from every branch of the splits in it.  A split that has no step left in any
-     * branch is removed as well.
+     * branch, other than No Operation steps, does nothing and is removed as well.  AEM rejects a split with an empty
+     * branch, so an emptied branch of a split that is kept gets a No Operation step.
      */
     private void removeStepFromFlow(String workflowStep, Node flowNode) {
         for (Node stepNode : XmlUtil.getChildElementNodes(flowNode)) {
             if (isSplit(stepNode)) {
+                List<Node> branches = getSplitBranches(stepNode);
                 boolean hasSteps = false;
-                for (Node branch : getSplitBranches(stepNode)) {
+                for (Node branch : branches) {
                     removeStepFromFlow(workflowStep, branch);
-                    hasSteps |= !XmlUtil.getChildElementNodes(branch).isEmpty();
+                    hasSteps |= hasStepOtherThanNoOp(branch);
                 }
                 if (!hasSteps) {
                     removeNode(stepNode);
+                    continue;
+                }
+                for (Node branch : branches) {
+                    if (XmlUtil.getChildElementNodes(branch).isEmpty()) {
+                        branch.appendChild(createNoOpStep(branch.getOwnerDocument()));
+                    }
                 }
             } else if (workflowStep.equals(getProcess(stepNode))) {
                 removeNode(stepNode);
             }
         }
+    }
+
+    private boolean hasStepOtherThanNoOp(Node branch) {
+        for (Node stepNode : XmlUtil.getChildElementNodes(branch)) {
+            if (!MigrationConstants.NOOP_PROCESS.equals(getProcess(stepNode))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static Element createNoOpStep(Document modelXml) {
+        Element metadataNode = modelXml.createElement(MigrationConstants.METADATA_XML_NODE);
+        metadataNode.setAttribute(MigrationConstants.JCR_PRIMARY_TYPE_PROP, MigrationConstants.NT_UNSTRUCTURED_TYPE_VALUE);
+        metadataNode.setAttribute(MigrationConstants.PROCESS_PROP, MigrationConstants.NOOP_PROCESS);
+        metadataNode.setAttribute(MigrationConstants.PROCESS_AUTO_ADVANCE_PROP, "true");
+
+        Element processNode = modelXml.createElement(MigrationConstants.NOOP_NODE_NAME);
+        processNode.setAttribute(MigrationConstants.JCR_PRIMARY_TYPE_PROP, MigrationConstants.NT_UNSTRUCTURED_TYPE_VALUE);
+        processNode.setAttribute(MigrationConstants.JCR_TITLE_PROP, "No Operation");
+        processNode.setAttribute(MigrationConstants.SLING_RESOURCE_TYPE_PROP, MigrationConstants.NOOP_RESOURCE_TYPE);
+        processNode.appendChild(metadataNode);
+        return processNode;
     }
 
     private int countSteps(String workflowStep, Node flowNode) {

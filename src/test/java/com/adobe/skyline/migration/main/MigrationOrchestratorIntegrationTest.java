@@ -67,11 +67,13 @@ public class MigrationOrchestratorIntegrationTest extends SkylineMigrationBaseTe
     @Test
     public void testMigrationMigratedProject() throws IOException {
         File testProject  = projectLoader.copyMigratedProjectToTemp(temp);
-        // The marketing model of this project has a Scene7 upload step inside an OR split, which is removed as well.
+        // The marketing model of this project has an OR split of a Scene7 upload step and a No Operation step.  Once the
+        // Scene7 step is removed, the split does nothing and is removed as well.
         testConfBasedProject(testProject, 10);
         String marketingModel = Files.readString(Path.of(getAbsolutePathForConfModel(testProject, "update_asset_marketing")));
         assertFalse(marketingModel.contains("com.day.cq.dam.scene7.impl.process.Scene7UploadProcess"));
-        assertTrue("The OR split keeps its other branch.", marketingModel.contains("cq/workflow/components/model/or"));
+        assertFalse("An OR split with only No Operation steps left is removed.", marketingModel.contains("cq/workflow/components/model/or"));
+        assertTrue("The steps after the split are kept.", marketingModel.contains("com.adobe.test.workflow.LogAssetUploadFolderProcess"));
     }
 
     @Test
