@@ -54,7 +54,6 @@ public class ProcessingProfileCreator {
     }
 
     public void createProfiles(WorkflowProject workflowProject) throws ProjectCreationException {
-        boolean profileCreated = false;
         boolean projectExists = mavenProjectDAO.projectExists(MigrationConstants.MIGRATION_PROJECT_CONTENT);
 
         for (Workflow workflow : workflowProject.getWorkflows()) {
@@ -73,14 +72,12 @@ public class ProcessingProfileCreator {
                     }
 
                     changeTracker.trackCreatedProcessingProfile(profile);
-                    ppDao.addProfile(profile);
-                    profileCreated = true;
+                    // A filter on the processing folder would delete the profiles the customer created in AEM, so the
+                    // filter covers only the page content and the migrated profiles.
+                    filterFileDAO.addPath(MigrationConstants.PROCESSING_PROFILE_JCR_PATH + "/" + MigrationConstants.JCR_CONTENT);
+                    filterFileDAO.addPath(ppDao.addProfile(profile));
                 }
             }
-        }
-
-        if (profileCreated) {
-            filterFileDAO.addPath(MigrationConstants.PROCESSING_PROFILE_JCR_PATH);
         }
     }
 

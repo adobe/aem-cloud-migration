@@ -74,6 +74,8 @@ public class ProcessingProfileCreatorTest extends SkylineMigrationBaseTest {
     public void testPdfProfileAdded() throws ProjectCreationException {
         WorkflowStep step = getPdfPreviewWorkflowStep();
         WorkflowProject project = wrapStepInProject(step);
+        String profilePath = MigrationConstants.PROCESSING_PROFILE_JCR_PATH + "/migrated_from_" + WORKFLOW_NAME;
+        when(ppDao.addProfile(any())).thenReturn(profilePath);
 
         creator.createProfiles(project);
 
@@ -88,7 +90,10 @@ public class ProcessingProfileCreatorTest extends SkylineMigrationBaseTest {
         profMatcher.expectRendition(renMatcher);
 
         verify(ppDao).addProfile(argThat(profMatcher));
-        verify(ffDao).addPath(MigrationConstants.PROCESSING_PROFILE_JCR_PATH);
+        // Only the migrated profile is covered: a filter on the processing folder would delete the customer's profiles.
+        verify(ffDao).addPath(profilePath);
+        verify(ffDao).addPath(MigrationConstants.PROCESSING_PROFILE_JCR_PATH + "/" + MigrationConstants.JCR_CONTENT);
+        verify(ffDao, never()).addPath(MigrationConstants.PROCESSING_PROFILE_JCR_PATH);
         verify(mavenProjectDAO).createProject(MigrationConstants.MIGRATION_PROJECT_CONTENT);
 
         List<ProcessingProfile> createdProfiles = changeTracker.getProcessingProfilesCreated();
