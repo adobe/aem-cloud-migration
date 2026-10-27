@@ -14,6 +14,10 @@ package com.adobe.skyline.migration.util;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.StringWriter;
+import java.nio.charset.CharacterCodingException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,7 +31,6 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-import com.adobe.skyline.migration.util.file.FileUtil;
 import org.w3c.dom.*;
 import org.xml.sax.SAXException;
 
@@ -51,14 +54,38 @@ public class XmlUtil {
         return doc;
     }
 
+    /**
+     * Writes the document. If the file already exists, only the parts that changed are rewritten so the formatting,
+     * comments and attribute order of the rest of the file are kept.
+     */
     public static void writeXml(Document doc, File target) throws TransformerException, IOException {
+        String serialized = serialize(doc);
+        String content = serialized;
+        if (target.exists()) {
+            try {
+                content = XmlTextDiff.minimize(Files.readString(target.toPath(), StandardCharsets.UTF_8), serialized);
+            } catch (CharacterCodingException e) {
+                content = serialized;
+            }
+        }
+        Files.writeString(target.toPath(), content, StandardCharsets.UTF_8);
+    }
+
+    private static String serialize(Document doc) throws TransformerException {
         TransformerFactory tFactory = TransformerFactory.newInstance();
         Transformer transformer = tFactory.newTransformer();
         transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-        DOMSource source = new DOMSource(doc);
-        StreamResult result = new StreamResult(target);
-        transformer.transform(source, result);
-        FileUtil.removeEmptyLinesFromFile(target);
+        transformer.setOutputProperty(OutputKeys.ENCODING, StandardCharsets.UTF_8.name());
+        StringWriter writer = new StringWriter();
+        transformer.transform(new DOMSource(doc), new StreamResult(writer));
+
+        StringBuilder content = new StringBuilder();
+        for (String line : writer.toString().split("\\r?\\n")) {
+            if (!line.trim().isEmpty()) {
+                content.append(line).append("\n");
+            }
+        }
+        return content.toString();
     }
 
     public static List<Node> getChildElementNodes(Node parentNode) {
@@ -74,6 +101,17 @@ public class XmlUtil {
         }
 
         return childElements;
+    }
+
+    /**
+     * @return the value of the attribute, or null if the node has no such attribute
+     */
+    public static String getAttribute(Node node, String attr) {
+        if (node.getAttributes() == null) {
+            return null;
+        }
+        Node attrNode = node.getAttributes().getNamedItem(attr);
+        return attrNode == null ? null : attrNode.getNodeValue();
     }
 
     public static Attr getOrCreateAttr(Element el, String attr) {

@@ -127,6 +127,18 @@ public class MigrationReportWriter {
             configMdBuilder.append(System.getProperty("line.separator"));
         }
 
+        List<String> configsMerged = changeTracker.getWorkflowRunnerConfigsMerged();
+        if (configsMerged.size() > 0) {
+            configMdBuilder.append(System.getProperty("line.separator"));
+            configMdBuilder.append("Only one configuration of this service can be active, so we have merged the entries of the following existing configurations into it and removed them:");
+            configMdBuilder.append(System.getProperty("line.separator"));
+            configMdBuilder.append(System.getProperty("line.separator"));
+            for (String config : configsMerged) {
+                configMdBuilder.append("* `").append(config).append("`");
+                configMdBuilder.append(System.getProperty("line.separator"));
+            }
+        }
+
         FileUtil.findAndReplaceInFile(reportFile, "\\$\\{RUNNER_CONFIGS_CREATED\\}", configMdBuilder.toString());
     }
 

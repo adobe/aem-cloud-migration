@@ -195,6 +195,147 @@ public class WorkflowModelDAOTest extends SkylineMigrationBaseTest {
         WorkflowModel model = modelDAO.loadWorkflowModel("/Users/ireasor/Desktop/tmg/customer-test/ui.conf.wf", "/conf/global/settings/workflow/models/dam/update_asset");
     }
 
+    private static final String PATH_TO_SPLIT_MODEL = "/conf/global/settings/workflow/models/split_model";
+
+    private WorkflowModel loadSplitModel(File projectRoot) throws CustomerDataException {
+        return modelDAO.loadWorkflowModel(Paths.get(projectRoot.getPath(),
+                TestConstants.CONF_WORKFLOW_PROJECT_NAME).toString(), PATH_TO_SPLIT_MODEL);
+    }
+
+    private WorkflowStep findStep(WorkflowModel model, String processId) {
+        for (WorkflowStep step : model.getWorkflowSteps()) {
+            if (processId.equals(step.getProcess())) {
+                return step;
+            }
+        }
+        return null;
+    }
+
+    @Test
+    public void testStepsInsideSplitsAreExtracted() throws CustomerDataException {
+        File projectRoot = projectLoader.copySplitModelProjectToTemp(temp);
+
+        WorkflowModel model = loadSplitModel(projectRoot);
+
+        WorkflowStep nested = findStep(model, "com.example.CustomNestedProcess");
+        assertNotNull("Step inside an OR split was not extracted.", nested);
+        assertTrue(nested.isNested());
+        assertNotNull("Step inside an AND split was not extracted.",
+                findStep(model, "com.day.cq.dam.core.process.CommandLineProcess"));
+
+        WorkflowStep topLevel = findStep(model, "com.example.TopLevelProcess");
+        assertNotNull(topLevel);
+        assertFalse(topLevel.isNested());
+        assertEquals(6, model.getWorkflowSteps().size());
+    }
+
+    @Test
+    public void testStepInsideSplitIsRemoved() throws CustomerDataException {
+        File projectRoot = projectLoader.copySplitModelProjectToTemp(temp);
+        WorkflowModel modelBefore = loadSplitModel(projectRoot);
+
+        modelDAO.removeWorkflowStepFromModel("com.day.cq.dam.core.process.CreateThumbnailProcess", modelBefore);
+
+        WorkflowModel modelAfter = loadSplitModel(projectRoot);
+        assertFalse(modelContainsStep(modelAfter, "com.day.cq.dam.core.process.CreateThumbnailProcess"));
+        assertTrue(modelContainsStep(modelAfter, "com.example.CustomNestedProcess"));
+        assertEquals("The OR split still has a step and must be kept.", 1, countElements(modelAfter, "or"));
+    }
+
+    @Test
+    public void testEmptiedBranchOfKeptSplitGetsNoOpStep() throws Exception {
+        File projectRoot = projectLoader.copySplitModelProjectToTemp(temp);
+        WorkflowModel model = loadSplitModel(projectRoot);
+
+        modelDAO.removeWorkflowStepFromModel("com.day.cq.dam.core.process.CreateThumbnailProcess", model);
+
+        Document doc = XmlUtil.loadXml(model.getConfigurationFile());
+        Node or = doc.getElementsByTagName("or").item(0);
+        for (Node branch : XmlUtil.getChildElementNodes(or)) {
+            List<Node> steps = XmlUtil.getChildElementNodes(branch);
+            assertFalse("AEM rejects a split with an empty branch: " + branch.getNodeName(), steps.isEmpty());
+        }
+        Node filled = XmlUtil.getChildElementNodes(or).get(0);
+        Node noop = XmlUtil.getChildElementNodes(filled).get(0);
+        assertEquals("cq/workflow/components/workflow/noopprocess", XmlUtil.getAttribute(noop, "sling:resourceType"));
+        Node metaData = XmlUtil.getChildElementNodes(noop).get(0);
+        assertEquals("/libs/workflow/scripts/noop.ecma", XmlUtil.getAttribute(metaData, "PROCESS"));
+        assertEquals("true", XmlUtil.getAttribute(metaData, "PROCESS_AUTO_ADVANCE"));
+    }
+
+    @Test
+    public void testSplitWithoutStepsIsRemoved() throws CustomerDataException {
+        File projectRoot = projectLoader.copySplitModelProjectToTemp(temp);
+        WorkflowModel model = loadSplitModel(projectRoot);
+
+        modelDAO.removeWorkflowStepFromModel("com.day.cq.dam.core.process.CommandLineProcess", model);
+        assertEquals("The AND split still has a step and must be kept.", 1, countElements(model, "and"));
+
+        modelDAO.removeWorkflowStepFromModel("com.day.cq.dam.core.process.DownloadAssetProcess", model);
+        assertEquals("An AND split with no steps left must be removed.", 0, countElements(model, "and"));
+        assertTrue(modelContainsStep(loadSplitModel(projectRoot), "com.example.TopLevelProcess"));
+    }
+
+    private static final String PATH_TO_COMPLETED_MODEL = "/conf/global/settings/workflow/models/completed_model";
+
+    @Test
+    public void testStepPlacedLastOnceAtTopLevel() throws Exception {
+        File projectRoot = projectLoader.copySplitModelProjectToTemp(temp);
+        String projectPath = Paths.get(projectRoot.getPath(), TestConstants.CONF_WORKFLOW_PROJECT_NAME).toString();
+        WorkflowModel model = modelDAO.loadWorkflowModel(projectPath, PATH_TO_COMPLETED_MODEL);
+
+        assertTrue(modelDAO.placeStepLast(WORKFLOW_COMPLETED_PROCESS_STEP, model));
+
+        WorkflowModel modelAfter = modelDAO.loadWorkflowModel(projectPath, PATH_TO_COMPLETED_MODEL);
+        List<WorkflowStep> steps = modelAfter.getWorkflowSteps();
+        long completedSteps = steps.stream()
+                .filter(s -> WORKFLOW_COMPLETED_PROCESS_STEP.getProcess().equals(s.getProcess())).count();
+        assertEquals("Exactly one Completed step must remain.", 1, completedSteps);
+
+        WorkflowStep last = steps.get(steps.size() - 1);
+        assertEquals(WORKFLOW_COMPLETED_PROCESS_STEP.getProcess(), last.getProcess());
+        assertFalse(last.isNested());
+        assertEquals("The last occurrence is the one kept.", "damupdateassetworkfl_0", last.getNodeName());
+        assertEquals(1, countElements(modelAfter, "or"));
+
+        assertFalse("A model that is already right is left unchanged.",
+                modelDAO.placeStepLast(WORKFLOW_COMPLETED_PROCESS_STEP, modelAfter));
+    }
+
+    @Test
+    public void testStepAddedLastWhenOnlyNested() throws Exception {
+        File projectRoot = projectLoader.copySplitModelProjectToTemp(temp);
+        String projectPath = Paths.get(projectRoot.getPath(), TestConstants.CONF_WORKFLOW_PROJECT_NAME).toString();
+        WorkflowModel model = modelDAO.loadWorkflowModel(projectPath, PATH_TO_COMPLETED_MODEL);
+        modelDAO.removeWorkflowStepFromModel("com.example.LastProcess", model);
+        Document doc = XmlUtil.loadXml(model.getConfigurationFile());
+        Node flow = doc.getElementsByTagName(MigrationConstants.FLOW_NODE).item(0);
+        for (Node step : XmlUtil.getChildElementNodes(flow)) {
+            if (step.getNodeName().startsWith("damupdateassetworkfl")) {
+                flow.removeChild(step);
+            }
+        }
+        XmlUtil.writeXml(doc, model.getConfigurationFile());
+
+        assertTrue(modelDAO.placeStepLast(WORKFLOW_COMPLETED_PROCESS_STEP, model));
+
+        List<WorkflowStep> steps = modelDAO.loadWorkflowModel(projectPath, PATH_TO_COMPLETED_MODEL).getWorkflowSteps();
+        assertEquals(1, steps.stream()
+                .filter(s -> WORKFLOW_COMPLETED_PROCESS_STEP.getProcess().equals(s.getProcess())).count());
+        WorkflowStep last = steps.get(steps.size() - 1);
+        assertEquals(WORKFLOW_COMPLETED_PROCESS_STEP.getProcess(), last.getProcess());
+        assertFalse(last.isNested());
+    }
+
+    private int countElements(WorkflowModel model, String nodeName) {
+        try {
+            Document doc = XmlUtil.loadXml(model.getConfigurationFile());
+            return doc.getElementsByTagName(nodeName).getLength();
+        } catch (Exception e) {
+            throw new AssertionError(e);
+        }
+    }
+
     private boolean modelContainsStep(WorkflowModel model, String processId) {
         for (WorkflowStep step : model.getWorkflowSteps()) {
             if (processId.equals(step.getProcess())) {

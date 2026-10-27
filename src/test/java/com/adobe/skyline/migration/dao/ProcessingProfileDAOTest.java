@@ -177,6 +177,13 @@ public class ProcessingProfileDAOTest extends SkylineMigrationBaseTest {
     }
 
     @Test
+    public void testAddProfileReturnsJcrPathOfProfile() {
+        String nodeName = PROFILE_NAME.toLowerCase();
+        assertEquals(MigrationConstants.PROCESSING_PROFILE_JCR_PATH + "/" + nodeName, dao.addProfile(createTestProfile()));
+        assertEquals(MigrationConstants.PROCESSING_PROFILE_JCR_PATH + "/" + nodeName + "-1", dao.addProfile(createTestProfile()));
+    }
+
+    @Test
     public void testDuplicateProfileNames() {
         File profile1Path = new File(Path.of(projectRootPath, MigrationConstants.PROCESSING_PROFILE_DISK_PATH, PROFILE_NAME).toString());
         File profile2Path = new File(Path.of(projectRootPath, MigrationConstants.PROCESSING_PROFILE_DISK_PATH, PROFILE_NAME + "-1").toString());

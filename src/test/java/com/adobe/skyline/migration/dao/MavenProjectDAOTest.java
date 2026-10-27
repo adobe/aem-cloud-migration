@@ -52,6 +52,34 @@ public class MavenProjectDAOTest extends SkylineMigrationBaseTest {
     }
 
     @Test
+    public void testContentTemplateHasNoOrderingOnlyNodes() throws Exception {
+        File tempProjectRoot = projectLoader.copyConfProjectToTemp(temp);
+        MavenProjectDAO creator = new MavenProjectDAO(tempProjectRoot.getAbsolutePath(), changeTracker, containerProjectDao);
+
+        creator.createProject(MigrationConstants.MIGRATION_PROJECT_CONTENT);
+
+        File processingPage = new File(tempProjectRoot, MigrationConstants.MIGRATION_PROJECT_CONTENT + "/"
+                + MigrationConstants.PROCESSING_PROFILE_DISK_PATH + "/" + MigrationConstants.CONTENT_XML);
+        Document doc = XmlUtil.loadXml(processingPage);
+        for (Node child : XmlUtil.getChildElementNodes(doc.getDocumentElement())) {
+            assertTrue("FileVault rejects the empty node " + child.getNodeName() + " in a package filter root.",
+                    child.hasAttributes() || child.hasChildNodes());
+        }
+    }
+
+    @Test
+    public void testAppsTemplateIsContainerPackage() throws Exception {
+        File tempProjectRoot = projectLoader.copyConfProjectToTemp(temp);
+        MavenProjectDAO creator = new MavenProjectDAO(tempProjectRoot.getAbsolutePath(), changeTracker, containerProjectDao);
+
+        creator.createProject(MigrationConstants.MIGRATION_PROJECT_APPS);
+
+        Document pom = XmlUtil.loadXml(new File(tempProjectRoot, MigrationConstants.MIGRATION_PROJECT_APPS + "/pom.xml"));
+        assertEquals("FileVault rejects OSGi configurations in an application package.",
+                "container", pom.getElementsByTagName("packageType").item(0).getTextContent().trim());
+    }
+
+    @Test
     public void testTemplateProjectsCopied() throws ProjectCreationException, ParserConfigurationException, SAXException, IOException, CustomerDataException {
         File tempProjectRoot = projectLoader.copyConfProjectToTemp(temp);
         MavenProjectDAO creator = new MavenProjectDAO(tempProjectRoot.getAbsolutePath(), changeTracker, containerProjectDao);

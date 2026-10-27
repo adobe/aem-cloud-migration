@@ -42,7 +42,7 @@ public class ProcessingProfileDAO {
         this.rootPage = new File(projectPath + "/" + MigrationConstants.PROCESSING_PROFILE_DISK_PATH + "/" + MigrationConstants.CONTENT_XML);
     }
 
-    public void addProfile(ProcessingProfile profile) {
+    public String addProfile(ProcessingProfile profile) {
         try {
             //Only create the config file if this method has been called.  We don't want to create an empty configuration in the constructor.
             if (!rootPage.exists()) {
@@ -54,6 +54,7 @@ public class ProcessingProfileDAO {
             for (RenditionConfig rendition : profile.getRenditions()) {
                 createRenditionFile(profileFile, rendition);
             }
+            return MigrationConstants.PROCESSING_PROFILE_JCR_PATH + "/" + profileFile.getParentFile().getName();
 
         } catch (Exception e) {
             throw new MigrationRuntimeException(e);

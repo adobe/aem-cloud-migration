@@ -22,6 +22,7 @@ public class ChangeTrackingService {
 
     private List<String> disabledLaunchers;
     private Map<String, String> runnerConfigsAdded;
+    private List<String> runnerConfigsMerged;
     private Map<String, Map<String, WorkflowStepSupportStatus>> modelStepsModified;
     private List<ProcessingProfile> processingProfilesCreated;
     private List<String> projectsCreated;
@@ -31,6 +32,7 @@ public class ChangeTrackingService {
     public ChangeTrackingService() {
         this.disabledLaunchers = new ArrayList<>();
         this.runnerConfigsAdded = new HashMap<>();
+        this.runnerConfigsMerged = new ArrayList<>();
         this.modelStepsModified = new HashMap<>();
         this.processingProfilesCreated = new ArrayList<>();
         this.projectsCreated = new ArrayList<>();
@@ -60,6 +62,14 @@ public class ChangeTrackingService {
 
     public Map<String, String> getWorkflowRunnerConfigsAdded() {
         return runnerConfigsAdded;
+    }
+
+    public void trackWorkflowRunnerConfigMerged(String configFile) {
+        runnerConfigsMerged.add(configFile);
+    }
+
+    public List<String> getWorkflowRunnerConfigsMerged() {
+        return runnerConfigsMerged;
     }
 
     public void trackModifiedWorkflowStep(String modelPath, String workflowStep, WorkflowStepSupportStatus reason) {
