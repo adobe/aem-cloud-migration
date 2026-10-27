@@ -65,7 +65,7 @@ public class MigrationOrchestratorIntegrationTest extends SkylineMigrationBaseTe
     public void testMigrationMigratedProject() throws IOException {
         File testProject  = projectLoader.copyMigratedProjectToTemp(temp);
         // The marketing model of this project has a Scene7 upload step inside an OR split, which is removed as well.
-        testConfBasedProject(testProject, 9);
+        testConfBasedProject(testProject, 10);
         String marketingModel = Files.readString(Path.of(getAbsolutePathForConfModel(testProject, "update_asset_marketing")));
         assertFalse(marketingModel.contains("com.day.cq.dam.scene7.impl.process.Scene7UploadProcess"));
         assertTrue("The OR split keeps its other branch.", marketingModel.contains("cq/workflow/components/model/or"));
@@ -74,7 +74,7 @@ public class MigrationOrchestratorIntegrationTest extends SkylineMigrationBaseTe
     @Test
     public void testMigrationConfPath() {
         File testProject  = projectLoader.copyConfProjectToTemp(temp);
-        testConfBasedProject(testProject, 8);
+        testConfBasedProject(testProject, 9);
     }
 
     private void testConfBasedProject(File testProject, int marketingModelUpdates) {
@@ -112,6 +112,12 @@ public class MigrationOrchestratorIntegrationTest extends SkylineMigrationBaseTe
             assertWorkflowRunnerConfigExistsForModel(testProject, "dam/update_asset");
 
             List<String> expectedProfiles = Arrays.asList("migrated_from_update_asset", "migrated_from_update_asset_marketing");
+
+            // Both models run the Completed step before custom steps; it is moved to the end.
+            assertLastStep(getAbsolutePathForConfModel(testProject, "update_asset_marketing"),
+                    MigrationConstants.WORKFLOW_COMPLETED_PROCESS.getProcess());
+            assertLastStep(getAbsolutePathForConfModel(testProject, "dam/update_asset"),
+                    MigrationConstants.WORKFLOW_COMPLETED_PROCESS.getProcess());
 
             assertProcessingProfilesCreated(testProject, expectedProfiles);
             assertBothNewModulesAddedToReactor(testProject);
@@ -199,6 +205,15 @@ public class MigrationOrchestratorIntegrationTest extends SkylineMigrationBaseTe
         String pathRoot = Path.of(tempProjectRoot.getPath(), TestConstants.ETC_WORKFLOW_PROJECT_NAME,
                 TestConstants.ETC_MODEL_PATH).toString();
         return Path.of(pathRoot, workflowModelName, MigrationConstants.CONTENT_XML).toString();
+    }
+
+    private void assertLastStep(String workflowModelPath, String process) throws Exception {
+        Document modelXml = XmlUtil.loadXml(new File(workflowModelPath));
+        List<Node> stepNodes = XmlUtil.getChildElementNodes(modelXml.getElementsByTagName("flow").item(0));
+        Node lastStep = stepNodes.get(stepNodes.size() - 1);
+        Node metaData = XmlUtil.getChildElementNodes(lastStep).get(0);
+        assertEquals(process, XmlUtil.getAttribute(metaData, "PROCESS"));
+        assertEquals(1, Files.readString(Path.of(workflowModelPath)).split(process, -1).length - 1);
     }
 
     private void assertStepsRemovedFromWorkflowModel(String[] workflowSteps, String workflowModelPath) {
@@ -382,7 +397,7 @@ public class MigrationOrchestratorIntegrationTest extends SkylineMigrationBaseTe
 
                 assertTrue(scanner.nextLine().startsWith("###")); //Workflow model description
                 skipLines(scanner, 1);
-                validateNumberOfTableRows(scanner, 9);
+                validateNumberOfTableRows(scanner, 10);
             }
 
             if (line.equals("## Paths Deleted")) {

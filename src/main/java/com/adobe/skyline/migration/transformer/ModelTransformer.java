@@ -59,6 +59,10 @@ public class ModelTransformer {
 
             if (!hasWorkflowCompletedProcess) {
                 addRequiredSteps(workflow);
+            } else if (dao.placeStepLast(MigrationConstants.WORKFLOW_COMPLETED_PROCESS, workflow.getWorkflowModel())) {
+                // The step must run exactly once, after every other step, and not inside a split.
+                changeTracker.trackModifiedWorkflowStep(workflow.getWorkflowModel().getConfigurationPage(),
+                        MigrationConstants.WORKFLOW_COMPLETED_PROCESS.getProcess(), WorkflowStepSupportStatus.REQUIRED);
             }
         }
     }

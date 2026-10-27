@@ -255,6 +255,57 @@ public class WorkflowModelDAOTest extends SkylineMigrationBaseTest {
         assertTrue(modelContainsStep(loadSplitModel(projectRoot), "com.example.TopLevelProcess"));
     }
 
+    private static final String PATH_TO_COMPLETED_MODEL = "/conf/global/settings/workflow/models/completed_model";
+
+    @Test
+    public void testStepPlacedLastOnceAtTopLevel() throws Exception {
+        File projectRoot = projectLoader.copySplitModelProjectToTemp(temp);
+        String projectPath = Paths.get(projectRoot.getPath(), TestConstants.CONF_WORKFLOW_PROJECT_NAME).toString();
+        WorkflowModel model = modelDAO.loadWorkflowModel(projectPath, PATH_TO_COMPLETED_MODEL);
+
+        assertTrue(modelDAO.placeStepLast(WORKFLOW_COMPLETED_PROCESS_STEP, model));
+
+        WorkflowModel modelAfter = modelDAO.loadWorkflowModel(projectPath, PATH_TO_COMPLETED_MODEL);
+        List<WorkflowStep> steps = modelAfter.getWorkflowSteps();
+        long completedSteps = steps.stream()
+                .filter(s -> WORKFLOW_COMPLETED_PROCESS_STEP.getProcess().equals(s.getProcess())).count();
+        assertEquals("Exactly one Completed step must remain.", 1, completedSteps);
+
+        WorkflowStep last = steps.get(steps.size() - 1);
+        assertEquals(WORKFLOW_COMPLETED_PROCESS_STEP.getProcess(), last.getProcess());
+        assertFalse(last.isNested());
+        assertEquals("The last occurrence is the one kept.", "damupdateassetworkfl_0", last.getNodeName());
+        assertEquals(1, countElements(modelAfter, "or"));
+
+        assertFalse("A model that is already right is left unchanged.",
+                modelDAO.placeStepLast(WORKFLOW_COMPLETED_PROCESS_STEP, modelAfter));
+    }
+
+    @Test
+    public void testStepAddedLastWhenOnlyNested() throws Exception {
+        File projectRoot = projectLoader.copySplitModelProjectToTemp(temp);
+        String projectPath = Paths.get(projectRoot.getPath(), TestConstants.CONF_WORKFLOW_PROJECT_NAME).toString();
+        WorkflowModel model = modelDAO.loadWorkflowModel(projectPath, PATH_TO_COMPLETED_MODEL);
+        modelDAO.removeWorkflowStepFromModel("com.example.LastProcess", model);
+        Document doc = XmlUtil.loadXml(model.getConfigurationFile());
+        Node flow = doc.getElementsByTagName(MigrationConstants.FLOW_NODE).item(0);
+        for (Node step : XmlUtil.getChildElementNodes(flow)) {
+            if (step.getNodeName().startsWith("damupdateassetworkfl")) {
+                flow.removeChild(step);
+            }
+        }
+        XmlUtil.writeXml(doc, model.getConfigurationFile());
+
+        assertTrue(modelDAO.placeStepLast(WORKFLOW_COMPLETED_PROCESS_STEP, model));
+
+        List<WorkflowStep> steps = modelDAO.loadWorkflowModel(projectPath, PATH_TO_COMPLETED_MODEL).getWorkflowSteps();
+        assertEquals(1, steps.stream()
+                .filter(s -> WORKFLOW_COMPLETED_PROCESS_STEP.getProcess().equals(s.getProcess())).count());
+        WorkflowStep last = steps.get(steps.size() - 1);
+        assertEquals(WORKFLOW_COMPLETED_PROCESS_STEP.getProcess(), last.getProcess());
+        assertFalse(last.isNested());
+    }
+
     private int countElements(WorkflowModel model, String nodeName) {
         try {
             Document doc = XmlUtil.loadXml(model.getConfigurationFile());

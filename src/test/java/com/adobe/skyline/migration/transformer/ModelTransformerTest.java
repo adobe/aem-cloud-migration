@@ -185,6 +185,35 @@ public class ModelTransformerTest extends SkylineMigrationBaseTest {
         verify(mockEditor, never()).addWorkflowStepToModel(eq(COMPLETED_STEP), eq(workflow.getWorkflowModel()));
     }
 
+    @Test
+    public void testExistingCompletedProcessIsPlacedLast() throws CustomerDataException {
+        WorkflowStep supportedStep = buildStep(SUPPORTED_STEP);
+        List<WorkflowStep> steps = new ArrayList<>();
+        steps.add(MigrationConstants.WORKFLOW_COMPLETED_PROCESS);
+        steps.add(supportedStep);
+        Workflow workflow = buildWorkflow(steps);
+        when(mockEditor.placeStepLast(eq(COMPLETED_STEP), eq(workflow.getWorkflowModel()))).thenReturn(true);
+
+        modelTransformer.transformModel(workflow);
+
+        verify(mockEditor).placeStepLast(eq(COMPLETED_STEP), eq(workflow.getWorkflowModel()));
+        Map<String, WorkflowStepSupportStatus> changedSteps = changeTracker.getModifiedWorkflowSteps().get(WORKFLOW_PATH);
+        assertEquals(WorkflowStepSupportStatus.REQUIRED, changedSteps.get(COMPLETED_STEP.getProcess()));
+    }
+
+    @Test
+    public void testCompletedProcessAlreadyLastIsNotReported() throws CustomerDataException {
+        WorkflowStep supportedStep = buildStep(SUPPORTED_STEP);
+        List<WorkflowStep> steps = new ArrayList<>();
+        steps.add(supportedStep);
+        steps.add(MigrationConstants.WORKFLOW_COMPLETED_PROCESS);
+        Workflow workflow = buildWorkflow(steps);
+
+        modelTransformer.transformModel(workflow);
+
+        assertNull(changeTracker.getModifiedWorkflowSteps().get(WORKFLOW_PATH));
+    }
+
     private WorkflowStep buildStep(String processId) {
         WorkflowStep step = new WorkflowStep();
         step.setProcess(processId);

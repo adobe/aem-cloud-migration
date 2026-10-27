@@ -18,8 +18,10 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
@@ -89,6 +91,48 @@ public class WorkflowModelDAO {
             addStepToConfigFile(workflowStep, model);
         } catch (Exception e) {
             throw new CustomerDataException("Unable to add new workflow step to model: ", e);
+        }
+    }
+
+    /**
+     * Ensures the model has exactly one step with the process of the given step, as its last top-level step.  The last
+     * top-level occurrence is kept and moved to the end; other occurrences, including those inside splits, are removed.
+     * The step is added if the model has no top-level occurrence.
+     *
+     * @return true if the model was changed
+     */
+    public boolean placeStepLast(WorkflowStep workflowStep, WorkflowModel model) throws CustomerDataException {
+        try {
+            Document modelXml = XmlUtil.loadXml(model.getConfigurationFile());
+            Node flowNode = modelXml.getElementsByTagName(MigrationConstants.FLOW_NODE).item(0);
+            String process = workflowStep.getProcess();
+
+            List<Node> topLevelNodes = XmlUtil.getChildElementNodes(flowNode);
+            Node stepToKeep = null;
+            for (Node stepNode : topLevelNodes) {
+                if (!isSplit(stepNode) && process.equals(getProcess(stepNode))) {
+                    stepToKeep = stepNode;
+                }
+            }
+
+            Node lastNode = topLevelNodes.isEmpty() ? null : topLevelNodes.get(topLevelNodes.size() - 1);
+            if (stepToKeep != null && stepToKeep == lastNode && countSteps(process, flowNode) == 1) {
+                return false;
+            }
+
+            if (stepToKeep != null) {
+                removeNode(stepToKeep);
+            }
+            removeStepFromFlow(process, flowNode);
+            if (stepToKeep == null) {
+                stepToKeep = createStepElement(modelXml, workflowStep, flowNode);
+            }
+            flowNode.appendChild(stepToKeep);
+
+            XmlUtil.writeXml(modelXml, model.getConfigurationFile());
+            return true;
+        } catch (Exception e) {
+            throw new CustomerDataException("Unable to update the workflow model for " + model.getName(), e);
         }
     }
 
@@ -250,6 +294,20 @@ public class WorkflowModelDAO {
         }
     }
 
+    private int countSteps(String workflowStep, Node flowNode) {
+        int count = 0;
+        for (Node stepNode : XmlUtil.getChildElementNodes(flowNode)) {
+            if (isSplit(stepNode)) {
+                for (Node branch : getSplitBranches(stepNode)) {
+                    count += countSteps(workflowStep, branch);
+                }
+            } else if (workflowStep.equals(getProcess(stepNode))) {
+                count++;
+            }
+        }
+        return count;
+    }
+
     private String getProcess(Node stepNode) {
         for (Node currNode : XmlUtil.getChildElementNodes(stepNode)) {
             if (currNode.getNodeName().equalsIgnoreCase(MigrationConstants.METADATA_XML_NODE)) {
@@ -283,21 +341,37 @@ public class WorkflowModelDAO {
     private void addStepToConfigFile(WorkflowStep workflowStep, WorkflowModel model) throws IOException, SAXException, ParserConfigurationException, TransformerException {
         Document modelXml = XmlUtil.loadXml(model.getConfigurationFile());
 
+        Node flowNode = modelXml.getElementsByTagName(MigrationConstants.FLOW_NODE).item(0);
+        flowNode.appendChild(createStepElement(modelXml, workflowStep, flowNode));
+
+        XmlUtil.writeXml(modelXml, model.getConfigurationFile());
+    }
+
+    private Element createStepElement(Document modelXml, WorkflowStep workflowStep, Node flowNode) {
         Element metadataNode = modelXml.createElement(MigrationConstants.METADATA_XML_NODE);
         metadataNode.setAttribute(MigrationConstants.JCR_PRIMARY_TYPE_PROP, MigrationConstants.NT_UNSTRUCTURED_TYPE_VALUE);
         metadataNode.setAttribute(MigrationConstants.PROCESS_PROP, workflowStep.getProcess());
         metadataNode.setAttribute(MigrationConstants.PROCESS_AUTO_ADVANCE_PROP, "true");
 
-        Element processNode = modelXml.createElement(workflowStep.getNodeName());
+        Element processNode = modelXml.createElement(getFreeNodeName(flowNode, workflowStep.getNodeName()));
         processNode.setAttribute(MigrationConstants.JCR_DESCRIPTION_PROP, workflowStep.getDescription());
         processNode.setAttribute(MigrationConstants.JCR_PRIMARY_TYPE_PROP, MigrationConstants.NT_UNSTRUCTURED_TYPE_VALUE);
         processNode.setAttribute(MigrationConstants.JCR_TITLE_PROP, workflowStep.getTitle());
         processNode.setAttribute(MigrationConstants.SLING_RESOURCE_TYPE_PROP, workflowStep.getResourceType());
         processNode.appendChild(metadataNode);
+        return processNode;
+    }
 
-        Node flowNode = modelXml.getElementsByTagName(MigrationConstants.FLOW_NODE).item(0);
-        flowNode.appendChild(processNode);
-
-        XmlUtil.writeXml(modelXml, model.getConfigurationFile());
+    // Oak cannot import two sibling nodes with the same name.
+    private static String getFreeNodeName(Node parent, String nodeName) {
+        Set<String> taken = new HashSet<>();
+        for (Node child : XmlUtil.getChildElementNodes(parent)) {
+            taken.add(child.getNodeName());
+        }
+        String name = nodeName;
+        for (int i = 0; taken.contains(name); i++) {
+            name = nodeName + "_" + i;
+        }
+        return name;
     }
 }
