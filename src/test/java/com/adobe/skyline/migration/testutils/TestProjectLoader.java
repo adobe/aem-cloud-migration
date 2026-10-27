@@ -46,6 +46,10 @@ public class TestProjectLoader {
         return copyResourceDirectoryToTemp("testProjectNoLauncher", temp);
     }
 
+    public File copySplitModelProjectToTemp(TemporaryFolder temp) {
+        return copyResourceDirectoryToTemp("testSplitModelProject", temp);
+    }
+
     private File copyResourceDirectoryToTemp(String resourceName, TemporaryFolder temp) {
         File tempFolder = null;
 

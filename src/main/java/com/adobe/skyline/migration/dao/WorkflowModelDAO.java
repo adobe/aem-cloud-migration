@@ -141,29 +141,57 @@ public class WorkflowModelDAO {
     }
 
     private List<WorkflowStep> extractWorkflowSteps(Document modelXml) {
-        List<Node> stepNodes = new ArrayList<>();
+        List<WorkflowStep> steps = new ArrayList<>();
 
         //Each workflow model should have exactly one flow tag
         NodeList flowNodes = modelXml.getElementsByTagName(MigrationConstants.FLOW_NODE);
         if (flowNodes != null && flowNodes.getLength() == 1) {
-            stepNodes = XmlUtil.getChildElementNodes(flowNodes.item(0));
-        }
-
-        List<WorkflowStep> steps = new ArrayList<>();
-        for (Node stepNode : stepNodes) {
-            WorkflowStep currStep = createWorkflowStep(stepNode);
-
-            if (currStep.getProcess() == null || currStep.getProcess().isEmpty()) {
-                Logger.WARN("Unable to map a workflow step in " + modelXml.getDocumentURI() + " because it does not " +
-                        "contain a PROCESS or EXTERNAL_PROCESS value.  Other workflow steps, such as OR splits, are not " +
-                        "supported at this time.");
-
-            } else {
-                steps.add(currStep);
-            }
+            collectWorkflowSteps(XmlUtil.getChildElementNodes(flowNodes.item(0)), false, modelXml.getDocumentURI(), steps);
         }
 
         return steps;
+    }
+
+    /**
+     * Collects the steps in a flow, including the steps in every branch of an OR or AND split.
+     */
+    private void collectWorkflowSteps(List<Node> stepNodes, boolean nested, String documentUri, List<WorkflowStep> steps) {
+        for (Node stepNode : stepNodes) {
+            if (isSplit(stepNode)) {
+                for (Node branch : getSplitBranches(stepNode)) {
+                    collectWorkflowSteps(XmlUtil.getChildElementNodes(branch), true, documentUri, steps);
+                }
+                continue;
+            }
+
+            WorkflowStep currStep = createWorkflowStep(stepNode);
+
+            if (currStep.getProcess() == null || currStep.getProcess().isEmpty()) {
+                Logger.WARN("Unable to map a workflow step in " + documentUri + " because it does not " +
+                        "contain a PROCESS or EXTERNAL_PROCESS value.");
+            } else {
+                currStep.setNested(nested);
+                steps.add(currStep);
+            }
+        }
+    }
+
+    private static boolean isSplit(Node stepNode) {
+        String resourceType = XmlUtil.getAttribute(stepNode, MigrationConstants.SLING_RESOURCE_TYPE_PROP);
+        String orSplit = XmlUtil.getAttribute(stepNode, MigrationConstants.OR_SPLIT_PROP);
+        return "true".equals(orSplit) || (resourceType != null
+                && (resourceType.endsWith(MigrationConstants.OR_SPLIT_RESOURCE_TYPE_SUFFIX)
+                || resourceType.endsWith(MigrationConstants.AND_SPLIT_RESOURCE_TYPE_SUFFIX)));
+    }
+
+    private static List<Node> getSplitBranches(Node splitNode) {
+        List<Node> branches = new ArrayList<>();
+        for (Node child : XmlUtil.getChildElementNodes(splitNode)) {
+            if (!child.getNodeName().equalsIgnoreCase(MigrationConstants.METADATA_XML_NODE)) {
+                branches.add(child);
+            }
+        }
+        return branches;
     }
 
     private WorkflowStep createWorkflowStep(Node stepXml){
@@ -196,22 +224,43 @@ public class WorkflowModelDAO {
         Document modelXml = XmlUtil.loadXml(model.getConfigurationFile());
 
         //Each workflow model should have exactly one flow tag
-        List<Node> stepNodes = XmlUtil.getChildElementNodes(modelXml.getElementsByTagName(MigrationConstants.FLOW_NODE).item(0));
-
-        for (Node stepNode : stepNodes) {
-            List<Node> stepChildren = XmlUtil.getChildElementNodes(stepNode);
-
-            for (Node currNode : stepChildren) {
-                if(currNode.getNodeName().equalsIgnoreCase(MigrationConstants.METADATA_XML_NODE)) {
-                    String processValue = extractProcessValue(currNode);
-                    if (workflowStep.equals(processValue)) {
-                        stepNode.getParentNode().removeChild(stepNode);
-                    }
-                }
-            }
-        }
+        removeStepFromFlow(workflowStep, modelXml.getElementsByTagName(MigrationConstants.FLOW_NODE).item(0));
 
         XmlUtil.writeXml(modelXml, model.getConfigurationFile());
+    }
+
+    /**
+     * Removes the step from a flow and from every branch of the splits in it.  A split that has no step left in any
+     * branch is removed as well.
+     */
+    private void removeStepFromFlow(String workflowStep, Node flowNode) {
+        for (Node stepNode : XmlUtil.getChildElementNodes(flowNode)) {
+            if (isSplit(stepNode)) {
+                boolean hasSteps = false;
+                for (Node branch : getSplitBranches(stepNode)) {
+                    removeStepFromFlow(workflowStep, branch);
+                    hasSteps |= !XmlUtil.getChildElementNodes(branch).isEmpty();
+                }
+                if (!hasSteps) {
+                    removeNode(stepNode);
+                }
+            } else if (workflowStep.equals(getProcess(stepNode))) {
+                removeNode(stepNode);
+            }
+        }
+    }
+
+    private String getProcess(Node stepNode) {
+        for (Node currNode : XmlUtil.getChildElementNodes(stepNode)) {
+            if (currNode.getNodeName().equalsIgnoreCase(MigrationConstants.METADATA_XML_NODE)) {
+                return extractProcessValue(currNode);
+            }
+        }
+        return null;
+    }
+
+    private static void removeNode(Node node) {
+        node.getParentNode().removeChild(node);
     }
 
     private String extractProcessValue(Node metadataNode){

@@ -15,6 +15,7 @@ package com.adobe.skyline.migration.main;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
@@ -61,18 +62,22 @@ public class MigrationOrchestratorIntegrationTest extends SkylineMigrationBaseTe
     }
 
     @Test
-    public void testMigrationMigratedProject() {
+    public void testMigrationMigratedProject() throws IOException {
         File testProject  = projectLoader.copyMigratedProjectToTemp(temp);
-        testConfBasedProject(testProject);
+        // The marketing model of this project has a Scene7 upload step inside an OR split, which is removed as well.
+        testConfBasedProject(testProject, 9);
+        String marketingModel = Files.readString(Path.of(getAbsolutePathForConfModel(testProject, "update_asset_marketing")));
+        assertFalse(marketingModel.contains("com.day.cq.dam.scene7.impl.process.Scene7UploadProcess"));
+        assertTrue("The OR split keeps its other branch.", marketingModel.contains("cq/workflow/components/model/or"));
     }
 
     @Test
     public void testMigrationConfPath() {
         File testProject  = projectLoader.copyConfProjectToTemp(temp);
-        testConfBasedProject(testProject);
+        testConfBasedProject(testProject, 8);
     }
 
-    private void testConfBasedProject(File testProject) {
+    private void testConfBasedProject(File testProject, int marketingModelUpdates) {
         try {
             new MigrationOrchestrator(testProject.getPath(), config, reportOutputDir.getPath()).exec();
 
@@ -110,7 +115,7 @@ public class MigrationOrchestratorIntegrationTest extends SkylineMigrationBaseTe
 
             assertProcessingProfilesCreated(testProject, expectedProfiles);
             assertBothNewModulesAddedToReactor(testProject);
-            validateConfProjectReportOutput();
+            validateConfProjectReportOutput(marketingModelUpdates);
         } catch (Exception e) {
             fail("An exception occurred during testing: " + e.getMessage());
             e.printStackTrace();
@@ -351,7 +356,7 @@ public class MigrationOrchestratorIntegrationTest extends SkylineMigrationBaseTe
         return false;
     }
 
-    private void validateConfProjectReportOutput() throws FileNotFoundException {
+    private void validateConfProjectReportOutput(int marketingModelUpdates) throws FileNotFoundException {
         File migrationReport = new File(reportOutputDir, MigrationConstants.REPORT_FILENAME);
 
         Scanner scanner = new Scanner(migrationReport);
@@ -373,7 +378,7 @@ public class MigrationOrchestratorIntegrationTest extends SkylineMigrationBaseTe
 
                 assertTrue(scanner.nextLine().startsWith("###")); //Workflow model description
                 skipLines(scanner, 1);
-                validateNumberOfTableRows(scanner, 8);
+                validateNumberOfTableRows(scanner, marketingModelUpdates);
 
                 assertTrue(scanner.nextLine().startsWith("###")); //Workflow model description
                 skipLines(scanner, 1);

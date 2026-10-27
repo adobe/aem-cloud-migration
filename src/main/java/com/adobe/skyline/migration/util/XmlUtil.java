@@ -76,6 +76,17 @@ public class XmlUtil {
         return childElements;
     }
 
+    /**
+     * @return the value of the attribute, or null if the node has no such attribute
+     */
+    public static String getAttribute(Node node, String attr) {
+        if (node.getAttributes() == null) {
+            return null;
+        }
+        Node attrNode = node.getAttributes().getNamedItem(attr);
+        return attrNode == null ? null : attrNode.getNodeValue();
+    }
+
     public static Attr getOrCreateAttr(Element el, String attr) {
         if (el.getAttribute(attr).length() > 0) { //We already have existing values.
             return el.getAttributeNode(attr);

@@ -148,6 +148,9 @@ public class MigrationConstants {
     public static final String NODE_PREFIX = "node";
     public static final String NODE_SPACE = "_x0023_";
     public static final String METADATA_XML_NODE = "metaData";
+    public static final String OR_SPLIT_PROP = "orSplit";
+    public static final String OR_SPLIT_RESOURCE_TYPE_SUFFIX = "/model/or";
+    public static final String AND_SPLIT_RESOURCE_TYPE_SUFFIX = "/model/and";
     public static final String TRANSITIONS_NODE = "transitions";
     public static final String JCR_ROOT_NODE = "jcr:root";
 
