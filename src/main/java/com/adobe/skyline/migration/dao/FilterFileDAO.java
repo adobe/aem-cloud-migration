@@ -56,8 +56,12 @@ public class FilterFileDAO {
             Document filterXml = XmlUtil.loadXml(filterFile);
             Element workspaceFilterElement = filterXml.getDocumentElement();
 
+            boolean rootsFixed = makeRootsAbsolute(workspaceFilterElement);
+
             if (!hasEntry(workspaceFilterElement, path)) {
                 addEntry(path, filterXml, workspaceFilterElement);
+            } else if (rootsFixed) {
+                XmlUtil.writeXml(filterXml, filterFile);
             }
         } catch (Exception e) {
             throw new MigrationRuntimeException(e);
@@ -95,6 +99,20 @@ public class FilterFileDAO {
         }
     }
 
+
+    // FileVault ignores filter roots that are not absolute; earlier versions of this tool wrote one
+    private boolean makeRootsAbsolute(Element workspaceFilterElement) {
+        boolean changed = false;
+        for (Node currNode : XmlUtil.getChildElementNodes(workspaceFilterElement)) {
+            Element filter = (Element) currNode;
+            String path = filter.getAttribute(MigrationConstants.ROOT_PROPERTY);
+            if (!path.isEmpty() && !path.startsWith("/")) {
+                filter.setAttribute(MigrationConstants.ROOT_PROPERTY, "/" + path);
+                changed = true;
+            }
+        }
+        return changed;
+    }
 
     private boolean hasEntry(Element workspaceFilterElement, String entry) {
         List<Node> filterNodes = XmlUtil.getChildElementNodes(workspaceFilterElement);

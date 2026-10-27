@@ -110,8 +110,8 @@ public class MigrationConstants {
     public static final String WORKFLOW_RUNNER_CONFIG_BY_PATH = "postProcWorkflowsByPath";
 
     //Processing Profile Constants
-    public static final String PROCESSING_PROFILE_JCR_PATH = Path.of(CONF, GLOBAL, SETTINGS, DAM, PROCESSING).toString();
-    public static final String PROCESSING_PROFILE_DISK_PATH = Path.of(PATH_TO_JCR_ROOT, PROCESSING_PROFILE_JCR_PATH).toString();
+    public static final String PROCESSING_PROFILE_JCR_PATH = "/" + String.join("/", CONF, GLOBAL, SETTINGS, DAM, PROCESSING);
+    public static final String PROCESSING_PROFILE_DISK_PATH = Path.of(PATH_TO_JCR_ROOT, CONF, GLOBAL, SETTINGS, DAM, PROCESSING).toString();
     public static final String PROCESSING_PROFILE_RESOURCE_TYPE = "dam/processing/profile";
     public static final String RENDITION_RESOURCE_TYPE = "dam/processing/profile/rendition";
     public static final String VIDEO_RESOURCE_TYPE = "dam/processing/profile/video";
