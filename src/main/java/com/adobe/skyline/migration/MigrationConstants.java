@@ -35,6 +35,7 @@ public class MigrationConstants {
     public static final String WORKFLOW = "workflow";
     public static final String LAUNCHER = "launcher";
     public static final String CONFIG = "config";
+    public static final String CONFIG_AUTHOR = "config.author";
     public static final String MODEL = "model";
     public static final String CONTENT = "content";
     public static final String DAM = "dam";
@@ -102,14 +103,15 @@ public class MigrationConstants {
     public static final String ORIGINAL_RENDITION_PATTERN_SUFFIX = "renditions/original";
 
     //Workflow Runner Constants
-    public static final String WORKFLOW_RUNNER_CONFIG_PATH = "/" + APPS + "/" + MIGRATION_PROJECT_NODE + "/" + CONFIG;
-    public static final String WORKFLOW_RUNNER_CONFIG_FILENAME = "com.adobe.cq.dam.processor.nui.impl.workflow.CustomDamWorkflowRunnerImpl.xml";
+    public static final String WORKFLOW_RUNNER_CONFIG_PATH = "/" + APPS + "/" + MIGRATION_PROJECT_NODE + "/" + CONFIG_AUTHOR;
+    public static final String WORKFLOW_RUNNER_PID = "com.adobe.cq.dam.processor.nui.impl.workflow.CustomDamWorkflowRunnerImpl";
+    public static final String WORKFLOW_RUNNER_CONFIG_FILENAME = WORKFLOW_RUNNER_PID + ".cfg.json";
     public static final String WORKFLOW_RUNNER_CONFIG_BY_EXPRESSION = "postProcWorkflowsByExpression";
     public static final String WORKFLOW_RUNNER_CONFIG_BY_PATH = "postProcWorkflowsByPath";
 
     //Processing Profile Constants
-    public static final String PROCESSING_PROFILE_JCR_PATH = Path.of(CONF, GLOBAL, SETTINGS, DAM, PROCESSING).toString();
-    public static final String PROCESSING_PROFILE_DISK_PATH = Path.of(PATH_TO_JCR_ROOT, PROCESSING_PROFILE_JCR_PATH).toString();
+    public static final String PROCESSING_PROFILE_JCR_PATH = "/" + String.join("/", CONF, GLOBAL, SETTINGS, DAM, PROCESSING);
+    public static final String PROCESSING_PROFILE_DISK_PATH = Path.of(PATH_TO_JCR_ROOT, CONF, GLOBAL, SETTINGS, DAM, PROCESSING).toString();
     public static final String PROCESSING_PROFILE_RESOURCE_TYPE = "dam/processing/profile";
     public static final String RENDITION_RESOURCE_TYPE = "dam/processing/profile/rendition";
     public static final String VIDEO_RESOURCE_TYPE = "dam/processing/profile/video";
@@ -148,6 +150,12 @@ public class MigrationConstants {
     public static final String NODE_PREFIX = "node";
     public static final String NODE_SPACE = "_x0023_";
     public static final String METADATA_XML_NODE = "metaData";
+    public static final String OR_SPLIT_PROP = "orSplit";
+    public static final String OR_SPLIT_RESOURCE_TYPE_SUFFIX = "/model/or";
+    public static final String AND_SPLIT_RESOURCE_TYPE_SUFFIX = "/model/and";
+    public static final String NOOP_PROCESS = "/libs/workflow/scripts/noop.ecma";
+    public static final String NOOP_RESOURCE_TYPE = "cq/workflow/components/workflow/noopprocess";
+    public static final String NOOP_NODE_NAME = "noopprocess";
     public static final String TRANSITIONS_NODE = "transitions";
     public static final String JCR_ROOT_NODE = "jcr:root";
 

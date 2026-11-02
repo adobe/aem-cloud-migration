@@ -21,6 +21,7 @@ public class WorkflowStep {
     private String description;
     private String resourceType;
     private Map<String, String> metadata;
+    private boolean nested;
 
     public String getNodeName() {
         return nodeName;
@@ -68,5 +69,16 @@ public class WorkflowStep {
 
     public void setMetadata(Map<String, String> metadata) {
         this.metadata = metadata;
+    }
+
+    /**
+     * @return true if the step is inside an OR or AND split rather than at the top level of the model
+     */
+    public boolean isNested() {
+        return nested;
+    }
+
+    public void setNested(boolean nested) {
+        this.nested = nested;
     }
 }

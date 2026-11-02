@@ -153,6 +153,18 @@ public class MigrationReportWriterTest {
     }
 
     @Test
+    public void testMergedRunnerConfigurationsWritten() throws IOException {
+        changeTracker.trackWorkflowRunnerConfigAdded("glob1", "model1");
+        changeTracker.trackWorkflowRunnerConfigMerged("ui.config/src/main/content/jcr_root/apps/myapp/config/runner.xml");
+
+        writer.write(temp.getRoot());
+
+        String report = new String(java.nio.file.Files.readAllBytes(new File(temp.getRoot(), MigrationConstants.REPORT_FILENAME).toPath()));
+        String section = report.substring(report.indexOf("## Custom Workflow Runner configuration"), report.indexOf("## Workflow Model Updates"));
+        assertTrue(section.contains("* `ui.config/src/main/content/jcr_root/apps/myapp/config/runner.xml`"));
+    }
+
+    @Test
     public void testModelUpdatesWritten() throws FileNotFoundException {
         changeTracker.trackModifiedWorkflowStep("model1Path", "step1", REQUIRED);
         changeTracker.trackModifiedWorkflowStep("model1Path", "step2", NUI_OOTB);

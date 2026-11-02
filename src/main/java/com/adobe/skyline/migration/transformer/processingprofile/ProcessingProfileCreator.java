@@ -12,7 +12,10 @@
 
 package com.adobe.skyline.migration.transformer.processingprofile;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 
 import com.adobe.skyline.migration.MigrationConstants;
 import com.adobe.skyline.migration.dao.FilterFileDAO;
@@ -22,6 +25,7 @@ import com.adobe.skyline.migration.exception.ProjectCreationException;
 import com.adobe.skyline.migration.model.ChangeTrackingService;
 import com.adobe.skyline.migration.model.ProcessingProfile;
 import com.adobe.skyline.migration.model.RenditionConfig;
+import com.adobe.skyline.migration.model.VideoProfileConfig;
 import com.adobe.skyline.migration.model.workflow.Workflow;
 import com.adobe.skyline.migration.model.workflow.WorkflowModel;
 import com.adobe.skyline.migration.model.workflow.WorkflowProject;
@@ -50,7 +54,6 @@ public class ProcessingProfileCreator {
     }
 
     public void createProfiles(WorkflowProject workflowProject) throws ProjectCreationException {
-        boolean profileCreated = false;
         boolean projectExists = mavenProjectDAO.projectExists(MigrationConstants.MIGRATION_PROJECT_CONTENT);
 
         for (Workflow workflow : workflowProject.getWorkflows()) {
@@ -69,14 +72,12 @@ public class ProcessingProfileCreator {
                     }
 
                     changeTracker.trackCreatedProcessingProfile(profile);
-                    ppDao.addProfile(profile);
-                    profileCreated = true;
+                    // A filter on the processing folder would delete the profiles the customer created in AEM, so the
+                    // filter covers only the page content and the migrated profiles.
+                    filterFileDAO.addPath(MigrationConstants.PROCESSING_PROFILE_JCR_PATH + "/" + MigrationConstants.JCR_CONTENT);
+                    filterFileDAO.addPath(ppDao.addProfile(profile));
                 }
             }
-        }
-
-        if (profileCreated) {
-            filterFileDAO.addPath(MigrationConstants.PROCESSING_PROFILE_JCR_PATH);
         }
     }
 
@@ -95,13 +96,56 @@ public class ProcessingProfileCreator {
                 //Merge the mimetype includes and excludes from the launcher into those defined by the rendition configuration
                 for (RenditionConfig rendition : renditions) {
                     if (!isOotbRendition(rendition)) {
-                        profile.addRendition(rendition);
+                        addRendition(profile, rendition, model);
                     }
                 }
             }
         }
 
         return profile;
+    }
+
+    /**
+     * Adds a rendition unless the profile already has one with the same file name. Identical definitions are merged by
+     * combining their included mimetypes; a different definition is reported, and the first one wins.
+     */
+    private void addRendition(ProcessingProfile profile, RenditionConfig rendition, WorkflowModel model) {
+        for (RenditionConfig existing : profile.getRenditions()) {
+            if (Objects.equals(existing.getFileName(), rendition.getFileName())) {
+                if (isSameDefinition(existing, rendition)) {
+                    if (existing.getIncludeMimeTypes().isEmpty() || rendition.getIncludeMimeTypes().isEmpty()) {
+                        existing.setIncludeMimeTypes(new HashSet<>());
+                    } else {
+                        Set<String> includes = new HashSet<>(existing.getIncludeMimeTypes());
+                        includes.addAll(rendition.getIncludeMimeTypes());
+                        existing.setIncludeMimeTypes(includes);
+                    }
+                } else {
+                    changeTracker.trackFailedMappings("Rendition " + rendition.getFileName() + " in " + model.getName(),
+                            "Another step of the workflow already creates this rendition with different settings. Only the first definition was migrated.");
+                }
+                return;
+            }
+        }
+
+        profile.addRendition(rendition);
+    }
+
+    private boolean isSameDefinition(RenditionConfig a, RenditionConfig b) {
+        boolean same = a.getClass().equals(b.getClass()) &&
+                Objects.equals(a.getFormat(), b.getFormat()) &&
+                a.getWidth() == b.getWidth() &&
+                a.getHeight() == b.getHeight() &&
+                a.getQuality() == b.getQuality() &&
+                a.getExcludeMimeTypes().equals(b.getExcludeMimeTypes());
+
+        if (same && a instanceof VideoProfileConfig) {
+            VideoProfileConfig videoA = (VideoProfileConfig) a;
+            VideoProfileConfig videoB = (VideoProfileConfig) b;
+            same = videoA.getBitRate() == videoB.getBitRate() && Objects.equals(videoA.getCodec(), videoB.getCodec());
+        }
+
+        return same;
     }
 
     private boolean isOotbRendition(RenditionConfig rendition) {

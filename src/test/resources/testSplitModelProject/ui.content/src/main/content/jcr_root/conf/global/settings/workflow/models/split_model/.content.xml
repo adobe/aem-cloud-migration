@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+    jcr:primaryType="cq:Page">
+    <jcr:content
+        cq:template="/libs/cq/workflow/templates/model"
+        jcr:primaryType="cq:PageContent"
+        jcr:title="Split Model"
+        sling:resourceType="cq/workflow/components/pages/model">
+        <flow
+            jcr:primaryType="nt:unstructured"
+            sling:resourceType="foundation/components/parsys">
+            <process
+                jcr:primaryType="nt:unstructured"
+                jcr:title="Continue updating?"
+                sling:resourceType="cq/workflow/components/model/process">
+                <metaData
+                    jcr:primaryType="nt:unstructured"
+                    PROCESS="com.day.cq.dam.core.process.GateKeeperProcess"
+                    PROCESS_AUTO_ADVANCE="true"/>
+            </process>
+            <or
+                jcr:primaryType="nt:unstructured"
+                sling:resourceType="cq/workflow/components/model/or"
+                branches="2"
+                orSplit="true">
+                <_x0031_
+                    jcr:primaryType="nt:unstructured"
+                    sling:resourceType="cq/flow/components/parsys">
+                    <createthumbnail
+                        jcr:primaryType="nt:unstructured"
+                        jcr:title="Create Thumbnail"
+                        sling:resourceType="cq/workflow/components/model/process">
+                        <metaData
+                            jcr:primaryType="nt:unstructured"
+                            PROCESS="com.day.cq.dam.core.process.CreateThumbnailProcess"
+                            PROCESS_AUTO_ADVANCE="true"/>
+                    </createthumbnail>
+                </_x0031_>
+                <_x0032_
+                    jcr:primaryType="nt:unstructured"
+                    sling:resourceType="cq/flow/components/parsys">
+                    <customprocess
+                        jcr:primaryType="nt:unstructured"
+                        jcr:title="Custom Process"
+                        sling:resourceType="cq/workflow/components/model/process">
+                        <metaData
+                            jcr:primaryType="nt:unstructured"
+                            PROCESS="com.example.CustomNestedProcess"
+                            PROCESS_AUTO_ADVANCE="true"/>
+                    </customprocess>
+                </_x0032_>
+            </or>
+            <and
+                jcr:primaryType="nt:unstructured"
+                sling:resourceType="cq/workflow/components/model/and"
+                branches="2">
+                <_x0031_
+                    jcr:primaryType="nt:unstructured"
+                    sling:resourceType="cq/flow/components/parsys">
+                    <commandlineprocess
+                        jcr:primaryType="nt:unstructured"
+                        jcr:title="ImageMagick"
+                        sling:resourceType="dam/components/workflow/commandlineprocess">
+                        <metaData
+                            jcr:primaryType="nt:unstructured"
+                            PROCESS="com.day.cq.dam.core.process.CommandLineProcess"
+                            PROCESS_AUTO_ADVANCE="true"/>
+                    </commandlineprocess>
+                </_x0031_>
+                <_x0032_
+                    jcr:primaryType="nt:unstructured"
+                    sling:resourceType="cq/flow/components/parsys">
+                    <downloadasset
+                        jcr:primaryType="nt:unstructured"
+                        jcr:title="Download Asset"
+                        sling:resourceType="cq/workflow/components/model/process">
+                        <metaData
+                            jcr:primaryType="nt:unstructured"
+                            PROCESS="com.day.cq.dam.core.process.DownloadAssetProcess"
+                            PROCESS_AUTO_ADVANCE="true"/>
+                    </downloadasset>
+                </_x0032_>
+            </and>
+            <toplevelprocess
+                jcr:primaryType="nt:unstructured"
+                jcr:title="Top Level Custom Process"
+                sling:resourceType="cq/workflow/components/model/process">
+                <metaData
+                    jcr:primaryType="nt:unstructured"
+                    PROCESS="com.example.TopLevelProcess"
+                    PROCESS_AUTO_ADVANCE="true"/>
+            </toplevelprocess>
+        </flow>
+    </jcr:content>
+</jcr:root>

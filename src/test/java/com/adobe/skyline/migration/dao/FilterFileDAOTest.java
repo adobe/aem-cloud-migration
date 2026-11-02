@@ -14,6 +14,8 @@ package com.adobe.skyline.migration.dao;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -84,6 +86,25 @@ public class FilterFileDAOTest extends SkylineMigrationBaseTest {
         dao.removePath("/conf/sample");
 
         assertEquals(0, findPathMatches("/conf/sample"));
+    }
+
+    @Test
+    public void testProcessingProfileFilterRootIsAbsolute() throws ParserConfigurationException, SAXException, IOException {
+        dao.addPath(MigrationConstants.PROCESSING_PROFILE_JCR_PATH);
+
+        assertEquals(1, findPathMatches("/conf/global/settings/dam/processing"));
+    }
+
+    @Test
+    public void testRelativeFilterRootMadeAbsolute() throws Exception {
+        String filter = new String(Files.readAllBytes(filterFile.toPath()), StandardCharsets.UTF_8);
+        filter = filter.replace("</workspaceFilter>", "    <filter root=\"conf/global/settings/dam/processing\"/>\n</workspaceFilter>");
+        Files.write(filterFile.toPath(), filter.getBytes(StandardCharsets.UTF_8));
+
+        dao.addPath("/conf/global/settings/dam/processing");
+
+        assertEquals(1, findPathMatches("/conf/global/settings/dam/processing"));
+        assertEquals(0, findPathMatches("conf/global/settings/dam/processing"));
     }
 
     private int findPathMatches(String path) throws ParserConfigurationException, SAXException, IOException {

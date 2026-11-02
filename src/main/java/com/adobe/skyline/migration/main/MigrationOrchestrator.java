@@ -69,7 +69,7 @@ class MigrationOrchestrator {
         FilterFileDAO appsFilterDAO = new FilterFileDAO(Paths.get(customerProjectPath, MigrationConstants.MIGRATION_PROJECT_APPS).toString());
         FilterFileDAO contentFilterDAO = new FilterFileDAO(Paths.get(customerProjectPath, MigrationConstants.MIGRATION_PROJECT_CONTENT).toString());
         ProcessingProfileDAO ppDAO = new ProcessingProfileDAO(Paths.get(customerProjectPath, MigrationConstants.MIGRATION_PROJECT_CONTENT).toString());
-        WorkflowRunnerConfigDAO runnerConfigDAO = new WorkflowRunnerConfigDAO(Paths.get(customerProjectPath, MigrationConstants.MIGRATION_PROJECT_APPS).toString());
+        WorkflowRunnerConfigDAO runnerConfigDAO = new WorkflowRunnerConfigDAO(customerProjectPath, changeTracker);
 
         //Load customer projects
         CustomerProjectLoader loader = new CustomerProjectLoader(queryService, launcherDAO, modelDAO);

@@ -15,6 +15,7 @@ package com.adobe.skyline.migration.main;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
@@ -37,6 +38,9 @@ import com.adobe.skyline.migration.exception.CustomerDataException;
 import com.adobe.skyline.migration.exception.ProjectCreationException;
 import com.adobe.skyline.migration.testutils.TestConstants;
 import com.adobe.skyline.migration.util.XmlUtil;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -61,18 +65,24 @@ public class MigrationOrchestratorIntegrationTest extends SkylineMigrationBaseTe
     }
 
     @Test
-    public void testMigrationMigratedProject() {
+    public void testMigrationMigratedProject() throws IOException {
         File testProject  = projectLoader.copyMigratedProjectToTemp(temp);
-        testConfBasedProject(testProject);
+        // The marketing model of this project has an OR split of a Scene7 upload step and a No Operation step.  Once the
+        // Scene7 step is removed, the split does nothing and is removed as well.
+        testConfBasedProject(testProject, 10);
+        String marketingModel = Files.readString(Path.of(getAbsolutePathForConfModel(testProject, "update_asset_marketing")));
+        assertFalse(marketingModel.contains("com.day.cq.dam.scene7.impl.process.Scene7UploadProcess"));
+        assertFalse("An OR split with only No Operation steps left is removed.", marketingModel.contains("cq/workflow/components/model/or"));
+        assertTrue("The steps after the split are kept.", marketingModel.contains("com.adobe.test.workflow.LogAssetUploadFolderProcess"));
     }
 
     @Test
     public void testMigrationConfPath() {
         File testProject  = projectLoader.copyConfProjectToTemp(temp);
-        testConfBasedProject(testProject);
+        testConfBasedProject(testProject, 9);
     }
 
-    private void testConfBasedProject(File testProject) {
+    private void testConfBasedProject(File testProject, int marketingModelUpdates) {
         try {
             new MigrationOrchestrator(testProject.getPath(), config, reportOutputDir.getPath()).exec();
 
@@ -108,9 +118,17 @@ public class MigrationOrchestratorIntegrationTest extends SkylineMigrationBaseTe
 
             List<String> expectedProfiles = Arrays.asList("migrated_from_update_asset", "migrated_from_update_asset_marketing");
 
+            // Both models run the Completed step before custom steps; it is moved to the end.
+            assertLastStep(getAbsolutePathForConfModel(testProject, "update_asset_marketing"),
+                    MigrationConstants.WORKFLOW_COMPLETED_PROCESS.getProcess());
+            assertLastStep(getAbsolutePathForConfModel(testProject, "dam/update_asset"),
+                    MigrationConstants.WORKFLOW_COMPLETED_PROCESS.getProcess());
+
             assertProcessingProfilesCreated(testProject, expectedProfiles);
+            // ImageMagick format conversions in the marketing model's CommandLineProcess become renditions
+            assertProfileHasRenditions(testProject, "migrated_from_update_asset_marketing", "cq5dam-v.jpeg", "cq5dam-v.png");
             assertBothNewModulesAddedToReactor(testProject);
-            validateConfProjectReportOutput();
+            validateConfProjectReportOutput(marketingModelUpdates);
         } catch (Exception e) {
             fail("An exception occurred during testing: " + e.getMessage());
             e.printStackTrace();
@@ -196,6 +214,15 @@ public class MigrationOrchestratorIntegrationTest extends SkylineMigrationBaseTe
         return Path.of(pathRoot, workflowModelName, MigrationConstants.CONTENT_XML).toString();
     }
 
+    private void assertLastStep(String workflowModelPath, String process) throws Exception {
+        Document modelXml = XmlUtil.loadXml(new File(workflowModelPath));
+        List<Node> stepNodes = XmlUtil.getChildElementNodes(modelXml.getElementsByTagName("flow").item(0));
+        Node lastStep = stepNodes.get(stepNodes.size() - 1);
+        Node metaData = XmlUtil.getChildElementNodes(lastStep).get(0);
+        assertEquals(process, XmlUtil.getAttribute(metaData, "PROCESS"));
+        assertEquals(1, Files.readString(Path.of(workflowModelPath)).split(process, -1).length - 1);
+    }
+
     private void assertStepsRemovedFromWorkflowModel(String[] workflowSteps, String workflowModelPath) {
         try {
             File modelFile = new File(workflowModelPath);
@@ -265,17 +292,16 @@ public class MigrationOrchestratorIntegrationTest extends SkylineMigrationBaseTe
         }
     }
 
-    private void assertWorkflowRunnerConfigExistsForModel(File testProject, String workflowModel) throws ParserConfigurationException, SAXException, IOException {
+    private void assertWorkflowRunnerConfigExistsForModel(File testProject, String workflowModel) throws IOException {
         File runnerConfig = getRunnerConfig(testProject);
         assertTrue(runnerConfig.exists());
-        Document runnerXml = XmlUtil.loadXml(runnerConfig);
-        Element rootElem = runnerXml.getDocumentElement();
-        List<String> patterns = XmlUtil.getStringArrayListFromAttribute(rootElem, MigrationConstants.WORKFLOW_RUNNER_CONFIG_BY_EXPRESSION);
+        JsonArray patterns = JsonParser.parseString(Files.readString(runnerConfig.toPath())).getAsJsonObject()
+                .getAsJsonArray(MigrationConstants.WORKFLOW_RUNNER_CONFIG_BY_EXPRESSION);
 
         boolean matched = false;
 
-        for (String pattern:patterns) {
-            String workflow = pattern.split(":")[1];
+        for (JsonElement pattern:patterns) {
+            String workflow = pattern.getAsString().split(":")[1];
             if (workflow.contains(workflowModel)) {
                 matched = true;
                 break;
@@ -316,6 +342,21 @@ public class MigrationOrchestratorIntegrationTest extends SkylineMigrationBaseTe
         }
     }
 
+    private void assertProfileHasRenditions(File testProject, String profileName, String... renditionNames) throws IOException {
+        Path profileDir = Path.of(testProject.getPath(), MigrationConstants.MIGRATION_PROJECT_CONTENT,
+                MigrationConstants.PROCESSING_PROFILE_DISK_PATH, profileName);
+        StringBuilder content = new StringBuilder();
+        try (java.util.stream.Stream<Path> files = Files.walk(profileDir)) {
+            for (Path file : (Iterable<Path>) files.filter(Files::isRegularFile)::iterator) {
+                content.append(Files.readString(file));
+            }
+        }
+
+        for (String renditionName : renditionNames) {
+            assertTrue(renditionName, content.toString().contains("name=\"" + renditionName + "\""));
+        }
+    }
+
     private void assertNoProcessingProfilesCreated(File testProject) {
         File profileRoot = new File(Path.of(testProject.getPath(), MigrationConstants.MIGRATION_PROJECT_CONTENT,
                 MigrationConstants.PROCESSING_PROFILE_DISK_PATH).toString());
@@ -351,7 +392,7 @@ public class MigrationOrchestratorIntegrationTest extends SkylineMigrationBaseTe
         return false;
     }
 
-    private void validateConfProjectReportOutput() throws FileNotFoundException {
+    private void validateConfProjectReportOutput(int marketingModelUpdates) throws FileNotFoundException {
         File migrationReport = new File(reportOutputDir, MigrationConstants.REPORT_FILENAME);
 
         Scanner scanner = new Scanner(migrationReport);
@@ -373,11 +414,11 @@ public class MigrationOrchestratorIntegrationTest extends SkylineMigrationBaseTe
 
                 assertTrue(scanner.nextLine().startsWith("###")); //Workflow model description
                 skipLines(scanner, 1);
-                validateNumberOfTableRows(scanner, 8);
+                validateNumberOfTableRows(scanner, marketingModelUpdates);
 
                 assertTrue(scanner.nextLine().startsWith("###")); //Workflow model description
                 skipLines(scanner, 1);
-                validateNumberOfTableRows(scanner, 9);
+                validateNumberOfTableRows(scanner, 10);
             }
 
             if (line.equals("## Paths Deleted")) {
@@ -395,7 +436,7 @@ public class MigrationOrchestratorIntegrationTest extends SkylineMigrationBaseTe
 
             if (line.equals("## Migration Issues")) {
                 skipLines(scanner, 4);
-                validateNumberOfTableRows(scanner, 1);
+                validateNumberOfTableRows(scanner, 2);
             }
         }
     }

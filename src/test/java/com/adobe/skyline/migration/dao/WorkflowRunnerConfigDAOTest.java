@@ -9,32 +9,34 @@
  OF ANY KIND, either express or implied. See the License for the specific language
  governing permissions and limitations under the License.
  */
-
 package com.adobe.skyline.migration.dao;
 
 import com.adobe.skyline.migration.MigrationConstants;
 import com.adobe.skyline.migration.SkylineMigrationBaseTest;
-import com.adobe.skyline.migration.testutils.TestConstants;
-import com.adobe.skyline.migration.util.XmlUtil;
+import com.adobe.skyline.migration.model.ChangeTrackingService;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import org.junit.Before;
 import org.junit.Test;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.xml.sax.SAXException;
 
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.TransformerException;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.Assert.*;
 
 public class WorkflowRunnerConfigDAOTest extends SkylineMigrationBaseTest {
 
+    private static final String PID = "com.adobe.cq.dam.processor.nui.impl.workflow.CustomDamWorkflowRunnerImpl";
     private static final String CONFIG_FILE_REL_PATH = Paths.get("", MigrationConstants.MIGRATION_PROJECT_APPS, MigrationConstants.PATH_TO_JCR_ROOT,
-            MigrationConstants.WORKFLOW_RUNNER_CONFIG_PATH, MigrationConstants.WORKFLOW_RUNNER_CONFIG_FILENAME).toString();
+            "apps", "aem-cloud-migration", "config.author", PID + ".cfg.json").toString();
 
     private static final String PATTERN = "\\/content\\/dam(\\/.*\\/)(marketing\\/seasonal)(\\/.*)";
     private static final String PATTERN_2 = "\\/content\\/dam(\\/.*\\/)(other_path)(\\/.*)";
@@ -45,6 +47,8 @@ public class WorkflowRunnerConfigDAOTest extends SkylineMigrationBaseTest {
     private static final String PATH_MODEL = "/var/workflow/models/dam/dam-autotag-assets";
 
     private File tempProjectRoot;
+    private File configFile;
+    private ChangeTrackingService changeTracker;
     private WorkflowRunnerConfigDAO dao;
 
     @Before
@@ -52,53 +56,110 @@ public class WorkflowRunnerConfigDAOTest extends SkylineMigrationBaseTest {
         super.setUp();
 
         this.tempProjectRoot = projectLoader.copyConfProjectToTemp(temp);
-
-        this.dao = new WorkflowRunnerConfigDAO(Paths.get(tempProjectRoot.getPath(), MigrationConstants.MIGRATION_PROJECT_APPS).toString());
+        this.configFile = new File(tempProjectRoot, CONFIG_FILE_REL_PATH);
+        this.changeTracker = new ChangeTrackingService();
+        this.dao = new WorkflowRunnerConfigDAO(tempProjectRoot.getPath(), changeTracker);
     }
 
     @Test
-    public void testConfigFileCreated() throws IOException, ParserConfigurationException, SAXException {
-        File configFile = new File(Paths.get(tempProjectRoot.getPath(), CONFIG_FILE_REL_PATH).toString());
+    public void testConfigFileCreatedAsAuthorCfgJson() throws IOException {
         assertFalse(configFile.exists());
 
-        dao.createConfigByExpression("", "");
+        dao.createConfigByPath(PATH, PATH_MODEL);
 
-        //Validate required properties
-        Document xmlDoc = XmlUtil.loadXml(configFile);
-        Element rootElem = xmlDoc.getDocumentElement();
-        assertEquals(MigrationConstants.NS_SLING_VALUE, rootElem.getAttribute(MigrationConstants.NS_SLING));
-        assertEquals(MigrationConstants.NS_JCR_VALUE, rootElem.getAttribute(MigrationConstants.NS_JCR));
-        assertEquals(MigrationConstants.OSGI_CONFIG_TYPE_VALUE, rootElem.getAttribute(MigrationConstants.JCR_PRIMARY_TYPE_PROP));
+        assertTrue(configFile.exists());
+        JsonObject config = readConfig(configFile);
+        assertEquals(Arrays.asList(PATH + ":" + PATH_MODEL), getList(config, MigrationConstants.WORKFLOW_RUNNER_CONFIG_BY_PATH));
+        assertFalse(config.has(MigrationConstants.WORKFLOW_RUNNER_CONFIG_BY_EXPRESSION));
     }
 
     @Test
-    public void testCreateConfigByExpression() throws IOException, ParserConfigurationException, SAXException {
+    public void testCreateConfigByExpression() throws IOException {
         dao.createConfigByExpression(PATTERN, PATTERN_MODEL);
         dao.createConfigByExpression(PATTERN_2, PATTERN_MODEL);
 
-        File configFile = new File(Paths.get(tempProjectRoot.getPath(), CONFIG_FILE_REL_PATH).toString());
-        List<String> patternMappings = getPatternMappingsFromFile(configFile, MigrationConstants.WORKFLOW_RUNNER_CONFIG_BY_EXPRESSION);
-
-        assertEquals(PATTERN + ":" + PATTERN_MODEL, patternMappings.get(0));
-        assertEquals(PATTERN_2 + ":" + PATTERN_MODEL, patternMappings.get(1));
+        assertEquals(Arrays.asList(PATTERN + ":" + PATTERN_MODEL, PATTERN_2 + ":" + PATTERN_MODEL),
+                getList(readConfig(configFile), MigrationConstants.WORKFLOW_RUNNER_CONFIG_BY_EXPRESSION));
     }
 
     @Test
-    public void testCreateConfigByPath() throws IOException, ParserConfigurationException, SAXException {
+    public void testPathEntriesOrderedMostSpecificFirst() throws IOException {
         dao.createConfigByPath(PATH, PATH_MODEL);
-        dao.createConfigByPath(PATH_2, PATH_MODEL);
+        dao.createConfigByPath(PATH_2, PATTERN_MODEL);
 
-        File configFile = new File(Paths.get(tempProjectRoot.getPath(), CONFIG_FILE_REL_PATH).toString());
-        List<String> patternMappings = getPatternMappingsFromFile(configFile, MigrationConstants.WORKFLOW_RUNNER_CONFIG_BY_PATH);
-
-        assertEquals(PATH + ":" + PATH_MODEL, patternMappings.get(0));
-        assertEquals(PATH_2 + ":" + PATH_MODEL, patternMappings.get(1));
+        assertEquals(Arrays.asList(PATH_2 + ":" + PATTERN_MODEL, PATH + ":" + PATH_MODEL),
+                getList(readConfig(configFile), MigrationConstants.WORKFLOW_RUNNER_CONFIG_BY_PATH));
     }
 
-    private List<String> getPatternMappingsFromFile(File configFile, String mappingProp) throws ParserConfigurationException, SAXException, IOException {
-        Document xmlDoc = XmlUtil.loadXml(configFile);
-        Element rootElem = xmlDoc.getDocumentElement();
-        return XmlUtil.getStringArrayListFromAttribute(rootElem, mappingProp);
+    @Test
+    public void testDuplicateEntriesAddedOnce() throws IOException {
+        dao.createConfigByPath(PATH, PATH_MODEL);
+        dao.createConfigByPath(PATH, PATH_MODEL);
+
+        assertEquals(1, getList(readConfig(configFile), MigrationConstants.WORKFLOW_RUNNER_CONFIG_BY_PATH).size());
     }
 
+    @Test
+    public void testExistingAuthorConfigsMergedAndRemoved() throws IOException {
+        File customerXml = write("ui.config/src/main/content/jcr_root/apps/myapp/config/" + PID + ".xml",
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+                + "<jcr:root xmlns:sling=\"http://sling.apache.org/jcr/sling/1.0\" xmlns:jcr=\"http://www.jcp.org/jcr/1.0\"\n"
+                + "    jcr:primaryType=\"sling:OsgiConfig\"\n"
+                + "    postProcWorkflowsByPath=\"[/content/dam/a:/var/workflow/models/a,/content/dam:/var/workflow/models/dam/dam-autotag-assets]\"/>\n");
+        File customerJson = write("ui.config/src/main/content/jcr_root/apps/myapp/config.author/" + PID + ".cfg.json",
+                "{\n  // existing\n  \"postProcWorkflowsByExpression\": [\"/content/dam/b/.*:/var/workflow/models/b\"]\n}\n");
+        File oldToolOutput = write(MigrationConstants.MIGRATION_PROJECT_APPS + "/src/main/content/jcr_root/apps/aem-cloud-migration/config/" + PID + ".xml",
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+                + "<jcr:root xmlns:sling=\"http://sling.apache.org/jcr/sling/1.0\" xmlns:jcr=\"http://www.jcp.org/jcr/1.0\"\n"
+                + "    jcr:primaryType=\"sling:OsgiConfig\"\n"
+                + "    postProcWorkflowsByPath=\"[/content/dam/c:/var/workflow/models/c]\"/>\n");
+
+        dao.createConfigByPath(PATH, PATH_MODEL);
+
+        JsonObject config = readConfig(configFile);
+        assertEquals(Arrays.asList(
+                "/content/dam/a:/var/workflow/models/a",
+                "/content/dam/c:/var/workflow/models/c",
+                PATH + ":" + PATH_MODEL), getList(config, MigrationConstants.WORKFLOW_RUNNER_CONFIG_BY_PATH));
+        assertEquals(Arrays.asList("/content/dam/b/.*:/var/workflow/models/b"),
+                getList(config, MigrationConstants.WORKFLOW_RUNNER_CONFIG_BY_EXPRESSION));
+
+        assertFalse(customerXml.exists());
+        assertFalse(customerJson.exists());
+        assertFalse(oldToolOutput.exists());
+        assertEquals(3, changeTracker.getWorkflowRunnerConfigsMerged().size());
+    }
+
+    @Test
+    public void testRunModeSpecificConfigsLeftAlone() throws IOException {
+        File prodConfig = write("ui.config/src/main/content/jcr_root/apps/myapp/config.author.prod/" + PID + ".cfg.json",
+                "{ \"postProcWorkflowsByPath\": [\"/content/dam/p:/var/workflow/models/p\"] }\n");
+
+        dao.createConfigByPath(PATH, PATH_MODEL);
+
+        assertTrue(prodConfig.exists());
+        assertEquals(Arrays.asList(PATH + ":" + PATH_MODEL),
+                getList(readConfig(configFile), MigrationConstants.WORKFLOW_RUNNER_CONFIG_BY_PATH));
+        assertEquals(1, changeTracker.getFailedMappings().size());
+    }
+
+    private File write(String relPath, String content) throws IOException {
+        Path file = tempProjectRoot.toPath().resolve(relPath);
+        Files.createDirectories(file.getParent());
+        Files.writeString(file, content);
+        return file.toFile();
+    }
+
+    private JsonObject readConfig(File file) throws IOException {
+        return JsonParser.parseString(Files.readString(file.toPath())).getAsJsonObject();
+    }
+
+    private List<String> getList(JsonObject config, String prop) {
+        List<String> values = new ArrayList<>();
+        JsonArray array = config.getAsJsonArray(prop);
+        for (JsonElement element : array) {
+            values.add(element.getAsString());
+        }
+        return values;
+    }
 }

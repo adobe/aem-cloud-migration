@@ -26,7 +26,7 @@
                 <configuration>
                     <group>aem-cloud-migration</group>
                     <name>migration-apps</name>
-                    <packageType>application</packageType>
+                    <packageType>container</packageType>
                     <properties>
                         <cloudManagerTarget>none</cloudManagerTarget>
                     </properties>
